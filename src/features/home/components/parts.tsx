@@ -1,4 +1,3 @@
-import { GlassContainer } from 'expo-glass-effect';
 import { Link, type Href } from 'expo-router';
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View, type ColorValue } from 'react-native';
@@ -6,6 +5,7 @@ import { Pressable, StyleSheet, Text, View, type ColorValue } from 'react-native
 import { GlassCard } from '@/components/GlassCard';
 import { Icon, type IconName } from '@/components/Icon';
 import { useColors } from '@/theme/colors';
+import { type } from '@/theme/tokens';
 
 /** Section title with an optional "see all" link. */
 export function SectionHeader({
@@ -40,16 +40,19 @@ export type Tile = {
   href?: Href;
 };
 
-/** Grid of stat tiles; GlassContainer lets the glass surfaces blend on iOS 26. */
+/** Grid of stat tiles: the figure is ink, state shows only as a small dot beside the label. */
 export function StatTiles({ tiles }: { tiles: Tile[] }) {
   const colors = useColors();
   return (
-    <GlassContainer spacing={10} style={styles.tiles}>
+    <View style={styles.tiles}>
       {tiles.map((tile) => {
         const body = (
-          <GlassCard padding={14} style={styles.tile}>
-            <Text style={[styles.tileValue, { color: tile.color }]}>{tile.value}</Text>
-            <Text style={[styles.tileLabel, { color: colors.secondaryLabel }]}>{tile.label}</Text>
+          <GlassCard padding={16} style={styles.tile}>
+            <Text style={[styles.tileValue, { color: colors.label }]}>{tile.value}</Text>
+            <View style={styles.tileLabelRow}>
+              <View style={[styles.dot, { backgroundColor: tile.color }]} />
+              <Text style={[styles.tileLabel, { color: colors.secondaryLabel }]}>{tile.label}</Text>
+            </View>
           </GlassCard>
         );
         return (
@@ -69,7 +72,7 @@ export function StatTiles({ tiles }: { tiles: Tile[] }) {
           </View>
         );
       })}
-    </GlassContainer>
+    </View>
   );
 }
 
@@ -78,7 +81,7 @@ export type QuickAction = { key: string; label: string; icon: IconName; href: Hr
 export function QuickActions({ actions }: { actions: QuickAction[] }) {
   const colors = useColors();
   return (
-    <GlassContainer spacing={10} style={styles.tiles}>
+    <View style={styles.tiles}>
       {actions.map((action) => (
         <View key={action.key} style={styles.tileCell}>
           <Link href={action.href} asChild>
@@ -94,7 +97,7 @@ export function QuickActions({ actions }: { actions: QuickAction[] }) {
           </Link>
         </View>
       ))}
-    </GlassContainer>
+    </View>
   );
 }
 
@@ -106,15 +109,17 @@ export function Muted({ children }: { children: ReactNode }) {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-  headerTitle: { fontSize: 20, fontWeight: '700' },
-  link: { fontSize: 15 },
-  tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  headerTitle: { ...type.title },
+  link: { fontSize: 15, fontWeight: '500' },
+  tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   tileCell: { flexGrow: 1, flexBasis: '45%' },
-  tile: { gap: 2 },
-  tileValue: { fontSize: 28, fontWeight: '700' },
-  tileLabel: { fontSize: 13 },
-  action: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  actionLabel: { fontSize: 15, fontWeight: '600', flexShrink: 1 },
+  tile: { gap: 4 },
+  tileValue: { ...type.stat, fontVariant: ['tabular-nums'] },
+  tileLabelRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  dot: { width: 6, height: 6, borderRadius: 3 },
+  tileLabel: { ...type.label },
+  action: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  actionLabel: { fontSize: 15, fontWeight: '500', flexShrink: 1 },
   pressed: { opacity: 0.7 },
-  muted: { fontSize: 15 },
+  muted: { ...type.body },
 });

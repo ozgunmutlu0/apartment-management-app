@@ -1,25 +1,25 @@
-import { GlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { StyleSheet, View, type ViewProps } from 'react-native';
 
 import { useColors } from '@/theme/colors';
+import { radius } from '@/theme/tokens';
 
 export type GlassCardProps = ViewProps & { padding?: number };
 
-/** Liquid Glass surface on iOS 26+, plain system-colored card elsewhere. */
+/**
+ * Flat card: one surface, one hairline, no shadow. (Name kept for the existing importers; glass is
+ * reserved for system chrome, content cards stay opaque so text keeps its contrast.)
+ */
 export function GlassCard({ style, padding = 16, children, ...rest }: GlassCardProps) {
   const colors = useColors();
-  if (isLiquidGlassAvailable()) {
-    return (
-      <GlassView glassEffectStyle="regular" style={[styles.card, { padding }, style]} {...rest}>
-        {children}
-      </GlassView>
-    );
-  }
   return (
     <View
       style={[
         styles.card,
-        { padding, backgroundColor: colors.secondarySystemGroupedBackground },
+        {
+          padding,
+          backgroundColor: colors.secondarySystemGroupedBackground,
+          borderColor: colors.separator,
+        },
         style,
       ]}
       {...rest}
@@ -30,5 +30,10 @@ export function GlassCard({ style, padding = 16, children, ...rest }: GlassCardP
 }
 
 const styles = StyleSheet.create({
-  card: { borderRadius: 20, borderCurve: 'continuous', overflow: 'hidden' },
+  card: {
+    borderRadius: radius.card,
+    borderCurve: 'continuous',
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+  },
 });

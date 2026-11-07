@@ -1,16 +1,16 @@
 import { useRouter, type Href } from 'expo-router';
 import { SymbolView, type AndroidSymbol, type SFSymbol } from 'expo-symbols';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View, type ColorValue } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useColors } from '@/theme/colors';
+import { radius, type } from '@/theme/tokens';
 
 type MenuItem = {
   href: Href;
   title: string;
   subtitle: string;
   symbol: { ios: SFSymbol; android: AndroidSymbol };
-  color: ColorValue;
 };
 
 export default function ManageScreen() {
@@ -24,14 +24,12 @@ export default function ManageScreen() {
       title: t('dues'),
       subtitle: t('duesSubtitle'),
       symbol: { ios: 'creditcard.fill', android: 'payments' },
-      color: colors.green,
     },
     {
       href: '/(tabs)/(manage)/reports',
       title: t('reports'),
       subtitle: t('reportsSubtitle'),
       symbol: { ios: 'chart.bar.fill', android: 'bar_chart' },
-      color: colors.orange,
     },
   ];
 
@@ -41,7 +39,15 @@ export default function ManageScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.content}
     >
-      <View style={[styles.group, { backgroundColor: colors.secondarySystemGroupedBackground }]}>
+      <View
+        style={[
+          styles.group,
+          {
+            backgroundColor: colors.secondarySystemGroupedBackground,
+            borderColor: colors.separator,
+          },
+        ]}
+      >
         {items.map((item, i) => (
           <Pressable
             key={item.title}
@@ -57,8 +63,8 @@ export default function ManageScreen() {
               pressed && styles.pressed,
             ]}
           >
-            <View style={[styles.iconBox, { backgroundColor: item.color }]}>
-              <SymbolView name={item.symbol} size={18} tintColor="#FFFFFF" />
+            <View style={styles.iconBox}>
+              <SymbolView name={item.symbol} size={20} tintColor={colors.tint} />
             </View>
             <View style={styles.text}>
               <Text style={[styles.title, { color: colors.label }]}>{item.title}</Text>
@@ -80,25 +86,23 @@ export default function ManageScreen() {
 
 const styles = StyleSheet.create({
   content: { padding: 16 },
-  group: { borderRadius: 20, borderCurve: 'continuous', overflow: 'hidden' },
+  group: {
+    borderRadius: radius.card,
+    borderCurve: 'continuous',
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+  },
   row: {
-    minHeight: 60,
+    minHeight: 64,
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 12,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
   },
   pressed: { opacity: 0.6 },
-  iconBox: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    borderCurve: 'continuous',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: { flex: 1 },
-  title: { fontSize: 17 },
-  subtitle: { fontSize: 13 },
+  iconBox: { width: 28, alignItems: 'center', justifyContent: 'center' },
+  text: { flex: 1, gap: 2 },
+  title: { ...type.bodyStrong },
+  subtitle: { ...type.small },
 });

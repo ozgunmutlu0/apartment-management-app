@@ -37,21 +37,12 @@ export default function ReportsScreen() {
 
   const data = report.data;
   const dateFormat = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium' });
-  const categoryColors = [
-    colors.tint,
-    colors.orange,
-    colors.green,
-    colors.purple,
-    colors.teal,
-    colors.indigo,
-    colors.red,
-  ];
-
+  // Categories are not states: one accent for every bar, ranking is shown by length.
   const categoryRows = data
-    ? TICKET_CATEGORIES.map((c, i) => ({
+    ? TICKET_CATEGORIES.map((c) => ({
         key: c,
         count: data.tickets.byCategory[c],
-        color: categoryColors[i % categoryColors.length],
+        color: colors.tint,
       })).sort((a, b) => b.count - a.count)
     : [];
   const maxCategory = categoryRows[0]?.count ?? 0;
@@ -217,14 +208,14 @@ const styles = StyleSheet.create({
   loader: { marginTop: 24 },
   range: { fontSize: 13, textAlign: 'center' },
   card: { gap: 12 },
-  title: { fontSize: 20, fontWeight: '700' },
+  title: { fontSize: 20, fontWeight: '600' },
   sub: { fontSize: 13, textTransform: 'uppercase', marginTop: 4 },
   stats: { flexDirection: 'row', gap: 12 },
   stat: { flex: 1, gap: 2 },
-  big: { fontSize: 22, fontWeight: '700' },
+  big: { fontSize: 22, fontWeight: '600' },
   caption: { fontSize: 13 },
   topRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   rank: { width: 20, fontSize: 17, fontWeight: '600' },
   topLabel: { flex: 1, fontSize: 17 },
-  topCount: { fontSize: 17, fontWeight: '700' },
+  topCount: { fontSize: 17, fontWeight: '600' },
 });

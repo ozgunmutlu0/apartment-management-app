@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useUnreadCount } from '@/features/notifications/api';
 import { useAuth } from '@/lib/auth';
+import { useColors } from '@/theme/colors';
 
 // Every tab group has an `index` route, so `/` is ambiguous; without this the router picks the
 // first group alphabetically (`(dues)`), which is hidden for managers/technicians -> blank screen.
@@ -12,9 +13,10 @@ export default function TabsLayout() {
   const { t } = useTranslation('tabs');
   const { role } = useAuth();
   const unread = useUnreadCount().data ?? 0;
+  const colors = useColors();
 
   return (
-    <NativeTabs>
+    <NativeTabs tintColor={colors.tint}>
       <NativeTabs.Trigger name="(home)">
         <NativeTabs.Trigger.Label>{t('home')}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />

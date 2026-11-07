@@ -15,6 +15,7 @@ import { TicketRow } from '@/features/tickets/components/TicketRow';
 import { TICKET_STATUSES, type TicketStatus } from '@/features/tickets/types';
 import { useAuth } from '@/lib/auth';
 import { useColors, useStatusColors } from '@/theme/colors';
+import { type } from '@/theme/tokens';
 
 import { Muted, SectionHeader, StatTiles, type Tile } from './parts';
 
@@ -296,10 +297,10 @@ export function TechnicianSections() {
 }
 
 const styles = StyleSheet.create({
-  section: { gap: 10 },
-  list: { gap: 10 },
+  section: { gap: 12 },
+  list: { gap: 12 },
   cardGap: { gap: 4 },
-  big: { fontSize: 24, fontWeight: '700' },
-  body: { fontSize: 17, fontWeight: '600' },
-  caption: { fontSize: 14 },
+  big: { ...type.stat, fontVariant: ['tabular-nums'] },
+  body: { ...type.bodyStrong },
+  caption: { ...type.small },
 });

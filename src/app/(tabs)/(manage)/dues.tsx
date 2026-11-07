@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   stats: { gap: 8 },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between' },
   statEnd: { alignItems: 'flex-end' },
-  statValue: { fontSize: 22, fontWeight: '700' },
+  statValue: { fontSize: 22, fontWeight: '600' },
   caption: { fontSize: 14 },
   row: { flexDirection: 'row', gap: 12, padding: 14, justifyContent: 'space-between' },
   pressed: { opacity: 0.6 },

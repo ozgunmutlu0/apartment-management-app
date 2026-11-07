@@ -17,10 +17,10 @@ Expo SDK 58 (`expo ~58.0.23`), React Native 0.88.1, React 19.3.0, TypeScript ~6.
 - `src/features/<feature>/` = `api.ts` (react-query hooks), `types.ts`, `components/`. Screens stay thin and call these hooks.
 - `src/components/` shared UI (GlassCard, EmptyState, ...). `src/lib/` supabase client, auth context, queryClient, `database.types.ts`.
 - `src/i18n/` namespaces per feature in `locales/{tr,en}/<ns>.json`; TR is default, EN second.
-- `src/theme/colors.ts` wraps `PlatformColor` (iOS system colors, Android palette); dark mode required.
+- `src/theme/colors.ts` = custom palette (warm paper grounds, warm ink, one accent "blueprint blue", state colors only; no violet, no pure black, no gradients). iOS via `DynamicColorIOS`, Android via `useColorScheme`; `hexColors()` for libraries that parse colors. `src/theme/tokens.ts` = spacing, radius (card 14 / control 10), type scale (weights 500/600 only). Dark mode required. Use accent for actions/links/selection only; categories are not states, never rainbow them.
 
 ## Native-first rule (PLAN.md section 1)
-Anything with a native equivalent is never imitated in JS: tab bar (NativeTabs), header (native stack, large titles, `headerSearchBarOptions`), sheets (`presentation: 'formSheet'`), glass surfaces (`expo-glass-effect` `GlassView`/`GlassContainer`, `isLiquidGlassAvailable()` with `PlatformColor` card fallback), segmented control / date picker / switch / context menu / alert / action sheet (`@expo/ui`, else RN core). No JS modal or bottom-sheet libraries. Justify before adding any UI library.
+Anything with a native equivalent is never imitated in JS: tab bar (NativeTabs), header (native stack, large titles, `headerSearchBarOptions`), sheets (`presentation: 'formSheet'`), glass only for system chrome / floating controls (`expo-glass-effect`); content cards (`GlassCard`) are flat opaque surfaces with a hairline, segmented control / date picker / switch / context menu / alert / action sheet (`@expo/ui`, else RN core). No JS modal or bottom-sheet libraries. Justify before adding any UI library.
 
 ## Verified SDK 58 API notes
 - `import { NativeTabs } from 'expo-router/native-tabs'` (NOT `unstable-native-tabs`). Hide per role with `<NativeTabs.Trigger name=".." hidden={...}>`.

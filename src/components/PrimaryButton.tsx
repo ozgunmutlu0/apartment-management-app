@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, type PressableProps } from 'react-native';
 
 import { useColors } from '@/theme/colors';
+import { radius } from '@/theme/tokens';
 
 export type PrimaryButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   title: string;
@@ -30,9 +31,9 @@ export function PrimaryButton({
       {...rest}
     >
       {loading ? (
-        <ActivityIndicator color={filled ? '#FFFFFF' : undefined} />
+        <ActivityIndicator color={filled ? (colors.onTint as string) : undefined} />
       ) : (
-        <Text style={[styles.title, { color: filled ? '#FFFFFF' : colors.tint }]}>{title}</Text>
+        <Text style={[styles.title, { color: filled ? colors.onTint : colors.tint }]}>{title}</Text>
       )}
     </Pressable>
   );
@@ -40,14 +41,14 @@ export function PrimaryButton({
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 50,
-    borderRadius: 14,
+    minHeight: 48,
+    borderRadius: radius.control,
     borderCurve: 'continuous',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
   },
-  title: { fontSize: 17, fontWeight: '600' },
-  disabled: { opacity: 0.5 },
-  pressed: { opacity: 0.7 },
+  title: { fontSize: 16, fontWeight: '600', letterSpacing: -0.1 },
+  disabled: { opacity: 0.45 },
+  pressed: { opacity: 0.8, transform: [{ scale: 0.98 }] },
 });

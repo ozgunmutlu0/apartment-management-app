@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   content: { padding: 20, gap: 12 },
   badges: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   pinned: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  title: { fontSize: 24, fontWeight: '700' },
+  title: { fontSize: 24, fontWeight: '600', letterSpacing: -0.5 },
   meta: { fontSize: 13 },
   body: { fontSize: 17, lineHeight: 24, marginTop: 8 },
 });

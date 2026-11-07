@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   card: { gap: 10 },
   headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   headerText: { flex: 1, gap: 4 },
-  title: { fontSize: 20, fontWeight: '700' },
+  title: { fontSize: 20, fontWeight: '600' },
   field: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
   fieldLabel: { fontSize: 15 },
   fieldValue: { fontSize: 15, flexShrink: 1, textAlign: 'right' },

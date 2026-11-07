@@ -18,7 +18,7 @@ export function StatusBadge({ status }: { status: TicketStatus }) {
 }
 
 const styles = StyleSheet.create({
-  badge: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  dot: { width: 8, height: 8, borderRadius: 4 },
-  label: { fontSize: 13, fontWeight: '600' },
+  badge: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  dot: { width: 6, height: 6, borderRadius: 3 },
+  label: { fontSize: 13, fontWeight: '500' },
 });

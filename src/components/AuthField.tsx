@@ -2,6 +2,7 @@ import type { Ref } from 'react';
 import { StyleSheet, TextInput, type TextInputInstance, type TextInputProps } from 'react-native';
 
 import { useColors } from '@/theme/colors';
+import { radius } from '@/theme/tokens';
 
 /** Native text input styled with system colors (used by the auth screens). */
 export function AuthField({
@@ -16,7 +17,11 @@ export function AuthField({
       placeholderTextColor={colors.secondaryLabel}
       style={[
         styles.input,
-        { color: colors.label, backgroundColor: colors.secondarySystemBackground },
+        {
+          color: colors.label,
+          backgroundColor: colors.systemBackground,
+          borderColor: colors.separator,
+        },
         style,
       ]}
       {...rest}
@@ -28,8 +33,9 @@ const styles = StyleSheet.create({
   input: {
     minHeight: 48,
     paddingHorizontal: 14,
-    borderRadius: 12,
+    borderRadius: radius.control,
     borderCurve: 'continuous',
-    fontSize: 17,
+    borderWidth: StyleSheet.hairlineWidth,
+    fontSize: 16,
   },
 });

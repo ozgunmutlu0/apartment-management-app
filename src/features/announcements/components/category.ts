@@ -13,12 +13,11 @@ export const CATEGORY_SYMBOLS = {
   payment: { ios: 'creditcard.fill', android: 'payments' },
 } as const satisfies Record<AnnouncementCategory, { ios: SFSymbol; android: AndroidSymbol }>;
 
-const EVENT_COLOR = { light: '#5856D6', dark: '#7D7AFF' };
-
 export function categoryColor(
   category: AnnouncementCategory,
   colors: SemanticColors,
-  scheme: 'light' | 'dark' | null | undefined,
+  // Kept for the existing call sites; colors are scheme-aware already.
+  _scheme?: 'light' | 'dark' | null,
 ): ColorValue {
   switch (category) {
     case 'urgent':
@@ -28,8 +27,8 @@ export function categoryColor(
     case 'payment':
       return colors.green;
     case 'event':
-      return scheme === 'dark' ? EVENT_COLOR.dark : EVENT_COLOR.light;
+      return colors.teal;
     default:
-      return colors.tint;
+      return colors.secondaryLabel;
   }
 }

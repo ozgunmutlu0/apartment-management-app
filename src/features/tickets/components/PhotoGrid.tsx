@@ -17,7 +17,11 @@ export type PhotoGridProps = {
 export function PhotoGrid({ photos, onPress, renderOverlay, size = 96 }: PhotoGridProps) {
   const colors = useColors();
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.row}
+    >
       {photos.map((photo, index) => (
         <View key={photo.key}>
           <Pressable

@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 16, paddingBottom: 32 },
   summary: { gap: 4, marginTop: 8, marginBottom: 8 },
   caption: { fontSize: 15 },
-  total: { fontSize: 34, fontWeight: '700' },
+  total: { fontSize: 34, fontWeight: '600', letterSpacing: -0.8, fontVariant: ['tabular-nums'] },
   overdue: { fontSize: 15, fontWeight: '600' },
   section: { fontSize: 15, fontWeight: '600', marginTop: 16, marginBottom: 6, marginLeft: 4 },
   row: {

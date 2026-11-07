@@ -160,9 +160,9 @@ export default function JoinBuildingScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { flexGrow: 1, justifyContent: 'center', padding: 20, gap: 20 },
-  header: { alignItems: 'center', gap: 6 },
-  title: { fontSize: 30, fontWeight: '800', textAlign: 'center' },
-  subtitle: { fontSize: 15, textAlign: 'center' },
+  header: { gap: 6 },
+  title: { fontSize: 30, fontWeight: '600', letterSpacing: -0.7, textAlign: 'left' },
+  subtitle: { fontSize: 16 },
   form: { gap: 12 },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   buildingName: { fontSize: 17, fontWeight: '600' },

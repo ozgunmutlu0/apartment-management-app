@@ -139,7 +139,7 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { flexGrow: 1, justifyContent: 'center', padding: 20, gap: 20 },
-  title: { fontSize: 30, fontWeight: '800', textAlign: 'center' },
+  title: { fontSize: 30, fontWeight: '600', letterSpacing: -0.7, textAlign: 'left' },
   form: { gap: 12 },
   hint: { fontSize: 13 },
   error: { fontSize: 14 },

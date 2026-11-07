@@ -18,6 +18,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { useAuth } from '@/lib/auth';
 import { authErrorMessage } from '@/lib/authErrors';
 import { useColors } from '@/theme/colors';
+import { type } from '@/theme/tokens';
 
 const DEMO_PASSWORD = 'Demo1234!';
 const DEMO_ACCOUNTS = [
@@ -139,12 +140,12 @@ export default function SignInScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  content: { flexGrow: 1, justifyContent: 'center', padding: 20, gap: 20 },
-  header: { alignItems: 'center', gap: 6, marginBottom: 8 },
-  appName: { fontSize: 34, fontWeight: '800' },
-  slogan: { fontSize: 15, textAlign: 'center' },
+  content: { flexGrow: 1, justifyContent: 'center', padding: 24, gap: 24 },
+  header: { gap: 8, marginBottom: 8 },
+  appName: { ...type.display },
+  slogan: { ...type.body },
   form: { gap: 12 },
-  error: { fontSize: 14 },
+  error: { ...type.small },
   footer: { flexDirection: 'row', justifyContent: 'center', gap: 6 },
   demo: { alignItems: 'center', gap: 8, marginTop: 8 },
   demoTitle: { fontSize: 13 },

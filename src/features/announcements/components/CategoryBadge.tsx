@@ -21,5 +21,5 @@ export function CategoryBadge({ category }: { category: AnnouncementCategory }) 
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  label: { fontSize: 13, fontWeight: '600' },
+  label: { fontSize: 13, fontWeight: '500' },
 });

@@ -1,1 +1,36 @@
-{}
+{
+  "account": "Account",
+  "name": "Full name",
+  "email": "Email",
+  "phone": "Phone",
+  "phonePlaceholder": "Not set",
+  "role": "Role",
+  "residence": "Residence",
+  "building": "Building",
+  "unit": "Unit",
+  "unitValue": "Block {{block}} / No. {{number}}",
+  "edit": {
+    "title": "Edit Profile",
+    "namePlaceholder": "Full name",
+    "phonePlaceholder": "Phone",
+    "nameRequired": "Name can't be empty.",
+    "error": "Couldn't save your profile. Please try again."
+  },
+  "language": {
+    "title": "Language",
+    "tr": "Türkçe",
+    "en": "English"
+  },
+  "shortcuts": "Shortcuts",
+  "signOut": {
+    "button": "Sign Out",
+    "title": "Sign out?",
+    "message": "You will be signed out of your account.",
+    "error": "Couldn't sign out. Please try again."
+  },
+  "roles": {
+    "resident": "Resident",
+    "manager": "Manager",
+    "technician": "Technician"
+  }
+}

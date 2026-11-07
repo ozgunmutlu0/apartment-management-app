@@ -59,6 +59,7 @@ export type Database = {
           address: string | null
           created_at: string
           id: string
+          invite_code: string
           name: string
           timezone: string
         }
@@ -66,6 +67,7 @@ export type Database = {
           address?: string | null
           created_at?: string
           id?: string
+          invite_code?: string
           name: string
           timezone?: string
         }
@@ -73,6 +75,7 @@ export type Database = {
           address?: string | null
           created_at?: string
           id?: string
+          invite_code?: string
           name?: string
           timezone?: string
         }
@@ -569,6 +572,14 @@ export type Database = {
       current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: Database['public']['Enums']['user_role']
+      }
+      get_building_by_invite: {
+        Args: { p_code: string }
+        Returns: Json
+      }
+      join_building: {
+        Args: { p_code: string; p_unit_id: string }
+        Returns: Database['public']['Tables']['profiles']['Row']
       }
       storage_ticket_id: {
         Args: { p_name: string }

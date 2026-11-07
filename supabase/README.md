@@ -10,6 +10,7 @@ supabase/
     20250101000100_functions_triggers.sql # yardımcı fonksiyonlar, trigger'lar, RPC'ler
     20250101000200_rls.sql                # grant'ler + RLS politikaları
     20250101000300_storage_realtime.sql   # ticket-photos bucket + realtime
+    20250101000400_join_building.sql      # davet kodu, get_building_by_invite / join_building RPC
   seed.sql                                # demo bina, kullanıcılar, örnek veriler
 ```
 
@@ -23,7 +24,8 @@ Supabase panelinde **SQL Editor** açın ve dosyaları **sırayla** çalıştır
 2. `migrations/20250101000100_functions_triggers.sql`
 3. `migrations/20250101000200_rls.sql`
 4. `migrations/20250101000300_storage_realtime.sql`
-5. `seed.sql` (isteğe bağlı, yalnızca demo/geliştirme projesi için)
+5. `migrations/20250101000400_join_building.sql`
+6. `seed.sql` (isteğe bağlı, yalnızca demo/geliştirme projesi için)
 
 ### B) Supabase CLI
 
@@ -68,6 +70,15 @@ Hepsinin şifresi: `Demo1234!`
 | notifications | yalnız kendi (okuma + `read_at`) | aynı | aynı |
 
 Kayıt olan herkes `resident` olur (metadata'daki rol yok sayılır). Yönetici/teknisyen ve bina/daire ataması seed veya service role / SQL ile yapılır.
+
+## Binaya katılma (davet kodu)
+
+Kayıt olan kullanıcının `building_id`'si boştur; uygulama onu `join-building` ekranına yönlendirir.
+
+- `buildings.invite_code`: 6 karakterlik benzersiz kod (otomatik üretilir; demo bina: `GUNES1`). Yönetici kodu sakinlerle paylaşır.
+- `supabase.rpc('get_building_by_invite', { p_code })` -> `{ id, name, units: [{ id, block, number, floor }] }` veya `null` (geçersiz kod).
+- `supabase.rpc('join_building', { p_code, p_unit_id })` -> güncel `profiles` satırı. Yalnızca binası olmayan `resident` çağırabilir; daire o binaya ait olmalıdır. `profiles_guard` yalnızca bu RPC içinde set edilen işlem-yerel `fmb.joining` bayrağıyla bu geçişe izin verir; diğer korumalar aynıdır.
+- Her iki RPC `security definer`'dır; `anon`'a kapalı, `authenticated`'a açıktır.
 
 ## Uygulama için notlar
 

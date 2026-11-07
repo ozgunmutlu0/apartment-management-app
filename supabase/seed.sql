@@ -22,8 +22,8 @@ declare
   r record;
 begin
   -- ------------------------------------------------------------ building, units, areas
-  insert into public.buildings (id, name, address)
-  values (v_building, 'Güneş Apartmanı', 'Atatürk Cad. No: 12, Kadıköy / İstanbul');
+  insert into public.buildings (id, name, address, invite_code)
+  values (v_building, 'Güneş Apartmanı', 'Atatürk Cad. No: 12, Kadıköy / İstanbul', 'GUNES1');
 
   insert into public.units (building_id, block, number, floor)
   select v_building, b.block, n::text, (n + 1) / 2

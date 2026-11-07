@@ -1,1 +1,36 @@
-{}
+{
+  "account": "Hesap",
+  "name": "Ad Soyad",
+  "email": "E-posta",
+  "phone": "Telefon",
+  "phonePlaceholder": "Eklenmemiş",
+  "role": "Rol",
+  "residence": "Konut",
+  "building": "Bina",
+  "unit": "Daire",
+  "unitValue": "Blok {{block}} / No {{number}}",
+  "edit": {
+    "title": "Profili Düzenle",
+    "namePlaceholder": "Ad Soyad",
+    "phonePlaceholder": "Telefon",
+    "nameRequired": "Ad soyad boş olamaz.",
+    "error": "Profil kaydedilemedi. Lütfen tekrar deneyin."
+  },
+  "language": {
+    "title": "Dil",
+    "tr": "Türkçe",
+    "en": "English"
+  },
+  "shortcuts": "Kısayollar",
+  "signOut": {
+    "button": "Çıkış Yap",
+    "title": "Çıkış yapılsın mı?",
+    "message": "Hesabınızdan çıkış yapacaksınız.",
+    "error": "Çıkış yapılamadı. Lütfen tekrar deneyin."
+  },
+  "roles": {
+    "resident": "Sakin",
+    "manager": "Yönetici",
+    "technician": "Teknik Personel"
+  }
+}

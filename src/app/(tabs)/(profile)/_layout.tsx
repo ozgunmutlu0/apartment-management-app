@@ -1,6 +1,8 @@
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
+export const unstable_settings = { anchor: 'index' };
+
 export default function Layout() {
   const { t } = useTranslation('tabs');
   const { t: tp } = useTranslation('profile');

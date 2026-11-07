@@ -38,7 +38,7 @@ Each group has its own native `Stack` layout. Creation forms use `presentation: 
 2. The hook uses `supabase` from `src/lib/supabase.ts` through react-query.
 3. Postgres applies RLS for the signed-in user and returns only permitted rows.
 4. Mutations call RPCs (status, assign, note) or insert rows allowed by RLS; triggers write events and notifications.
-5. Mutations invalidate related query keys; Realtime updates (notifications, tickets) also invalidate keys.
+5. Mutations invalidate related query keys (ticket and dues mutations also refresh the manager reports); Realtime updates (notifications, tickets) also invalidate keys.
 
 Session tokens are stored with `expo-secure-store` (AsyncStorage fallback for large values).
 

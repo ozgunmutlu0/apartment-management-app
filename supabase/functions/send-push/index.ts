@@ -1,4 +1,4 @@
-// @ts-nocheck -- Deno runtime (Supabase Edge Function); not part of the Expo app's TypeScript project.
+// Deno runtime (Supabase Edge Function); excluded from the Expo app's tsconfig and eslint.
 //
 // send-push: called by the `notifications_send_push` Postgres trigger (pg_net) with
 // `{ "notification_id": "<uuid>" }` and the shared secret in the `x-webhook-secret` header.
@@ -42,7 +42,11 @@ function buildMessage(locale: string, n: Row): { title: string; body: string } {
       };
     case 'ticket_status':
       return {
-        title: lang === 'en' ? `Request status: ${statusLabel}` : `Talep durumu: ${statusLabel}`,
+        // Neutral wording: the recipient may be the creator or the assigned technician.
+        title:
+          lang === 'en'
+            ? `Request status updated: ${statusLabel}`
+            : `Talep durumu güncellendi: ${statusLabel}`,
         body: n.body ? `${n.title} - ${n.body}` : n.title,
       };
     case 'ticket_assigned':

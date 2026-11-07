@@ -20,14 +20,14 @@ export default function ManageScreen() {
 
   const items: MenuItem[] = [
     {
-      href: '/dues',
+      href: '/(tabs)/(manage)/dues',
       title: t('dues'),
       subtitle: t('duesSubtitle'),
       symbol: { ios: 'creditcard.fill', android: 'payments' },
       color: colors.green,
     },
     {
-      href: '/reports',
+      href: '/(tabs)/(manage)/reports',
       title: t('reports'),
       subtitle: t('reportsSubtitle'),
       symbol: { ios: 'chart.bar.fill', android: 'bar_chart' },

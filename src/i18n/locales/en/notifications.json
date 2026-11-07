@@ -1,17 +1,17 @@
 {
   "title": {
     "ticket_created": "New request: {{title}}",
-    "ticket_status": "Your request is {{status}}: {{title}}",
+    "ticket_status": "Request status updated: {{status}} — {{title}}",
     "ticket_status_unknown": "Request updated: {{title}}",
     "ticket_assigned": "Assigned to you: {{title}}",
     "announcement": "New announcement: {{title}}",
     "generic": "{{title}}"
   },
   "status": {
-    "pending": "pending",
-    "in_review": "in review",
-    "in_progress": "in progress",
-    "resolved": "resolved"
+    "pending": "Pending",
+    "in_review": "In review",
+    "in_progress": "In progress",
+    "resolved": "Resolved"
   },
   "markRead": "Mark as read",
   "markAllRead": "Mark all as read",

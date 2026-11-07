@@ -1,10 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 
 import type { DueWithPayments, ManagerDue, PaymentMethod, ResidentSummary } from './types';
 import { effectiveStatus, remainingOf, toDateString } from './utils';
+
+/** Dues also feed the manager reports. */
+function invalidateDues(queryClient: QueryClient) {
+  void queryClient.invalidateQueries({ queryKey: ['reports'] });
+  return queryClient.invalidateQueries({ queryKey: ['dues'] });
+}
 
 function useResidentDuesQuery<T>(select: (dues: DueWithPayments[]) => T) {
   const { profile } = useAuth();
@@ -129,7 +135,7 @@ export function useGenerateDues() {
       if (error) throw error;
       return { created: data.length, skipped: units.data.length - data.length };
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['dues'] }),
+    onSuccess: () => invalidateDues(queryClient),
   });
 }
 
@@ -155,7 +161,7 @@ export function useRecordPayment() {
       });
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['dues'] }),
+    onSuccess: () => invalidateDues(queryClient),
   });
 }
 
@@ -167,6 +173,6 @@ export function useDeletePayment() {
       const { error } = await supabase.from('payments').delete().eq('id', paymentId);
       if (error) throw error;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['dues'] }),
+    onSuccess: () => invalidateDues(queryClient),
   });
 }

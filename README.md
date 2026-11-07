@@ -22,15 +22,17 @@ Apartment life runs on WhatsApp groups, phone calls and paper lists. Fault repor
 
 ## Features
 
+All features below are implemented. They have passed static checks (typecheck, lint, expo-doctor, bundle export) but are **not yet tested on a device or against a live Supabase project** (Aşama 6, testing in progress).
+
 - [x] Project skeleton (Expo Router, NativeTabs, theme, i18n TR + EN)
 - [x] Database schema (Postgres, RLS, triggers, RPCs, storage, demo seed)
-- [ ] Authentication and roles (in progress)
-- [ ] Fault reports with photos and request tracking (Pending, In review, In progress, Resolved)
-- [ ] Announcements (pinned, manager CRUD)
-- [ ] Dues tracking (manager creates, residents view)
-- [ ] Notifications (in-app, realtime, push)
-- [ ] Common area reservations
-- [ ] Home dashboard and manager reports
+- [x] Authentication, roles and joining a building by invite code
+- [x] Fault reports with photos and request tracking (Pending, In review, In progress, Resolved)
+- [x] Announcements (pinned, manager CRUD)
+- [x] Dues tracking (manager creates and records payments, residents view)
+- [x] Notifications (in-app, realtime, push; see [Push notifications setup](supabase/README.md#push-bildirimleri-opsiyonel))
+- [x] Common area reservations
+- [x] Home dashboard and manager reports
 
 Priorities: required = auth/roles, tickets, request tracking, announcements; second phase = dues, notifications; extra = reservations, reports. See [PLAN.md](PLAN.md).
 
@@ -110,6 +112,8 @@ npm install
    npx expo start
    ```
 
+Optional push notifications need an Edge Function and a few secrets: see [Push notifications setup](supabase/README.md#push-bildirimleri-opsiyonel).
+
 Never put the Supabase service role key in the app. Only `EXPO_PUBLIC_*` variables belong in `.env`.
 
 ### Demo accounts
@@ -144,7 +148,7 @@ src/
   i18n/                # i18next setup, locales/{tr,en}/<namespace>.json
   theme/               # colors.ts (PlatformColor wrappers)
 supabase/
-  migrations/          # schema, functions/triggers, RLS, storage/realtime, join building
+  migrations/          # schema, functions/triggers, RLS, storage/realtime, join building, notifications/push
   seed.sql             # demo data
 docs/                  # architecture, database, project report (TR), screenshots
 ```
@@ -155,10 +159,10 @@ docs/                  # architecture, database, project report (TR), screenshot
 |---|---|---|
 | Aşama 1 | Project definition and requirements | Done |
 | Aşama 2 | Design: roles, screens, data model, navigation | Done |
-| Aşama 3 | Foundation: skeleton, Supabase schema/RLS, auth and roles | In progress |
-| Aşama 4 | Required features: tickets with photos, request tracking, announcements | Planned |
-| Aşama 5 | Second phase: dues, notifications (realtime + push) | Planned |
-| Aşama 6 | Extras: home dashboard, reservations, reports; QA | Planned |
+| Aşama 3 | Foundation: skeleton, Supabase schema/RLS, auth and roles | Done (implemented) |
+| Aşama 4 | Required features: tickets with photos, request tracking, announcements | Done (implemented) |
+| Aşama 5 | Second phase: dues, notifications (realtime + push), extras: dashboard, reservations, reports | Done (implemented) |
+| Aşama 6 | Test: static QA done; device and live Supabase testing | In progress |
 | Aşama 7 | Documentation, final checks, delivery | Planned |
 
 Work packages and rules: [PLAN.md](PLAN.md). Turkish project definition: [docs/project-report-tr.md](docs/project-report-tr.md).
@@ -174,7 +178,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). AI-assisted development guidelines are i
 - Teknoloji: React Native + Expo SDK 58, TypeScript, Supabase (Auth, Postgres + RLS, Storage, Realtime).
 - iOS 26'da Liquid Glass için yerel bileşenler (NativeTabs, formSheet, expo-glass-effect); Türkçe (varsayılan) ve İngilizce.
 - Öncelikler: zorunlu = giriş/roller, arıza, talep takibi, duyuru; ikinci aşama = aidat, bildirim; ekstra = rezervasyon, raporlar.
-- Durum: proje iskeleti ve veritabanı şeması tamamlandı, kimlik doğrulama geliştiriliyor.
+- Durum: tüm özellikler geliştirildi (statik kontroller geçti); cihaz ve gerçek Supabase üzerinde test aşaması (Aşama 6) sürüyor.
 - Detaylı proje tanımı: [docs/project-report-tr.md](docs/project-report-tr.md). Kurulum için yukarıdaki "Getting started" bölümüne ve [supabase/README.md](supabase/README.md) dosyasına bakın.
 
 ## License

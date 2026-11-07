@@ -1,4 +1,10 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { useAuth } from '@/lib/auth';
@@ -23,6 +29,12 @@ export const ticketKeys = {
   technicians: (buildingId: string | null | undefined) =>
     ['tickets', 'technicians', buildingId] as const,
 };
+
+/** Ticket data also feeds the home dashboard (same keys) and the manager reports. */
+function invalidateTickets(queryClient: QueryClient) {
+  void queryClient.invalidateQueries({ queryKey: ['reports'] });
+  return queryClient.invalidateQueries({ queryKey: ticketKeys.all });
+}
 
 export type TicketListItem = {
   id: string;
@@ -238,7 +250,7 @@ export function useCreateTicket() {
         failedPhotos: results.filter((r) => r.status === 'rejected').length,
       };
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ticketKeys.all }),
+    onSettled: () => invalidateTickets(queryClient),
   });
 }
 
@@ -246,7 +258,7 @@ function useInvalidatingMutation<TVars>(fn: (vars: TVars) => Promise<unknown>) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: fn,
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ticketKeys.all }),
+    onSettled: () => invalidateTickets(queryClient),
   });
 }
 
@@ -299,7 +311,7 @@ export function useTicketsRealtime() {
     const channel = supabase
       .channel(`tickets-${userId}-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tickets' }, () => {
-        void queryClient.invalidateQueries({ queryKey: ticketKeys.all });
+        void invalidateTickets(queryClient);
       })
       .subscribe();
     return () => {

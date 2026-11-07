@@ -28,7 +28,11 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   // Register the push token once per signed-in profile.
   const registeredFor = useRef<string | null>(null);
   useEffect(() => {
-    if (!userId || registeredFor.current === userId) return;
+    if (!userId) {
+      registeredFor.current = null; // signed out (token cleared): register again on next sign-in
+      return;
+    }
+    if (registeredFor.current === userId) return;
     registeredFor.current = userId;
     void (async () => {
       const token = await getPushToken();

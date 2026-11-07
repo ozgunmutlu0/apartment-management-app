@@ -1,7 +1,7 @@
 {
   "title": {
     "ticket_created": "Yeni talep: {{title}}",
-    "ticket_status": "Talebiniz {{status}}: {{title}}",
+    "ticket_status": "Talep durumu güncellendi: {{status}} — {{title}}",
     "ticket_status_unknown": "Talep güncellendi: {{title}}",
     "ticket_assigned": "Size atandı: {{title}}",
     "announcement": "Yeni duyuru: {{title}}",

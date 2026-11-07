@@ -2,6 +2,8 @@ import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/lib/auth';
 
+export const unstable_settings = { anchor: 'index' };
+
 export default function Layout() {
   const { t } = useTranslation('tabs');
   const { role } = useAuth();

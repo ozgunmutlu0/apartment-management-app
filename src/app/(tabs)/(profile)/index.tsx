@@ -6,6 +6,7 @@ import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Icon, type IconName } from '@/components/Icon';
 import { PressableRow } from '@/components/PressableRow';
+import { clearPushToken } from '@/features/notifications/push';
 import { useResidence, useUpdateProfile } from '@/features/profile/api';
 import { setAppLanguage } from '@/i18n/locale';
 import { supportedLanguages, type SupportedLanguage } from '@/i18n/resources';
@@ -73,6 +74,7 @@ export default function ProfileScreen() {
 
   const doSignOut = async () => {
     try {
+      await clearPushToken(user?.id); // best effort, never blocks sign-out
       await signOut();
     } catch {
       Alert.alert(t('signOut.error'));

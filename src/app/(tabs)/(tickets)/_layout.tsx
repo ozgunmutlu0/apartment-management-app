@@ -22,6 +22,14 @@ export default function Layout() {
           headerLargeTitleEnabled: false,
         }}
       />
+      <Stack.Screen
+        name="photo"
+        options={{
+          headerShown: false,
+          presentation: 'fullScreenModal',
+          animation: 'fade',
+        }}
+      />
     </Stack>
   );
 }

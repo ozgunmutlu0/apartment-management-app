@@ -1,1 +1,94 @@
-{}
+{
+  "status": {
+    "pending": "Beklemede",
+    "in_review": "İnceleniyor",
+    "in_progress": "İşlemde",
+    "resolved": "Çözüldü"
+  },
+  "category": {
+    "elevator": "Asansör",
+    "plumbing": "Su tesisatı",
+    "electrical": "Elektrik",
+    "cleaning": "Temizlik",
+    "common_area": "Ortak alan",
+    "heating": "Isıtma",
+    "other": "Diğer"
+  },
+  "priority": {
+    "low": "Düşük",
+    "normal": "Normal",
+    "high": "Yüksek",
+    "urgent": "Acil"
+  },
+  "unit": "Daire {{label}}",
+  "all": "Tümü",
+  "list": {
+    "searchPlaceholder": "Talep ara",
+    "emptyTitle": "Henüz talep yok",
+    "emptyMessage": "Bir arıza veya bakım talebi oluşturmak için + düğmesine dokunun.",
+    "emptyTechnicianMessage": "Size atanmış bir iş bulunmuyor.",
+    "emptyFilteredTitle": "Eşleşen talep yok",
+    "emptyFilteredMessage": "Arama veya filtreyi değiştirmeyi deneyin.",
+    "errorTitle": "Talepler yüklenemedi",
+    "add": "Yeni talep"
+  },
+  "new": {
+    "category": "Kategori",
+    "priority": "Öncelik",
+    "title": "Başlık",
+    "titlePlaceholder": "Örn. Asansör çalışmıyor",
+    "description": "Açıklama",
+    "descriptionPlaceholder": "Sorunu ayrıntılı anlatın",
+    "photos": "Fotoğraflar",
+    "addPhoto": "Fotoğraf ekle",
+    "photoLimit": "En fazla {{count}} fotoğraf ekleyebilirsiniz.",
+    "takePhoto": "Fotoğraf çek",
+    "chooseFromLibrary": "Galeriden seç",
+    "removePhoto": "Fotoğrafı kaldır",
+    "submit": "Talebi gönder",
+    "titleInvalid": "Başlık 3 ile 120 karakter arasında olmalı.",
+    "descriptionTooLong": "Açıklama en fazla 4000 karakter olabilir.",
+    "cameraDenied": "Kamera izni verilmedi. Ayarlardan izin verebilirsiniz.",
+    "libraryDenied": "Fotoğraf erişimi izni verilmedi. Ayarlardan izin verebilirsiniz.",
+    "photosFailedTitle": "Talep oluşturuldu",
+    "photosFailedMessage": "{{count}} fotoğraf yüklenemedi. Talep detayından tekrar deneyebilirsiniz."
+  },
+  "detail": {
+    "notFound": "Talep bulunamadı",
+    "errorTitle": "Talep yüklenemedi",
+    "createdBy": "Oluşturan",
+    "createdAt": "Oluşturulma",
+    "updatedAt": "Güncelleme",
+    "resolvedAt": "Çözülme",
+    "assignedTo": "Atanan",
+    "unassigned": "Atanmadı",
+    "category": "Kategori",
+    "priority": "Öncelik",
+    "description": "Açıklama",
+    "noDescription": "Açıklama girilmedi.",
+    "photos": "Fotoğraflar",
+    "timeline": "Zaman çizelgesi",
+    "actions": "İşlemler",
+    "changeStatus": "Durumu değiştir",
+    "assign": "Teknisyen ata",
+    "removeAssignee": "Atamayı kaldır",
+    "noTechnicians": "Binada teknisyen yok",
+    "noteLabel": "Not",
+    "notePlaceholder": "Not ekleyin (durum değişikliğinde isteğe bağlı)",
+    "addNote": "Not ekle",
+    "close": "Kapat"
+  },
+  "events": {
+    "created": "{{name}} talebi oluşturdu",
+    "status": "{{name}} durumu \"{{from}}\" yerine \"{{to}}\" yaptı",
+    "statusFromNone": "{{name}} durumu \"{{to}}\" yaptı",
+    "assigned": "{{name}} talebi {{assignee}} kişisine atadı",
+    "unassigned": "{{name}} atamayı kaldırdı",
+    "note": "{{name}} not ekledi",
+    "unknownUser": "Bir kullanıcı"
+  },
+  "errors": {
+    "title": "İşlem başarısız",
+    "generic": "Bir sorun oluştu. Lütfen tekrar deneyin."
+  }
+}

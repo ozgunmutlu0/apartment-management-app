@@ -1,1 +1,94 @@
-{}
+{
+  "status": {
+    "pending": "Pending",
+    "in_review": "In review",
+    "in_progress": "In progress",
+    "resolved": "Resolved"
+  },
+  "category": {
+    "elevator": "Elevator",
+    "plumbing": "Plumbing",
+    "electrical": "Electrical",
+    "cleaning": "Cleaning",
+    "common_area": "Common area",
+    "heating": "Heating",
+    "other": "Other"
+  },
+  "priority": {
+    "low": "Low",
+    "normal": "Normal",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "unit": "Unit {{label}}",
+  "all": "All",
+  "list": {
+    "searchPlaceholder": "Search requests",
+    "emptyTitle": "No requests yet",
+    "emptyMessage": "Tap + to report a fault or maintenance issue.",
+    "emptyTechnicianMessage": "No jobs are assigned to you.",
+    "emptyFilteredTitle": "No matching requests",
+    "emptyFilteredMessage": "Try changing the search or the filter.",
+    "errorTitle": "Could not load requests",
+    "add": "New request"
+  },
+  "new": {
+    "category": "Category",
+    "priority": "Priority",
+    "title": "Title",
+    "titlePlaceholder": "e.g. Elevator is not working",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe the problem in detail",
+    "photos": "Photos",
+    "addPhoto": "Add photo",
+    "photoLimit": "You can attach up to {{count}} photos.",
+    "takePhoto": "Take photo",
+    "chooseFromLibrary": "Choose from library",
+    "removePhoto": "Remove photo",
+    "submit": "Submit request",
+    "titleInvalid": "The title must be 3 to 120 characters.",
+    "descriptionTooLong": "The description can be at most 4000 characters.",
+    "cameraDenied": "Camera permission was denied. You can allow it in Settings.",
+    "libraryDenied": "Photo access was denied. You can allow it in Settings.",
+    "photosFailedTitle": "Request created",
+    "photosFailedMessage": "{{count}} photo(s) could not be uploaded. You can try again from the request details."
+  },
+  "detail": {
+    "notFound": "Request not found",
+    "errorTitle": "Could not load the request",
+    "createdBy": "Created by",
+    "createdAt": "Created",
+    "updatedAt": "Updated",
+    "resolvedAt": "Resolved",
+    "assignedTo": "Assigned to",
+    "unassigned": "Unassigned",
+    "category": "Category",
+    "priority": "Priority",
+    "description": "Description",
+    "noDescription": "No description provided.",
+    "photos": "Photos",
+    "timeline": "Timeline",
+    "actions": "Actions",
+    "changeStatus": "Change status",
+    "assign": "Assign technician",
+    "removeAssignee": "Remove assignment",
+    "noTechnicians": "No technicians in this building",
+    "noteLabel": "Note",
+    "notePlaceholder": "Add a note (optional when changing status)",
+    "addNote": "Add note",
+    "close": "Close"
+  },
+  "events": {
+    "created": "{{name}} created the request",
+    "status": "{{name}} changed the status from \"{{from}}\" to \"{{to}}\"",
+    "statusFromNone": "{{name}} set the status to \"{{to}}\"",
+    "assigned": "{{name}} assigned the request to {{assignee}}",
+    "unassigned": "{{name}} removed the assignment",
+    "note": "{{name}} added a note",
+    "unknownUser": "Someone"
+  },
+  "errors": {
+    "title": "Action failed",
+    "generic": "Something went wrong. Please try again."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "home": "Home",
+  "tickets": {
+    "resident": "My Requests",
+    "manager": "Requests",
+    "technician": "Assigned Jobs"
+  },
+  "announcements": "Announcements",
+  "dues": "Dues",
+  "manage": "Manage",
+  "profile": "Profile",
+  "screens": {
+    "signIn": "Sign In",
+    "ticketDetail": "Request Details",
+    "newTicket": "New Request",
+    "announcementDetail": "Announcement",
+    "newAnnouncement": "New Announcement",
+    "manageDues": "Manage Dues",
+    "reports": "Reports",
+    "reservations": "Reservations",
+    "notifications": "Notifications"
+  }
+}

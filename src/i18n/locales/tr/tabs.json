@@ -1,0 +1,23 @@
+{
+  "home": "Ana Sayfa",
+  "tickets": {
+    "resident": "Taleplerim",
+    "manager": "Talepler",
+    "technician": "Atanan İşler"
+  },
+  "announcements": "Duyurular",
+  "dues": "Aidat",
+  "manage": "Yönetim",
+  "profile": "Profil",
+  "screens": {
+    "signIn": "Giriş Yap",
+    "ticketDetail": "Talep Detayı",
+    "newTicket": "Yeni Talep",
+    "announcementDetail": "Duyuru",
+    "newAnnouncement": "Yeni Duyuru",
+    "manageDues": "Aidat Yönetimi",
+    "reports": "Raporlar",
+    "reservations": "Rezervasyonlar",
+    "notifications": "Bildirimler"
+  }
+}

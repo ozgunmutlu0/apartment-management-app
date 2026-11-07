@@ -1,0 +1,15 @@
+{
+  "appName": "FixMyBuilding",
+  "slogan": "Your Building, Your Community, One App.",
+  "comingSoon": "Coming soon",
+  "comingSoonMessage": "This screen is not ready yet.",
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "retry": "Retry"
+  },
+  "loading": "Loading…",
+  "error": "Something went wrong"
+}

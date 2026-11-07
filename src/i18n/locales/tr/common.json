@@ -1,0 +1,15 @@
+{
+  "appName": "FixMyBuilding",
+  "slogan": "Binanız, topluluğunuz, tek bir uygulama.",
+  "comingSoon": "Çok yakında",
+  "comingSoonMessage": "Bu ekran henüz hazır değil.",
+  "buttons": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "retry": "Tekrar dene"
+  },
+  "loading": "Yükleniyor…",
+  "error": "Bir hata oluştu"
+}

@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth';
 
 // Every tab group has an `index` route, so `/` is ambiguous; without this the router picks the
 // first group alphabetically (`(dues)`), which is hidden for managers/technicians -> blank screen.
-export const unstable_settings = { initialRouteName: '(home)' };
+export const unstable_settings = { anchor: '(home)' };
 
 export default function TabsLayout() {
   const { t } = useTranslation('tabs');

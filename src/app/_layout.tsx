@@ -12,6 +12,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { NotificationsProvider } from '@/features/notifications/NotificationsProvider';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { queryClient } from '@/lib/queryClient';
+import { NavigationTheme } from '@/theme/NavigationTheme';
 import { useColors } from '@/theme/colors';
 
 // Keep the splash screen up until the session and profile are resolved.
@@ -72,7 +73,9 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <NotificationsProvider>
-          <RootNavigator />
+          <NavigationTheme>
+            <RootNavigator />
+          </NavigationTheme>
         </NotificationsProvider>
       </AuthProvider>
     </QueryClientProvider>

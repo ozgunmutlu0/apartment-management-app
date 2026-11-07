@@ -114,7 +114,7 @@ Auth ayarı: Authentication > Providers > Email açık olmalı. Demo için "Conf
 
 Uygulama içi bildirimler (tablo + Realtime) ek kurulum gerektirmez. Telefona **push** göndermek için:
 
-1. Migration'ları uygulayın (`20250101000500_notifications.sql` `pg_net` eklentisini ve `notifications` tablosundaki `notifications_send_push` trigger'ını kurar).
+1. Migration'ları uygulayın (`20250101000500_notifications.sql` `notifications` tablosundaki `notifications_send_push` trigger'ını kurar; `20250101000600_security_hardening.sql` `pg_net`'i `extensions` şemasına taşır ve trigger'ı yeniden oluşturur).
 2. Edge Function'ı yayınlayın (trigger kendi gizli anahtarını gönderdiği için JWT doğrulaması kapalıdır):
    ```bash
    npx supabase functions deploy send-push --no-verify-jwt --project-ref <PROJECT_REF>
@@ -130,7 +130,7 @@ Uygulama içi bildirimler (tablo + Realtime) ek kurulum gerektirmez. Telefona **
 4. Uygulama tarafında push token alınabilmesi için bir EAS projesi gerekir: `npx eas init` (`app.json` içine `extra.eas.projectId` yazar). Expo Go'da Android uzaktan push desteklemez; development build kullanın. iOS için ayrıca Apple Developer hesabı / push anahtarı gerekir.
 
 Notlar:
-- Token `profiles.expo_push_token` içinde tutulur; aynı token başka bir profile yazılırsa eskisinden otomatik silinir (`profiles_dedupe_push_token`).
-- Fonksiyon `DeviceNotRegistered` hatasında token'ı temizler.
+- Token'lar `public.push_tokens` tablosunda (cihaz başına bir satır) tutulur; yalnızca sahibi görebilir. Uygulama `register_push_token` / `unregister_push_token` RPC'lerini kullanır; aynı token başka bir kullanıcıya kayıtlıysa ondan otomatik silinir (bir cihaz = bir hesap).
+- Fonksiyon bir kullanıcının tüm cihazlarına gönderir ve `DeviceNotRegistered` hatasında ilgili token satırını siler.
 - Hata ayıklama: `select * from net._http_response order by created desc limit 10;` ve Edge Function logları.
 - Push tıklaması `data.url` (`/(tabs)/(tickets)/<id>` veya `/(tabs)/(announcements)/<id>`) ile ilgili ekranı açar.

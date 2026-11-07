@@ -2,8 +2,9 @@
 //
 // send-push: called by the `notifications_send_push` Postgres trigger (pg_net) with
 // `{ "notification_id": "<uuid>" }` and the shared secret in the `x-webhook-secret` header.
-// Looks up the recipient's Expo push token + locale (service role), builds a localized message and
-// sends it through the Expo Push API.
+// Looks up the recipient's Expo push tokens (public.push_tokens, one per device) + locale (service
+// role), builds a localized message and sends it to every device through the Expo Push API.
+// Tokens reported as DeviceNotRegistered are deleted.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
@@ -113,11 +114,15 @@ Deno.serve(async (req) => {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('expo_push_token, locale')
+    .select('locale')
     .eq('id', notification.user_id)
     .maybeSingle();
-  const token = profile?.expo_push_token;
-  if (!token) return json({ skipped: 'no push token' });
+  const { data: tokenRows } = await supabase
+    .from('push_tokens')
+    .select('token')
+    .eq('user_id', notification.user_id);
+  const tokens = (tokenRows ?? []).map((r) => r.token as string);
+  if (tokens.length === 0) return json({ skipped: 'no push token' });
 
   const { count: unread } = await supabase
     .from('notifications')
@@ -129,31 +134,40 @@ Deno.serve(async (req) => {
   const response = await fetch(EXPO_PUSH_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({
-      to: token,
-      title: message.title,
-      body: message.body,
-      sound: 'default',
-      channelId: 'default',
-      badge: unread ?? undefined,
-      data: {
-        notification_id: notificationId,
-        type: notification.type,
-        url: deepLink(notification),
-        ...(notification.data ?? {}),
-      },
-    }),
+    body: JSON.stringify(
+      tokens.map((to) => ({
+        to,
+        title: message.title,
+        body: message.body,
+        sound: 'default',
+        channelId: 'default',
+        badge: unread ?? undefined,
+        data: {
+          notification_id: notificationId,
+          type: notification.type,
+          url: deepLink(notification),
+          ...(notification.data ?? {}),
+        },
+      })),
+    ),
   });
 
+  // Expo returns one ticket per message, in request order.
   const result = await response.json().catch(() => null);
-  const ticket = result?.data;
-  if (ticket?.status === 'error' && ticket.details?.error === 'DeviceNotRegistered') {
-    await supabase
-      .from('profiles')
-      .update({ expo_push_token: null })
-      .eq('id', notification.user_id)
-      .eq('expo_push_token', token);
-    return json({ cleared: 'DeviceNotRegistered' });
+  const tickets: Array<{ status?: string; details?: { error?: string } }> = Array.isArray(
+    result?.data,
+  )
+    ? result.data
+    : [];
+  const stale = tokens.filter(
+    (_, i) =>
+      tickets[i]?.status === 'error' && tickets[i]?.details?.error === 'DeviceNotRegistered',
+  );
+  if (stale.length > 0) {
+    await supabase.from('push_tokens').delete().in('token', stale);
   }
-  return json({ ok: response.ok, ticket }, response.ok ? 200 : 502);
+  return json(
+    { ok: response.ok, sent: tokens.length, removed: stale.length, tickets },
+    response.ok ? 200 : 502,
+  );
 });

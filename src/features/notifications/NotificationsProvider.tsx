@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/auth';
 
 import { useUnreadCount } from './api';
 import { notificationHref } from './links';
-import { configureNotificationHandler, getPushToken, savePushToken, setAppBadge } from './push';
+import { configureNotificationHandler, getPushToken, registerPushToken, setAppBadge } from './push';
 import { useNotificationsRealtime } from './realtime';
 
 configureNotificationHandler();
@@ -21,7 +21,6 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   const { profile } = useAuth();
   const userId = profile?.id;
   const hasBuilding = !!profile?.building_id;
-  const storedToken = profile?.expo_push_token ?? null;
 
   useNotificationsRealtime();
 
@@ -36,9 +35,9 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     registeredFor.current = userId;
     void (async () => {
       const token = await getPushToken();
-      if (token && token !== storedToken) await savePushToken(userId, token);
+      if (token) await registerPushToken(token);
     })();
-  }, [userId, storedToken]);
+  }, [userId]);
 
   // Tap on a notification (warm or cold start) -> open the related screen.
   const lastResponse = Notifications.useLastNotificationResponse();

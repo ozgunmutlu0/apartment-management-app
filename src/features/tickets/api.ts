@@ -280,7 +280,8 @@ export function useAssignTicket() {
     async (v: { ticketId: string; technicianId: string | null; note?: string | null }) => {
       const { error } = await supabase.rpc('assign_ticket', {
         p_ticket_id: v.ticketId,
-        p_technician_id: v.technicianId,
+        // The generated types cannot express nullable RPC args; null means "unassign" at runtime.
+        p_technician_id: v.technicianId as string,
         p_note: v.note?.trim() || undefined,
       });
       if (error) throw error;

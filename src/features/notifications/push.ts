@@ -2,6 +2,7 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { AndroidImportance } from 'expo-notifications';
+import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
 import { supabase } from '@/lib/supabase';
@@ -60,19 +61,51 @@ export async function getPushToken(): Promise<string | null> {
   }
 }
 
-export async function savePushToken(userId: string, token: string | null): Promise<void> {
-  const { error } = await supabase
-    .from('profiles')
-    .update({ expo_push_token: token })
-    .eq('id', userId);
-  if (error) warn('Saving the push token failed.', error);
+/** Remembers this device's token so sign-out can unregister exactly it. */
+const TOKEN_STORAGE_KEY = 'fmb.pushToken';
+
+async function readStoredToken(): Promise<string | null> {
+  try {
+    return await SecureStore.getItemAsync(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+async function writeStoredToken(token: string | null): Promise<void> {
+  try {
+    if (token) await SecureStore.setItemAsync(TOKEN_STORAGE_KEY, token);
+    else await SecureStore.deleteItemAsync(TOKEN_STORAGE_KEY);
+  } catch {
+    // non-critical
+  }
+}
+
+/** Registers this device's token for the signed-in user (moves it away from any previous user). */
+export async function registerPushToken(token: string): Promise<void> {
+  const platform = Platform.OS === 'ios' || Platform.OS === 'android' ? Platform.OS : undefined;
+  const { error } = await supabase.rpc('register_push_token', {
+    p_token: token,
+    p_platform: platform,
+  });
+  if (error) {
+    warn('Registering the push token failed.', error);
+    return;
+  }
+  await writeStoredToken(token);
 }
 
 /** Best effort: call BEFORE signing out so the device stops receiving this user's pushes. */
-export async function clearPushToken(userId: string | undefined): Promise<void> {
-  if (!userId) return;
+export async function clearPushToken(): Promise<void> {
   try {
-    await savePushToken(userId, null);
+    const token = await readStoredToken();
+    if (!token) return;
+    const { error } = await supabase.rpc('unregister_push_token', { p_token: token });
+    if (error) {
+      warn('Unregistering the push token failed.', error);
+      return;
+    }
+    await writeStoredToken(null);
   } catch (error) {
     warn('Clearing the push token failed.', error);
   }

@@ -24,6 +24,7 @@ erDiagram
     COMMON_AREAS ||--o{ RESERVATIONS : booked
     PROFILES ||--o{ RESERVATIONS : makes
     PROFILES ||--o{ NOTIFICATIONS : receives
+    PROFILES ||--o{ PUSH_TOKENS : "devices"
 
     BUILDINGS {
         uuid id PK
@@ -47,7 +48,11 @@ erDiagram
         uuid building_id FK
         uuid unit_id FK
         text locale
-        text expo_push_token
+    }
+    PUSH_TOKENS {
+        text token PK "Expo push token"
+        uuid user_id FK
+        text platform
     }
     TICKETS {
         uuid id PK
@@ -152,7 +157,7 @@ Notable constraints: `units` unique `(building_id, block, number)`; `dues` uniqu
 |---|---|
 | `buildings` | A building; `invite_code` (6 chars, demo `GUNES1`) lets residents join |
 | `units` | Apartments of a building |
-| `profiles` | One row per auth user (created by signup trigger); role, building, unit, locale, push token |
+| `profiles` | One row per auth user (created by signup trigger); role, building, unit, locale |
 | `tickets` | Fault reports / requests with status lifecycle |
 | `ticket_photos` | Storage paths of ticket photos |
 | `ticket_events` | Timeline: created, status change, assignment, note (trigger-written, plus client notes) |
@@ -160,6 +165,7 @@ Notable constraints: `units` unique `(building_id, block, number)`; `dues` uniqu
 | `dues` / `payments` | Monthly dues per unit and recorded payments |
 | `common_areas` / `reservations` | Shared spaces and bookings |
 | `notifications` | In-app notifications (also source for push) |
+| `push_tokens` | Expo push tokens, one row per device; owner-only (not visible to other building members) |
 
 ## RLS matrix
 
@@ -177,6 +183,7 @@ RLS is enabled on every table; all policies target `authenticated`. Scope is alw
 | `common_areas` | read | read | full |
 | `reservations` | read confirmed; manage own | same | read and manage all |
 | `notifications` | read/update/delete own | same | same |
+| `push_tokens` | read/insert/update/delete own only | same | same |
 
 Storage bucket `ticket-photos` is private; policies derive the ticket from the first path segment and reuse ticket visibility.
 
@@ -204,6 +211,8 @@ Storage bucket `ticket-photos` is private; policies derive the ticket from the f
 | `get_building_by_invite(p_code)` | authenticated | Building + units for an invite code, or `null` |
 | `join_building(p_code, p_unit_id)` | resident without building | Join a building and unit |
 | `mark_overdue_dues()` | service role / cron | Mark past-due unpaid dues as `overdue` |
+| `register_push_token(p_token, p_platform)` | authenticated | Register this device token for the caller; removes it from any other user (one device = one account) |
+| `unregister_push_token(p_token)` | authenticated | Remove the caller's own row for this token (call before sign-out) |
 | `current_user_role()`, `current_building_id()`, `current_unit_id()` | RLS helpers | `security definer` lookups |
 
 Never insert into `ticket_events` (except notes through the RPC) or `notifications` from the client.

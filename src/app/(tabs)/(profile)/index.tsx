@@ -74,7 +74,7 @@ export default function ProfileScreen() {
 
   const doSignOut = async () => {
     try {
-      await clearPushToken(user?.id); // best effort, never blocks sign-out
+      await clearPushToken(); // best effort, never blocks sign-out
       await signOut();
     } catch {
       Alert.alert(t('signOut.error'));

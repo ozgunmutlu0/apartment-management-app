@@ -1,6 +1,6 @@
 # Screenshots
 
-Screenshots are taken on an iOS 26 device (Liquid Glass) and saved as PNG in this folder.
+Current screenshots were taken on an Android emulator (Pixel 8, API 35, light mode) as the demo resident and saved as PNG in this folder. iOS 26 (Liquid Glass) and dark-mode screenshots are still to be added.
 
 Naming: `<screen>.png` for light mode and `<screen>-dark.png` for dark mode.
 

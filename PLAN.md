@@ -11,10 +11,10 @@
 | Navigasyon | **Expo Router** (dosya tabanlı). Sekmeler: `expo-router/native-tabs` (**NativeTabs**) → iOS 26'da otomatik Liquid Glass tab bar, Android'de Material bottom nav |
 | Stack | Native stack (`Stack` from expo-router). iOS'ta `headerLargeTitle`, `headerTransparent` + `headerBlurEffect`/sistem varsayılanı; arama için `headerSearchBarOptions` |
 | Modallar | `presentation: 'formSheet'` + `sheetAllowedDetents` (iOS 26'da glass sheet). JS tabanlı modal/bottom-sheet kütüphanesi **YOK** |
-| Glass yüzeyler | `expo-glass-effect` (`GlassView`, `GlassContainer`, `isLiquidGlassAvailable()`); glass yoksa `PlatformColor` tabanlı düz kart fallback |
+| Glass yüzeyler | Liquid Glass yalnızca sistem krom'unda (NativeTabs tab bar, native header, formSheet); içerik kartları (`GlassCard`) düz, opak, ince çizgili karttır |
 | Native kontroller | `@expo/ui` (iOS: SwiftUI — Picker/segmented, DateTimePicker, Switch, ContextMenu, Button; Android: Jetpack Compose karşılıkları). Mevcut değilse RN core + `@react-native-community/datetimepicker` |
 | İkonlar | `expo-symbols` (SF Symbols) iOS; Android için Material ikon fallback'i |
-| Renkler | iOS'ta `PlatformColor('label' / 'systemBackground' / 'secondarySystemBackground' / 'systemBlue' ...)`, Android'de Material 3 dinamik renk / sabit palet. Dark mode zorunlu destek |
+| Renkler | Özel sıcak palet, tek vurgu rengi ("blueprint blue"); iOS'ta `DynamicColorIOS`, Android'de `useColorScheme`, kütüphaneler için `hexColors()`. Boşluk/radius/tipografi `theme/tokens.ts`. Dark mode zorunlu destek |
 | Backend | **Supabase** (Auth email+şifre, Postgres + RLS, Storage, Realtime, Edge Functions) |
 | Veri katmanı | `@supabase/supabase-js` + `@tanstack/react-query`; oturum `expo-secure-store` (büyük değer sorunu varsa AsyncStorage) |
 | i18n | `i18next` + `react-i18next` + `expo-localization`; **TR (varsayılan) + EN**; feature başına namespace dosyası |
@@ -22,7 +22,7 @@
 | Bildirim | `expo-notifications` (push) + Supabase Realtime (uygulama içi) + `notifications` tablosu |
 | Kalite | ESLint (`eslint-config-expo`), Prettier, `tsc --noEmit`, `npx expo-doctor` |
 
-**Native-first kuralı:** Ekranda native karşılığı olan hiçbir şey JS ile taklit edilmez (tab bar, header, arama çubuğu, sheet, segmented control, date picker, switch, context menu, alert, action sheet). Özel gölgeli/yuvarlak "fake iOS" kartları yerine sistem renkleri + GlassView.
+**Native-first kuralı:** Ekranda native karşılığı olan hiçbir şey JS ile taklit edilmez (tab bar, header, arama çubuğu, sheet, segmented control, date picker, switch, context menu, alert, action sheet). Özel gölgeli/yuvarlak "fake iOS" kartları yerine tutarlı palet + `tokens.ts` ile düz kartlar; Liquid Glass sistem krom'una bırakılır.
 
 ## 2. Roller
 
@@ -76,7 +76,8 @@ src/
   features/<feature>/       # api.ts (react-query hook'ları), types.ts, components/
   lib/supabase.ts, lib/queryClient.ts, lib/auth.tsx
   i18n/index.ts, i18n/locales/{tr,en}/<namespace>.json
-  theme/colors.ts           # PlatformColor sarmalayıcıları
+  theme/colors.ts           # özel palet (DynamicColorIOS / useColorScheme, hexColors)
+  theme/tokens.ts           # spacing, radius, tipografi ölçeği
 supabase/
   migrations/*.sql
   seed.sql

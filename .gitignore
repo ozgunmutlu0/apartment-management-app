@@ -48,3 +48,8 @@ example
 
 # local MCP config
 .mcp.json
+
+# local agent skills (third-party, not project code)
+.agents/
+.claude/skills/
+skills-lock.json

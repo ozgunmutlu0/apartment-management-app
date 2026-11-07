@@ -1,1 +1,53 @@
-{}
+{
+  "categories": {
+    "general": "General",
+    "maintenance": "Maintenance",
+    "event": "Event",
+    "urgent": "Urgent",
+    "payment": "Payment"
+  },
+  "filter": {
+    "title": "Category",
+    "all": "All"
+  },
+  "search": "Search announcements",
+  "pinned": "Pinned",
+  "unknownAuthor": "Management",
+  "by": "By",
+  "actions": {
+    "new": "New announcement",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "more": "Options",
+    "filter": "Filter"
+  },
+  "empty": {
+    "title": "No announcements",
+    "message": "New announcements will show up here.",
+    "filtered": "No announcements match this filter."
+  },
+  "notFound": "Announcement not found.",
+  "delete": {
+    "title": "Delete announcement?",
+    "message": "This cannot be undone."
+  },
+  "form": {
+    "newTitle": "New announcement",
+    "editTitle": "Edit announcement",
+    "title": "Title",
+    "body": "Content",
+    "category": "Category",
+    "pinned": "Pin to top",
+    "create": "Publish",
+    "save": "Save"
+  },
+  "validation": {
+    "titleRequired": "Title is required.",
+    "titleTooLong": "Title can be at most {{max}} characters.",
+    "bodyTooLong": "Content can be at most {{max}} characters."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "load": "Could not load announcements."
+  }
+}

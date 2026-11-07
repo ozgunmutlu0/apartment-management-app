@@ -1,1 +1,53 @@
-{}
+{
+  "categories": {
+    "general": "Genel",
+    "maintenance": "Bakım",
+    "event": "Etkinlik",
+    "urgent": "Acil",
+    "payment": "Ödeme"
+  },
+  "filter": {
+    "title": "Kategori",
+    "all": "Tümü"
+  },
+  "search": "Duyuru ara",
+  "pinned": "Sabitlendi",
+  "unknownAuthor": "Yönetim",
+  "by": "Yazan",
+  "actions": {
+    "new": "Yeni duyuru",
+    "pin": "Sabitle",
+    "unpin": "Sabitlemeyi kaldır",
+    "more": "Seçenekler",
+    "filter": "Filtrele"
+  },
+  "empty": {
+    "title": "Duyuru yok",
+    "message": "Yeni duyurular burada görünecek.",
+    "filtered": "Bu filtreyle eşleşen duyuru yok."
+  },
+  "notFound": "Duyuru bulunamadı.",
+  "delete": {
+    "title": "Duyuru silinsin mi?",
+    "message": "Bu işlem geri alınamaz."
+  },
+  "form": {
+    "newTitle": "Yeni duyuru",
+    "editTitle": "Duyuruyu düzenle",
+    "title": "Başlık",
+    "body": "İçerik",
+    "category": "Kategori",
+    "pinned": "Üste sabitle",
+    "create": "Yayınla",
+    "save": "Kaydet"
+  },
+  "validation": {
+    "titleRequired": "Başlık gerekli.",
+    "titleTooLong": "Başlık en fazla {{max}} karakter olabilir.",
+    "bodyTooLong": "İçerik en fazla {{max}} karakter olabilir."
+  },
+  "errors": {
+    "generic": "Bir sorun oluştu. Lütfen tekrar deneyin.",
+    "load": "Duyurular yüklenemedi."
+  }
+}

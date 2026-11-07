@@ -48,7 +48,7 @@ Permissions are enforced by Row Level Security in the database, not only in the 
 
 ## Screenshots
 
-Taken on an Android emulator (Pixel 8, API 35) in light mode with the demo resident account. Naming rules: [docs/screenshots/README.md](docs/screenshots/README.md).
+Taken on an Android emulator (Pixel 8, API 35) (light and dark) with the demo resident account. Naming rules: [docs/screenshots/README.md](docs/screenshots/README.md).
 
 <table>
   <tr>
@@ -60,6 +60,21 @@ Taken on an Android emulator (Pixel 8, API 35) in light mode with the demo resid
     <td align="center"><img src="docs/screenshots/announcements.png" width="180" alt="Announcements"><br>Announcements</td>
     <td align="center"><img src="docs/screenshots/dues.png" width="180" alt="Dues"><br>Dues</td>
     <td align="center"><img src="docs/screenshots/profile.png" width="180" alt="Profile"><br>Profile</td>
+  </tr>
+</table>
+
+Dark mode:
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/home-dark.png" width="180" alt="Home (dark)"><br>Home</td>
+    <td align="center"><img src="docs/screenshots/tickets-dark.png" width="180" alt="Tickets (dark)"><br>Tickets</td>
+    <td align="center"><img src="docs/screenshots/new-ticket-dark.png" width="180" alt="New ticket (dark)"><br>New ticket</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/announcements-dark.png" width="180" alt="Announcements (dark)"><br>Announcements</td>
+    <td align="center"><img src="docs/screenshots/dues-dark.png" width="180" alt="Dues (dark)"><br>Dues</td>
+    <td align="center"><img src="docs/screenshots/profile-dark.png" width="180" alt="Profile (dark)"><br>Profile</td>
   </tr>
 </table>
 

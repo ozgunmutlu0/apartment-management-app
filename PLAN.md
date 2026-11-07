@@ -8,7 +8,7 @@
 | Konu | Karar |
 |---|---|
 | Framework | React Native + **Expo (en güncel stabil SDK)**, TypeScript `strict` |
-| Navigasyon | **Expo Router** (dosya tabanlı). Sekmeler: `expo-router/unstable-native-tabs` (**NativeTabs**) → iOS 26'da otomatik Liquid Glass tab bar, Android'de Material bottom nav |
+| Navigasyon | **Expo Router** (dosya tabanlı). Sekmeler: `expo-router/native-tabs` (**NativeTabs**) → iOS 26'da otomatik Liquid Glass tab bar, Android'de Material bottom nav |
 | Stack | Native stack (`Stack` from expo-router). iOS'ta `headerLargeTitle`, `headerTransparent` + `headerBlurEffect`/sistem varsayılanı; arama için `headerSearchBarOptions` |
 | Modallar | `presentation: 'formSheet'` + `sheetAllowedDetents` (iOS 26'da glass sheet). JS tabanlı modal/bottom-sheet kütüphanesi **YOK** |
 | Glass yüzeyler | `expo-glass-effect` (`GlassView`, `GlassContainer`, `isLiquidGlassAvailable()`); glass yoksa `PlatformColor` tabanlı düz kart fallback |
@@ -39,12 +39,12 @@ Yetki **RLS ile veritabanında** uygulanır; UI sadece gizler.
 Enum'lar: `user_role (resident, manager, technician)`, `ticket_status (pending, in_review, in_progress, resolved)`, `ticket_category (elevator, plumbing, electrical, cleaning, common_area, heating, other)`, `ticket_priority (low, normal, high, urgent)`, `due_status (unpaid, paid, overdue)`, `reservation_status (confirmed, cancelled)`.
 
 Tablolar (hepsi `id uuid pk default gen_random_uuid()`, `created_at timestamptz default now()`):
-- `buildings(name, address)`
+- `buildings(name, address, timezone, invite_code)`
 - `units(building_id, block, number, floor)` — unique(building_id, block, number)
 - `profiles(id = auth.users.id, full_name, phone, role, building_id, unit_id, locale, expo_push_token)` — auth signup trigger ile otomatik oluşur
 - `tickets(building_id, unit_id, created_by, assigned_to, category, priority, title, description, status default 'pending', updated_at, resolved_at)`
 - `ticket_photos(ticket_id, storage_path)`
-- `ticket_events(ticket_id, actor_id, from_status, to_status, note)` — durum geçmişi / zaman çizelgesi
+- `ticket_events(ticket_id, actor_id, event_type [created|status|assignment|note], from_status, to_status, assignee_id, note)` — zaman çizelgesi (trigger/RPC ile yazılır)
 - `announcements(building_id, author_id, title, body, category, pinned bool)`
 - `dues(unit_id, period date (ayın 1'i), amount numeric, due_date, status)` — unique(unit_id, period)
 - `payments(due_id, amount, paid_at, method, recorded_by)`
@@ -53,7 +53,8 @@ Tablolar (hepsi `id uuid pk default gen_random_uuid()`, `created_at timestamptz 
 - `notifications(user_id, type, title, body, data jsonb, read_at)`
 
 Trigger'lar: ticket status değişince `ticket_events` + `notifications` kaydı; yeni duyuruda binadaki tüm sakinlere `notifications`; ödeme kaydedilince `dues.status='paid'`; `updated_at` otomatik.
-Helper SQL fonksiyonları: `current_role()`, `current_building_id()` (security definer, RLS'de kullanılır).
+Helper SQL fonksiyonları: `current_user_role()`, `current_building_id()`, `current_unit_id()` (security definer, RLS'de kullanılır).
+RPC'ler: `update_ticket_status`, `assign_ticket`, `add_ticket_note`, `get_building_by_invite`, `join_building`. Güncel şema için tek kaynak `supabase/migrations/` ve `docs/database.md`.
 
 ## 4. Klasör yapısı
 
@@ -61,7 +62,8 @@ Helper SQL fonksiyonları: `current_role()`, `current_building_id()` (security d
 src/
   app/                      # expo-router
     _layout.tsx             # providers (QueryClient, i18n, Auth) + Stack.Protected auth gate
-    sign-in.tsx
+    sign-in.tsx, sign-up.tsx
+    join-building.tsx       # davet kodu ile binaya katılma (demo: GUNES1)
     (tabs)/
       _layout.tsx           # NativeTabs, role'e göre görünür sekmeler
       (home)/_layout.tsx, index.tsx
@@ -107,7 +109,7 @@ WP4, WP5, WP6 paralel yürütülebilir: her ajan **yalnızca kendi** `src/app/(t
 1. Kod/identifier İngilizce; kullanıcıya görünen **tüm** metinler i18n'den (`t('...')`), TR ve EN birlikte eklenir. Hardcoded metin yok.
 2. Native-first kuralı (Bölüm 1). Yeni bir UI kütüphanesi eklemeden önce gerekçe sun.
 3. Kurulum her zaman `npx expo install <pkg>` ile (SDK uyumlu sürüm).
-4. API'yi tahmin etme: `unstable-native-tabs`, `expo-glass-effect`, `@expo/ui` kurulu sürümün dokümanına (docs.expo.dev) ve `node_modules` içindeki tip tanımlarına bakılarak kullanılır.
+4. API'yi tahmin etme: `expo-router/native-tabs`, `expo-glass-effect`, `@expo/ui` kurulu sürümün dokümanına (docs.expo.dev) ve `node_modules` içindeki tip tanımlarına bakılarak kullanılır.
 5. Bitirmeden önce: `npx tsc --noEmit`, `npx eslint .`, `npx expo-doctor` temiz olmalı; ayrıca `npx expo export --platform ios --output-dir %TEMP%` bundle'ı hatasız almalı (çıktı repoya yazılmaz).
 6. Gizli anahtar commit edilmez: `.env` (gitignore'da), `.env.example` repoda.
 7. Commit atma — review'dan sonra ben (koordinatör) commit ederim.

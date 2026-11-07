@@ -10,6 +10,19 @@
     "edit": "Edit",
     "retry": "Retry"
   },
+  "relativeTime": {
+    "now": "now",
+    "past": "{{count}} {{unit}} ago",
+    "future": "in {{count}} {{unit}}",
+    "units": {
+      "year": "yr",
+      "month": "mo",
+      "week": "wk",
+      "day": "d",
+      "hour": "h",
+      "minute": "min"
+    }
+  },
   "loading": "Loading…",
   "error": "Something went wrong"
 }

@@ -10,6 +10,19 @@
     "edit": "Düzenle",
     "retry": "Tekrar dene"
   },
+  "relativeTime": {
+    "now": "şimdi",
+    "past": "{{count}} {{unit}} önce",
+    "future": "{{count}} {{unit}} sonra",
+    "units": {
+      "year": "yıl",
+      "month": "ay",
+      "week": "hafta",
+      "day": "gün",
+      "hour": "sa",
+      "minute": "dk"
+    }
+  },
   "loading": "Yükleniyor…",
   "error": "Bir hata oluştu"
 }

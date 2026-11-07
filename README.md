@@ -164,7 +164,7 @@ docs/                  # architecture, database, project report (TR), screenshot
 | Aşama 3 | Foundation: skeleton, Supabase schema/RLS, auth and roles | Done (implemented) |
 | Aşama 4 | Required features: tickets with photos, request tracking, announcements | Done (implemented) |
 | Aşama 5 | Second phase: dues, notifications (realtime + push), extras: dashboard, reservations, reports | Done (implemented) |
-| Aşama 6 | Test: static QA done; device and live Supabase testing | In progress |
+| Aşama 6 | Test: static QA done (typecheck, lint, expo-doctor, iOS export pass); Android relative-time fallback and role-based initial route fixed; device and live Supabase testing | In progress |
 | Aşama 7 | Documentation, final checks, delivery | Planned |
 
 Work packages and rules: [PLAN.md](PLAN.md). Turkish project definition: [docs/project-report-tr.md](docs/project-report-tr.md).

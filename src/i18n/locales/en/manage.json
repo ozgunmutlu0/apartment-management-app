@@ -1,1 +1,7 @@
-{}
+{
+  "section": "Management",
+  "dues": "Manage Dues",
+  "duesSubtitle": "Period dues and payments",
+  "reports": "Reports",
+  "reportsSubtitle": "Collection and request summaries"
+}

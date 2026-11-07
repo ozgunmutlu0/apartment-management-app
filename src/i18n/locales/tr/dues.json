@@ -1,1 +1,65 @@
-{}
+{
+  "summary": {
+    "outstanding": "Ödenecek tutar",
+    "overdue": "Gecikmiş: {{count}}",
+    "nextDue": "Sonraki son ödeme tarihi: {{date}}",
+    "allPaid": "Tüm aidatlarınız ödenmiş"
+  },
+  "status": { "paid": "Ödendi", "unpaid": "Ödenmedi", "overdue": "Gecikmiş" },
+  "method": { "cash": "Nakit", "bank_transfer": "Havale/EFT", "card": "Kart", "other": "Diğer" },
+  "dueOn": "Son ödeme: {{date}}",
+  "paidOn": "{{date}} · {{method}}",
+  "remaining": "Kalan: {{amount}}",
+  "info": "Ödemeler yönetim tarafından kaydedilir. Uygulama üzerinden online ödeme yapılmaz.",
+  "empty": { "title": "Aidat kaydı yok", "message": "Henüz adınıza bir aidat oluşturulmadı." },
+  "noUnit": { "title": "Daire bilgisi yok", "message": "Hesabınız bir daireye bağlı değil." },
+  "error": "Aidatlar yüklenemedi.",
+  "manage": {
+    "empty": {
+      "title": "Bu dönem için aidat yok",
+      "message": "Sağ üstteki düğme ile dönem aidatını oluşturabilirsiniz."
+    },
+    "error": "Aidatlar yüklenemedi.",
+    "previousMonth": "Önceki ay",
+    "nextMonth": "Sonraki ay",
+    "generate": "Dönem aidatı oluştur",
+    "stats": {
+      "collected": "Tahsil edilen",
+      "expected": "Beklenen",
+      "paidCount": "{{paid}} / {{total}} daire ödedi"
+    },
+    "unit": "Daire {{label}}",
+    "noResident": "Sakin yok",
+    "partial": "Kısmi ödeme",
+    "record": {
+      "title": "Ödeme Kaydet",
+      "unit": "Daire",
+      "remaining": "Kalan tutar",
+      "amount": "Tutar",
+      "method": "Ödeme yöntemi",
+      "date": "Ödeme tarihi",
+      "save": "Kaydet",
+      "invalidAmount": "Geçerli bir tutar girin.",
+      "error": "Ödeme kaydedilemedi."
+    },
+    "payments": {
+      "title": "Ödemeler",
+      "empty": "Bu aidat için ödeme yok.",
+      "record": "Ödeme kaydet",
+      "deleteTitle": "Ödeme silinsin mi?",
+      "deleteMessage": "{{amount}} tutarındaki ödeme silinecek.",
+      "deleteError": "Ödeme silinemedi."
+    },
+    "generateSheet": {
+      "title": "Dönem Aidatı Oluştur",
+      "period": "Dönem",
+      "amount": "Daire başına tutar",
+      "dueDate": "Son ödeme tarihi",
+      "submit": "Oluştur",
+      "invalidAmount": "Geçerli bir tutar girin.",
+      "noUnits": "Binada daire bulunamadı.",
+      "result": "{{created}} daire için aidat oluşturuldu, {{skipped}} daire zaten kayıtlıydı.",
+      "error": "Aidatlar oluşturulamadı."
+    }
+  }
+}

@@ -1,1 +1,7 @@
-{}
+{
+  "section": "Yönetim",
+  "dues": "Aidat Yönetimi",
+  "duesSubtitle": "Dönem aidatları ve ödemeler",
+  "reports": "Raporlar",
+  "reportsSubtitle": "Tahsilat ve talep özetleri"
+}

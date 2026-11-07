@@ -1,1 +1,65 @@
-{}
+{
+  "summary": {
+    "outstanding": "Amount due",
+    "overdue": "Overdue: {{count}}",
+    "nextDue": "Next due date: {{date}}",
+    "allPaid": "All your dues are paid"
+  },
+  "status": { "paid": "Paid", "unpaid": "Unpaid", "overdue": "Overdue" },
+  "method": { "cash": "Cash", "bank_transfer": "Bank transfer", "card": "Card", "other": "Other" },
+  "dueOn": "Due: {{date}}",
+  "paidOn": "{{date}} · {{method}}",
+  "remaining": "Remaining: {{amount}}",
+  "info": "Payments are recorded by building management. There is no online payment in the app.",
+  "empty": { "title": "No dues", "message": "No dues have been created for you yet." },
+  "noUnit": { "title": "No unit", "message": "Your account is not linked to a unit." },
+  "error": "Could not load dues.",
+  "manage": {
+    "empty": {
+      "title": "No dues for this period",
+      "message": "Use the button at the top right to generate the period's dues."
+    },
+    "error": "Could not load dues.",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "generate": "Generate period dues",
+    "stats": {
+      "collected": "Collected",
+      "expected": "Expected",
+      "paidCount": "{{paid}} of {{total}} units paid"
+    },
+    "unit": "Unit {{label}}",
+    "noResident": "No resident",
+    "partial": "Partially paid",
+    "record": {
+      "title": "Record Payment",
+      "unit": "Unit",
+      "remaining": "Remaining",
+      "amount": "Amount",
+      "method": "Payment method",
+      "date": "Payment date",
+      "save": "Save",
+      "invalidAmount": "Enter a valid amount.",
+      "error": "Could not record the payment."
+    },
+    "payments": {
+      "title": "Payments",
+      "empty": "No payments for this due.",
+      "record": "Record payment",
+      "deleteTitle": "Delete payment?",
+      "deleteMessage": "The payment of {{amount}} will be deleted.",
+      "deleteError": "Could not delete the payment."
+    },
+    "generateSheet": {
+      "title": "Generate Period Dues",
+      "period": "Period",
+      "amount": "Amount per unit",
+      "dueDate": "Due date",
+      "submit": "Generate",
+      "invalidAmount": "Enter a valid amount.",
+      "noUnits": "No units found in the building.",
+      "result": "Dues created for {{created}} units, {{skipped}} units already had dues.",
+      "error": "Could not generate dues."
+    }
+  }
+}

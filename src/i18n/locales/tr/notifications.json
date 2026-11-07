@@ -1,0 +1,28 @@
+{
+  "title": {
+    "ticket_created": "Yeni talep: {{title}}",
+    "ticket_status": "Talebiniz {{status}}: {{title}}",
+    "ticket_status_unknown": "Talep güncellendi: {{title}}",
+    "ticket_assigned": "Size atandı: {{title}}",
+    "announcement": "Yeni duyuru: {{title}}",
+    "generic": "{{title}}"
+  },
+  "status": {
+    "pending": "Beklemede",
+    "in_review": "İncelemede",
+    "in_progress": "İşlemde",
+    "resolved": "Çözüldü"
+  },
+  "markRead": "Okundu işaretle",
+  "markAllRead": "Tümünü okundu işaretle",
+  "unread": "Okunmamış",
+  "empty": {
+    "title": "Bildirim yok",
+    "message": "Yeni bildirimler burada görünecek."
+  },
+  "delete": {
+    "title": "Bildirim silinsin mi?",
+    "message": "Bu bildirim kalıcı olarak silinecek."
+  },
+  "error": "Bildirimler yüklenemedi."
+}

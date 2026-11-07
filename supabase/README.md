@@ -109,3 +109,28 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=<anon / publishable key>
 Service role anahtarı uygulamaya **asla** konmaz (yalnızca Edge Function / sunucu tarafı).
 
 Auth ayarı: Authentication > Providers > Email açık olmalı. Demo için "Confirm email" kapatılabilir.
+
+## Push bildirimleri (opsiyonel)
+
+Uygulama içi bildirimler (tablo + Realtime) ek kurulum gerektirmez. Telefona **push** göndermek için:
+
+1. Migration'ları uygulayın (`20250101000500_notifications.sql` `pg_net` eklentisini ve `notifications` tablosundaki `notifications_send_push` trigger'ını kurar).
+2. Edge Function'ı yayınlayın (trigger kendi gizli anahtarını gönderdiği için JWT doğrulaması kapalıdır):
+   ```bash
+   npx supabase functions deploy send-push --no-verify-jwt --project-ref <PROJECT_REF>
+   npx supabase secrets set SEND_PUSH_SECRET=<uzun-rastgele-bir-değer> --project-ref <PROJECT_REF>
+   ```
+   `SUPABASE_URL` ve `SUPABASE_SERVICE_ROLE_KEY` Supabase tarafından fonksiyona otomatik verilir.
+3. SQL Editor'de aynı değerleri Vault'a yazın (gerçek değerleri depoya **koymayın**):
+   ```sql
+   select vault.create_secret('https://<PROJECT_REF>.supabase.co/functions/v1/send-push', 'send_push_url');
+   select vault.create_secret('<SEND_PUSH_SECRET ile aynı değer>', 'send_push_secret');
+   ```
+   Vault'ta bu iki kayıt yoksa trigger hiçbir şey yapmaz; bildirim ekleme asla başarısız olmaz. Değiştirmek için `vault.update_secret(...)` kullanın.
+4. Uygulama tarafında push token alınabilmesi için bir EAS projesi gerekir: `npx eas init` (`app.json` içine `extra.eas.projectId` yazar). Expo Go'da Android uzaktan push desteklemez; development build kullanın. iOS için ayrıca Apple Developer hesabı / push anahtarı gerekir.
+
+Notlar:
+- Token `profiles.expo_push_token` içinde tutulur; aynı token başka bir profile yazılırsa eskisinden otomatik silinir (`profiles_dedupe_push_token`).
+- Fonksiyon `DeviceNotRegistered` hatasında token'ı temizler.
+- Hata ayıklama: `select * from net._http_response order by created desc limit 10;` ve Edge Function logları.
+- Push tıklaması `data.url` (`/(tabs)/(tickets)/<id>` veya `/(tabs)/(announcements)/<id>`) ile ilgili ekranı açar.

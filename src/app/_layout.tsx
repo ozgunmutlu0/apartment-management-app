@@ -9,6 +9,7 @@ import { View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { NotificationsProvider } from '@/features/notifications/NotificationsProvider';
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { queryClient } from '@/lib/queryClient';
 import { useColors } from '@/theme/colors';
@@ -70,7 +71,9 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <RootNavigator />
+        <NotificationsProvider>
+          <RootNavigator />
+        </NotificationsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

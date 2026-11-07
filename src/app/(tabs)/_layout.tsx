@@ -1,11 +1,13 @@
 import { NativeTabs } from 'expo-router/native-tabs';
 import { useTranslation } from 'react-i18next';
 
+import { useUnreadCount } from '@/features/notifications/api';
 import { useAuth } from '@/lib/auth';
 
 export default function TabsLayout() {
   const { t } = useTranslation('tabs');
   const { role } = useAuth();
+  const unread = useUnreadCount().data ?? 0;
 
   return (
     <NativeTabs>
@@ -45,6 +47,9 @@ export default function TabsLayout() {
 
       <NativeTabs.Trigger name="(profile)">
         <NativeTabs.Trigger.Label>{t('profile')}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Badge hidden={unread === 0}>
+          {unread > 99 ? '99+' : String(unread)}
+        </NativeTabs.Trigger.Badge>
         <NativeTabs.Trigger.Icon
           sf={{ default: 'person.crop.circle', selected: 'person.crop.circle.fill' }}
           md="account_circle"

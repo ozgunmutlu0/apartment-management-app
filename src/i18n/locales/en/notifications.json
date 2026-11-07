@@ -1,0 +1,28 @@
+{
+  "title": {
+    "ticket_created": "New request: {{title}}",
+    "ticket_status": "Your request is {{status}}: {{title}}",
+    "ticket_status_unknown": "Request updated: {{title}}",
+    "ticket_assigned": "Assigned to you: {{title}}",
+    "announcement": "New announcement: {{title}}",
+    "generic": "{{title}}"
+  },
+  "status": {
+    "pending": "pending",
+    "in_review": "in review",
+    "in_progress": "in progress",
+    "resolved": "resolved"
+  },
+  "markRead": "Mark as read",
+  "markAllRead": "Mark all as read",
+  "unread": "Unread",
+  "empty": {
+    "title": "No notifications",
+    "message": "New notifications will show up here."
+  },
+  "delete": {
+    "title": "Delete notification?",
+    "message": "This notification will be permanently deleted."
+  },
+  "error": "Notifications could not be loaded."
+}

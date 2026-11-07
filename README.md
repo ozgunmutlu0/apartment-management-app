@@ -50,6 +50,7 @@ Permissions are enforced by Row Level Security in the database, not only in the 
 
 Screenshots are coming soon (iOS 26, light and dark). Naming rules: [docs/screenshots/README.md](docs/screenshots/README.md).
 
+<!-- Uncomment when screenshots are added to docs/screenshots/
 <table>
   <tr>
     <td align="center"><img src="docs/screenshots/home.png" width="180" alt="Home"><br>Home</td>
@@ -62,6 +63,7 @@ Screenshots are coming soon (iOS 26, light and dark). Naming rules: [docs/screen
     <td align="center"><img src="docs/screenshots/profile.png" width="180" alt="Profile"><br>Profile</td>
   </tr>
 </table>
+-->
 
 ## Tech stack
 

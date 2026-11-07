@@ -1,1 +1,44 @@
-{}
+{
+  "greeting": "Hello, {{name}}",
+  "greetingNoName": "Hello",
+  "subtitle": "{{building}} · Unit {{unit}}",
+  "subtitleBuilding": "{{building}}",
+  "seeAll": "See all",
+  "errorTitle": "Could not load the overview",
+  "tickets": {
+    "open": "Open requests",
+    "openCount": "{{count}} open",
+    "latest": "My latest requests",
+    "none": "You have no requests yet.",
+    "byStatus": "Requests",
+    "unassigned": "Unassigned requests",
+    "assignedOpen": "Open jobs assigned to you",
+    "inProgressList": "In progress",
+    "noneActive": "Nothing is being worked on right now."
+  },
+  "dues": {
+    "title": "Dues",
+    "outstanding": "Amount due",
+    "overdue": "Overdue: {{count}}",
+    "allPaid": "All your dues are paid",
+    "monthCollection": "Collected this month",
+    "collectedOf": "{{collected}} / {{expected}}",
+    "noDues": "No dues have been created for this month."
+  },
+  "announcements": {
+    "title": "Announcements",
+    "none": "No announcements yet."
+  },
+  "reservation": {
+    "next": "My next reservation",
+    "none": "You have no upcoming reservations."
+  },
+  "actions": {
+    "title": "Quick actions",
+    "reportIssue": "Report an Issue",
+    "reserve": "Book an Area",
+    "newAnnouncement": "New announcement",
+    "duesManagement": "Dues management",
+    "reports": "Reports"
+  }
+}

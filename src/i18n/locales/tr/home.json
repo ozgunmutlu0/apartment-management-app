@@ -1,1 +1,44 @@
-{}
+{
+  "greeting": "Merhaba, {{name}}",
+  "greetingNoName": "Merhaba",
+  "subtitle": "{{building}} · Daire {{unit}}",
+  "subtitleBuilding": "{{building}}",
+  "seeAll": "Tümünü gör",
+  "errorTitle": "Özet yüklenemedi",
+  "tickets": {
+    "open": "Açık talepler",
+    "openCount": "{{count}} açık",
+    "latest": "Son taleplerim",
+    "none": "Henüz talebiniz yok.",
+    "byStatus": "Talepler",
+    "unassigned": "Atanmamış talepler",
+    "assignedOpen": "Size atanan açık işler",
+    "inProgressList": "Üzerinde çalışılanlar",
+    "noneActive": "Şu an üzerinde çalışılan iş yok."
+  },
+  "dues": {
+    "title": "Aidat",
+    "outstanding": "Ödenecek tutar",
+    "overdue": "Gecikmiş: {{count}}",
+    "allPaid": "Tüm aidatlarınız ödenmiş",
+    "monthCollection": "Bu ay tahsilat",
+    "collectedOf": "{{collected}} / {{expected}}",
+    "noDues": "Bu ay için aidat oluşturulmadı."
+  },
+  "announcements": {
+    "title": "Duyurular",
+    "none": "Henüz duyuru yok."
+  },
+  "reservation": {
+    "next": "Sıradaki rezervasyonum",
+    "none": "Yaklaşan rezervasyonunuz yok."
+  },
+  "actions": {
+    "title": "Hızlı işlemler",
+    "reportIssue": "Arıza Bildir",
+    "reserve": "Rezervasyon Yap",
+    "newAnnouncement": "Yeni duyuru",
+    "duesManagement": "Aidat yönetimi",
+    "reports": "Raporlar"
+  }
+}

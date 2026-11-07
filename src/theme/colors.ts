@@ -18,6 +18,9 @@ export type SemanticColors = {
   green: ColorValue;
   orange: ColorValue;
   red: ColorValue;
+  indigo: ColorValue;
+  purple: ColorValue;
+  teal: ColorValue;
   separator: ColorValue;
 };
 
@@ -32,6 +35,9 @@ const ios: SemanticColors = {
   green: PlatformColor('systemGreen'),
   orange: PlatformColor('systemOrange'),
   red: PlatformColor('systemRed'),
+  indigo: PlatformColor('systemIndigo'),
+  purple: PlatformColor('systemPurple'),
+  teal: PlatformColor('systemTeal'),
   separator: PlatformColor('separator'),
 };
 
@@ -46,6 +52,9 @@ const androidLight: SemanticColors = {
   green: '#1E8E3E',
   orange: '#E8710A',
   red: '#D93025',
+  indigo: '#3F51B5',
+  purple: '#8E24AA',
+  teal: '#00897B',
   separator: '#D1D1D6',
 };
 
@@ -60,6 +69,9 @@ const androidDark: SemanticColors = {
   green: '#81C995',
   orange: '#FDA85A',
   red: '#F28B82',
+  indigo: '#9FA8DA',
+  purple: '#CE93D8',
+  teal: '#4DB6AC',
   separator: '#38383A',
 };
 

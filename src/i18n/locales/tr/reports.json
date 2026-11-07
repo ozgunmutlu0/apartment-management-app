@@ -1,0 +1,31 @@
+{
+  "period": {
+    "month": "Bu ay",
+    "quarter": "Son 3 ay",
+    "year": "Bu yıl"
+  },
+  "range": "{{from}} - {{to}}",
+  "error": "Rapor yüklenemedi.",
+  "tickets": {
+    "title": "Talepler",
+    "total": "Toplam talep",
+    "byStatus": "Duruma göre",
+    "byCategory": "Kategoriye göre",
+    "avgResolution": "Ortalama çözüm süresi",
+    "avgHours": "{{value}} saat",
+    "avgDays": "{{value}} gün",
+    "noResolved": "Henüz çözülen talep yok",
+    "empty": "Bu dönemde talep yok."
+  },
+  "dues": {
+    "title": "Aidat",
+    "collectionRate": "Tahsilat oranı",
+    "collected": "Tahsil edilen",
+    "expected": "Beklenen",
+    "overdueTotal": "Gecikmiş toplam",
+    "empty": "Bu dönemde aidat kaydı yok."
+  },
+  "top": {
+    "title": "En çok bildirilen kategoriler"
+  }
+}

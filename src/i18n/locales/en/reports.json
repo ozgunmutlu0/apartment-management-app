@@ -1,0 +1,31 @@
+{
+  "period": {
+    "month": "This month",
+    "quarter": "Last 3 months",
+    "year": "This year"
+  },
+  "range": "{{from}} - {{to}}",
+  "error": "Could not load the report.",
+  "tickets": {
+    "title": "Requests",
+    "total": "Total requests",
+    "byStatus": "By status",
+    "byCategory": "By category",
+    "avgResolution": "Average resolution time",
+    "avgHours": "{{value}} h",
+    "avgDays": "{{value}} days",
+    "noResolved": "No resolved requests yet",
+    "empty": "No requests in this period."
+  },
+  "dues": {
+    "title": "Dues",
+    "collectionRate": "Collection rate",
+    "collected": "Collected",
+    "expected": "Expected",
+    "overdueTotal": "Total overdue",
+    "empty": "No dues in this period."
+  },
+  "top": {
+    "title": "Most reported categories"
+  }
+}

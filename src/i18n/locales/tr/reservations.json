@@ -1,0 +1,46 @@
+{
+  "areas": {
+    "title": "Ortak alanlar",
+    "hours": "{{open}} - {{close}}",
+    "capacity": "Kapasite: {{count}} kişi",
+    "reserve": "Rezervasyon yap",
+    "empty": "Binada tanımlı ortak alan yok.",
+    "error": "Ortak alanlar yüklenemedi."
+  },
+  "mine": {
+    "title": "Rezervasyonlarım",
+    "upcoming": "Yaklaşan",
+    "past": "Geçmiş",
+    "noUpcoming": "Yaklaşan rezervasyonunuz yok.",
+    "noPast": "Geçmiş rezervasyonunuz yok.",
+    "error": "Rezervasyonlar yüklenemedi.",
+    "cancelled": "İptal edildi",
+    "cancel": "İptal et",
+    "cancelTitle": "Rezervasyon iptal edilsin mi?",
+    "cancelMessage": "{{area}}, {{when}} rezervasyonu iptal edilecek.",
+    "cancelConfirm": "Rezervasyonu iptal et",
+    "keep": "Vazgeç",
+    "cancelError": "Rezervasyon iptal edilemedi."
+  },
+  "form": {
+    "title": "Yeni Rezervasyon",
+    "area": "Alan",
+    "date": "Tarih",
+    "start": "Başlangıç",
+    "end": "Bitiş",
+    "booked": "Bu gün dolu saatler",
+    "noneBooked": "Bu gün için rezervasyon yok.",
+    "hours": "Çalışma saatleri: {{open}} - {{close}}",
+    "noSlots": "Bu tarihte uygun saat kalmadı.",
+    "submit": "Rezerve et",
+    "loadingSlots": "Saatler yükleniyor…",
+    "notFound": "Alan bulunamadı."
+  },
+  "errors": {
+    "conflict": "Bu saat aralığı dolu.",
+    "past": "Geçmiş bir zamana rezervasyon yapılamaz.",
+    "hours": "Seçilen saatler alanın çalışma saatleri dışında.",
+    "sameDay": "Rezervasyon aynı gün içinde başlayıp bitmelidir.",
+    "generic": "Rezervasyon oluşturulamadı. Lütfen tekrar deneyin."
+  }
+}

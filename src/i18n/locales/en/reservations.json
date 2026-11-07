@@ -1,0 +1,46 @@
+{
+  "areas": {
+    "title": "Common areas",
+    "hours": "{{open}} - {{close}}",
+    "capacity": "Capacity: {{count}} people",
+    "reserve": "Book",
+    "empty": "No common areas are set up for this building.",
+    "error": "Could not load common areas."
+  },
+  "mine": {
+    "title": "My reservations",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "noUpcoming": "You have no upcoming reservations.",
+    "noPast": "You have no past reservations.",
+    "error": "Could not load reservations.",
+    "cancelled": "Cancelled",
+    "cancel": "Cancel",
+    "cancelTitle": "Cancel this reservation?",
+    "cancelMessage": "Your reservation for {{area}} on {{when}} will be cancelled.",
+    "cancelConfirm": "Cancel reservation",
+    "keep": "Keep",
+    "cancelError": "Could not cancel the reservation."
+  },
+  "form": {
+    "title": "New Reservation",
+    "area": "Area",
+    "date": "Date",
+    "start": "Start",
+    "end": "End",
+    "booked": "Already booked today",
+    "noneBooked": "Nothing is booked on this day.",
+    "hours": "Opening hours: {{open}} - {{close}}",
+    "noSlots": "No free time is left on this date.",
+    "submit": "Book",
+    "loadingSlots": "Loading time slots…",
+    "notFound": "Area not found."
+  },
+  "errors": {
+    "conflict": "This time slot is already booked.",
+    "past": "You cannot book a time in the past.",
+    "hours": "The selected time is outside the opening hours.",
+    "sameDay": "A reservation must start and end on the same day.",
+    "generic": "Could not create the reservation. Please try again."
+  }
+}

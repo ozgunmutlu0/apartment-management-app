@@ -4,7 +4,15 @@ import { RefreshControl, SectionList, StyleSheet, Text, View } from 'react-nativ
 
 import { EmptyState } from '@/components/EmptyState';
 import { GlassCard } from '@/components/GlassCard';
+import {
+  HeroCaption,
+  HeroCard,
+  HeroEyebrow,
+  HeroFigure,
+  HeroProgress,
+} from '@/components/HeroCard';
 import { Icon } from '@/components/Icon';
+import { IconTile, type Tone } from '@/components/IconTile';
 import { SectionLabel } from '@/components/SectionLabel';
 import { Skeleton } from '@/components/Skeleton';
 import { useResidentDues, useResidentSummary } from '@/features/dues/api';
@@ -15,50 +23,70 @@ import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
 import { space, type } from '@/theme/tokens';
 
-function SummaryCard() {
-  const { t } = useTranslation('dues');
+function SummaryCard({ dues }: { dues: DueWithPayments[] | undefined }) {
+  const { t, i18n } = useTranslation('dues');
   const colors = useColors();
   const fmt = useDuesFormat();
   const { data } = useResidentSummary();
+
+  const total = dues?.length ?? 0;
+  const paidCount = (dues ?? []).filter((d) => d.status === 'paid').length;
+
   if (!data) {
     return (
-      <GlassCard variant="tint" style={styles.summary}>
-        <Skeleton width={120} height={14} />
-        <Skeleton width={180} height={40} />
-      </GlassCard>
+      <HeroCard style={styles.summary}>
+        <HeroEyebrow>{t('summary.outstanding').toLocaleUpperCase(i18n.language)}</HeroEyebrow>
+        <View style={styles.heroSkeleton}>
+          <Skeleton width={200} height={40} color={colors.onHero} />
+          <Skeleton width="55%" height={14} color={colors.onHero} />
+        </View>
+      </HeroCard>
     );
   }
   const allPaid = data.outstanding === 0;
   return (
-    <GlassCard variant="tint" padding={space.xl} style={styles.summary}>
+    <HeroCard symbol={{ ios: 'creditcard.fill', android: 'payments' }} style={styles.summary}>
       {allPaid ? (
-        <>
-          <Icon name="check" size={32} color={colors.onTint} />
-          <Text style={[styles.heroTitle, { color: colors.onTint }]} accessibilityRole="header">
+        <View style={styles.paidRow}>
+          <Icon name="check" size={32} color={colors.onHero} />
+          <Text
+            style={[styles.heroTitle, { color: colors.onHero }]}
+            accessibilityRole="header"
+            numberOfLines={2}
+          >
             {t('summary.allPaid')}
           </Text>
-        </>
+        </View>
       ) : (
         <>
-          <Text style={[styles.heroCaption, { color: colors.onTint }]}>
-            {t('summary.outstanding')}
-          </Text>
-          <Text style={[styles.total, { color: colors.onTint }]} accessibilityRole="header">
+          <HeroEyebrow>{t('summary.outstanding').toLocaleUpperCase(i18n.language)}</HeroEyebrow>
+          <HeroFigure
+            style={styles.figure}
+            accessibilityRole="header"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
             {fmt.money(data.outstanding)}
-          </Text>
+          </HeroFigure>
           {data.overdueCount > 0 ? (
-            <Text style={[styles.heroLine, { color: colors.onTint }]}>
+            <HeroCaption style={styles.overdue}>
               {t('summary.overdue', { count: data.overdueCount })}
-            </Text>
+            </HeroCaption>
           ) : null}
           {data.nextDueDate ? (
-            <Text style={[styles.heroCaption, { color: colors.onTint }]}>
-              {t('summary.nextDue', { date: fmt.date(data.nextDueDate) })}
-            </Text>
+            <HeroCaption>{t('summary.nextDue', { date: fmt.date(data.nextDueDate) })}</HeroCaption>
           ) : null}
         </>
       )}
-    </GlassCard>
+      {total > 0 ? (
+        <>
+          <HeroProgress value={paidCount / total} accessibilityLabel={t('summary.progress')} />
+          <HeroCaption style={styles.progressText}>
+            {t('summary.paidPeriods', { paid: paidCount, total })}
+          </HeroCaption>
+        </>
+      ) : null}
+    </HeroCard>
   );
 }
 
@@ -70,10 +98,18 @@ function DueRow({ due }: { due: DueWithPayments }) {
   const lastPayment = due.payments[0];
   const remaining = remainingOf(due);
   const partial = status !== 'paid' && due.payments.length > 0 && remaining > 0;
+  const tone: Tone =
+    status === 'paid' ? 'green' : status === 'overdue' ? 'red' : partial ? 'orange' : 'neutral';
   return (
     <GlassCard style={styles.row}>
+      <IconTile
+        name={status === 'paid' ? 'check' : status === 'overdue' ? 'error' : 'clock'}
+        tone={tone}
+      />
       <View style={styles.rowMain}>
-        <Text style={[styles.month, { color: colors.label }]}>{fmt.month(due.period)}</Text>
+        <Text style={[styles.month, { color: colors.label }]} numberOfLines={1}>
+          {fmt.month(due.period)}
+        </Text>
         <Text style={[styles.detail, { color: colors.secondaryLabel }]}>
           {t('dueOn', { date: fmt.date(due.due_date) })}
         </Text>
@@ -86,7 +122,7 @@ function DueRow({ due }: { due: DueWithPayments }) {
           </Text>
         ) : null}
         {partial ? (
-          <Text style={[styles.detail, { color: colors.secondaryLabel }]}>
+          <Text style={[styles.detail, { color: colors.orange }]}>
             {t('remaining', { amount: fmt.money(remaining) })}
           </Text>
         ) : null}
@@ -146,7 +182,7 @@ export default function DuesScreen() {
       keyExtractor={(item) => item.id}
       refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={() => void refetch()} />}
       stickySectionHeadersEnabled={false}
-      ListHeaderComponent={<SummaryCard />}
+      ListHeaderComponent={<SummaryCard dues={data} />}
       ListFooterComponent={
         <Text style={[styles.info, { color: colors.secondaryLabel }]}>{t('info')}</Text>
       }
@@ -155,6 +191,7 @@ export default function DuesScreen() {
           <View style={styles.skeletons}>
             {[0, 1, 2].map((i) => (
               <GlassCard key={i} style={styles.row}>
+                <Skeleton width={44} height={44} />
                 <View style={styles.rowMain}>
                   <Skeleton width="50%" height={18} />
                   <Skeleton width="35%" height={14} />
@@ -178,16 +215,22 @@ export default function DuesScreen() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', padding: space.xl, gap: space.md },
-  content: { paddingHorizontal: space.lg, paddingBottom: space.xxl },
-  summary: { gap: space.xs, marginTop: space.sm, marginBottom: space.sm },
-  heroCaption: { ...type.small },
-  heroLine: { ...type.bodyStrong },
-  heroTitle: { ...type.title, marginTop: space.xs },
-  total: { ...type.hero, fontVariant: ['tabular-nums'] },
+  content: {
+    paddingHorizontal: space.lg,
+    paddingTop: space.sm,
+    paddingBottom: space.xxl + space.xl,
+  },
+  summary: { marginBottom: space.sm },
+  heroSkeleton: { gap: space.md, marginTop: space.sm, opacity: 0.2 },
+  figure: { marginTop: space.xs, marginBottom: space.xs },
+  overdue: { fontFamily: type.bodyStrong.fontFamily },
+  paidRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  heroTitle: { ...type.title, flex: 1 },
+  progressText: { marginTop: space.sm },
   section: { marginTop: space.xl, marginBottom: 0 },
   skeletons: { gap: space.sm },
-  row: { flexDirection: 'row', gap: space.md, justifyContent: 'space-between' },
-  rowMain: { flex: 1, gap: space.xs },
+  row: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  rowMain: { flex: 1, gap: 2, flexShrink: 1 },
   rowEnd: { alignItems: 'flex-end', gap: space.sm },
   month: { ...type.headline },
   detail: { ...type.caption },

@@ -54,7 +54,9 @@ export default function TicketDetailScreen() {
 
   if (ticketQuery.isPending) {
     return (
-      <View style={[styles.content, styles.fill, { backgroundColor: colors.systemGroupedBackground }]}>
+      <View
+        style={[styles.content, styles.fill, { backgroundColor: colors.systemGroupedBackground }]}
+      >
         <View style={styles.headerRow}>
           <Skeleton width={56} height={56} />
           <View style={styles.headerText}>

@@ -3,7 +3,9 @@
     "outstanding": "Amount due",
     "overdue": "Overdue: {{count}}",
     "nextDue": "Next due date: {{date}}",
-    "allPaid": "All your dues are paid"
+    "allPaid": "All your dues are paid",
+    "progress": "Payment progress",
+    "paidPeriods": "{{paid}} of {{total}} periods paid"
   },
   "status": { "paid": "Paid", "unpaid": "Unpaid", "overdue": "Overdue" },
   "method": { "cash": "Cash", "bank_transfer": "Bank transfer", "card": "Card", "other": "Other" },

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { useToneColors, type Tone } from '@/components/IconTile';
 import { radius, type } from '@/theme/tokens';
@@ -9,13 +9,14 @@ export type BadgeProps = {
   tone?: Tone;
   /** Leading colored dot. */
   dot?: boolean;
+  style?: StyleProp<ViewStyle>;
 };
 
 /** Soft pill: tinted fill, same-hue text, optional dot. */
-export function Badge({ label, tone = 'neutral', dot }: BadgeProps) {
+export function Badge({ label, tone = 'neutral', dot, style }: BadgeProps) {
   const { fill, fg } = useToneColors(tone);
   return (
-    <View style={[styles.badge, { backgroundColor: fill }]}>
+    <View style={[styles.badge, { backgroundColor: fill }, style]}>
       {dot ? <View style={[styles.dot, { backgroundColor: fg }]} /> : null}
       <Text style={[styles.label, { color: fg }]} numberOfLines={1}>
         {label}

@@ -8,6 +8,7 @@
   "residence": "Konut",
   "building": "Bina",
   "unit": "Daire",
+  "memberSince": "Üyelik",
   "unitValue": "Blok {{block}} / No {{number}}",
   "edit": {
     "title": "Profili Düzenle",

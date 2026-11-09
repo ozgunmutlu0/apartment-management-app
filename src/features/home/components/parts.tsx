@@ -1,14 +1,30 @@
 import { Link, type Href } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import type { ReactNode } from 'react';
-import { StyleSheet, Text, View, type ColorValue } from 'react-native';
+import { StyleSheet, Text, View, useColorScheme, type ColorValue } from 'react-native';
+import Animated, { FadeInDown, useReducedMotion } from 'react-native-reanimated';
 
+import { Avatar } from '@/components/Avatar';
 import { GlassCard } from '@/components/GlassCard';
-import type { IconName } from '@/components/Icon';
-import { IconTile } from '@/components/IconTile';
+import { Icon, type IconName } from '@/components/Icon';
+import { IconTile, type Tone } from '@/components/IconTile';
 import { PressableScale } from '@/components/PressableScale';
 import { Skeleton } from '@/components/Skeleton';
+import { StatTile } from '@/components/StatTile';
 import { useColors } from '@/theme/colors';
-import { hitTarget, radius, space, type } from '@/theme/tokens';
+import { elevation, fonts, radius, space, type } from '@/theme/tokens';
+
+/** Staggered fade-in for a main block (40ms per step); off under reduced motion. */
+export function Reveal({ index, children }: { index: number; children: ReactNode }) {
+  const reduced = useReducedMotion();
+  return (
+    <Animated.View
+      entering={reduced ? undefined : FadeInDown.delay(Math.min(index, 8) * 40).duration(320)}
+    >
+      {children}
+    </Animated.View>
+  );
+}
 
 /** Section title with an optional "see all" link. */
 export function SectionHeader({
@@ -35,139 +51,203 @@ export function SectionHeader({
   );
 }
 
-/**
- * Hero summary card: small context line, one big figure, optional secondary line and progress.
- * Everything sits on the accent fill, so text uses `onTint` only.
- */
-export function HeroCard({
+/** In-content header: avatar, greeting + first name, notification bell; building line below. */
+export function TopBlock({
+  fullName,
+  greeting,
+  displayName,
   context,
-  caption,
-  figure,
-  figureIsMessage,
-  secondary,
-  progress,
-  loading,
+  unread,
+  bellLabel,
+  onBellPress,
 }: {
-  context?: string | null;
-  caption?: string;
-  figure?: string;
-  /** Long text instead of a number: rendered smaller. */
-  figureIsMessage?: boolean;
-  secondary?: string | null;
-  /** 0..1, renders a thin track under the figure. */
-  progress?: number;
-  loading?: boolean;
+  fullName: string | null | undefined;
+  greeting: string;
+  displayName: string;
+  context: string | null;
+  unread: number;
+  bellLabel: string;
+  onBellPress: () => void;
 }) {
   const colors = useColors();
+  const dark = useColorScheme() === 'dark';
   return (
-    <GlassCard variant="tint" padding={space.xl} style={styles.hero}>
-      {context ? (
-        <Text style={[styles.heroContext, { color: colors.onTint }]}>{context}</Text>
-      ) : null}
-      {loading ? (
-        <View style={styles.heroSkeleton}>
-          <Skeleton width="55%" height={44} color={colors.onTint} />
-          <Skeleton width="40%" height={16} color={colors.onTint} />
+    <View style={styles.top}>
+      <View style={styles.topRow}>
+        <Avatar name={fullName} size={56} />
+        <View style={styles.topText}>
+          <Text style={[styles.greeting, { color: colors.secondaryLabel }]} numberOfLines={1}>
+            {greeting}
+          </Text>
+          <Text
+            style={[styles.name, { color: colors.label }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            accessibilityRole="header"
+          >
+            {displayName}
+          </Text>
         </View>
-      ) : (
-        <>
-          <View style={styles.heroBody}>
-            {caption ? (
-              <Text style={[styles.heroCaption, { color: colors.onTint }]}>{caption}</Text>
-            ) : null}
-            {figure ? (
-              <Text
-                numberOfLines={figureIsMessage ? 2 : 1}
-                adjustsFontSizeToFit={!figureIsMessage}
-                style={[
-                  figureIsMessage ? styles.heroMessage : styles.heroFigure,
-                  { color: colors.onTint },
-                ]}
-              >
-                {figure}
+        <PressableScale
+          accessibilityRole="button"
+          accessibilityLabel={bellLabel}
+          onPress={onBellPress}
+          style={[
+            styles.bell,
+            { backgroundColor: colors.secondarySystemGroupedBackground },
+            dark
+              ? { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.separator }
+              : elevation.card,
+          ]}
+        >
+          <Icon name="bell" size={22} color={colors.label} />
+          {unread > 0 ? (
+            <View style={[styles.badge, { backgroundColor: colors.red }]}>
+              <Text style={[styles.badgeText, { color: colors.onTint }]}>
+                {unread > 9 ? '9+' : unread}
               </Text>
-            ) : null}
-          </View>
-          {progress !== undefined ? (
-            <View
-              style={styles.track}
-              accessibilityRole="progressbar"
-              accessibilityValue={{ min: 0, max: 100, now: Math.round(progress * 100) }}
-            >
-              <View style={[styles.trackBase, { backgroundColor: colors.onTint }]} />
-              <View
-                style={[
-                  styles.trackFill,
-                  {
-                    backgroundColor: colors.onTint,
-                    width: `${Math.round(Math.min(1, Math.max(0, progress)) * 100)}%`,
-                  },
-                ]}
-              />
             </View>
           ) : null}
-          {secondary ? (
-            <Text style={[styles.heroSecondary, { color: colors.onTint }]}>{secondary}</Text>
-          ) : null}
-        </>
-      )}
-    </GlassCard>
+        </PressableScale>
+      </View>
+      {context ? (
+        <View style={styles.contextRow}>
+          <SymbolView
+            name={{ ios: 'building.2.fill', android: 'apartment' }}
+            size={16}
+            tintColor={colors.tertiaryLabel}
+          />
+          <Text style={[styles.context, { color: colors.secondaryLabel }]} numberOfLines={1}>
+            {context}
+          </Text>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+/** Translucent on-accent chip for a HeroCard: glyph, value, label. Optionally a link. */
+export function HeroChip({
+  icon,
+  value,
+  label,
+  href,
+}: {
+  icon: IconName;
+  value: number | string;
+  label: string;
+  href?: Href;
+}) {
+  const colors = useColors();
+  const body = (
+    <>
+      <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.onHero, opacity: 0.16 }]} />
+      <Icon name={icon} size={18} color={colors.onHero} />
+      <Text style={[styles.chipValue, { color: colors.onHero }]}>{value}</Text>
+      <Text style={[styles.chipLabel, { color: colors.onHero }]} numberOfLines={1}>
+        {label}
+      </Text>
+    </>
+  );
+  if (!href) {
+    return (
+      <View accessible accessibilityLabel={`${value} ${label}`} style={styles.chip}>
+        {body}
+      </View>
+    );
+  }
+  return (
+    <Link href={href} asChild>
+      <PressableScale
+        accessibilityRole="link"
+        accessibilityLabel={`${value} ${label}`}
+        style={styles.chip}
+      >
+        {body}
+      </PressableScale>
+    </Link>
+  );
+}
+
+/** Placeholder lines for a loading HeroCard. */
+export function HeroSkeleton() {
+  const colors = useColors();
+  return (
+    <View style={styles.heroSkeleton}>
+      <Skeleton width="40%" height={14} color={colors.onHero} />
+      <Skeleton width="60%" height={44} color={colors.onHero} />
+      <Skeleton width="45%" height={14} color={colors.onHero} />
+    </View>
+  );
+}
+
+/** Slim stacked bar, one rounded segment per status, proportional to its count. */
+export function DistributionBar({
+  segments,
+  label,
+}: {
+  segments: { key: string; count: number; color: ColorValue }[];
+  label: string;
+}) {
+  const visible = segments.filter((s) => s.count > 0);
+  return (
+    <View accessible accessibilityRole="image" accessibilityLabel={label} style={styles.bar}>
+      {visible.map((s) => (
+        <View key={s.key} style={{ flex: s.count, backgroundColor: s.color }} />
+      ))}
+    </View>
   );
 }
 
 export type Tile = {
   key: string;
   label: string;
-  value: string | number;
-  color: ColorValue;
+  value: number;
+  tone: Tone;
+  icon: IconName;
   href?: Href;
 };
 
-/** Equal-height 2-column grid of stat tiles: the figure is ink, state shows as a dot by the label. */
-export function StatTiles({ tiles }: { tiles: Tile[] }) {
-  const colors = useColors();
+/**
+ * Two-column grid of StatTiles in equal-height rows.
+ */
+export function StatGrid({ tiles }: { tiles: Tile[] }) {
+  const rows: Tile[][] = [];
+  for (let i = 0; i < tiles.length; i += 2) rows.push(tiles.slice(i, i + 2));
   return (
-    <View style={styles.tiles}>
-      {tiles.map((tile) => {
-        const body = (
-          <GlassCard padding={space.lg} style={styles.tile}>
-            <Text style={[styles.tileValue, { color: colors.label }]}>{tile.value}</Text>
-            <View style={styles.tileLabelRow}>
-              <View style={[styles.dot, { backgroundColor: tile.color }]} />
-              <Text numberOfLines={2} style={[styles.tileLabel, { color: colors.secondaryLabel }]}>
-                {tile.label}
-              </Text>
-            </View>
-          </GlassCard>
-        );
-        return (
-          <View key={tile.key} style={styles.tileCell}>
-            {tile.href ? (
-              <Link href={tile.href} asChild>
-                <PressableScale accessibilityRole="button" style={styles.fill}>
-                  {body}
-                </PressableScale>
-              </Link>
-            ) : (
-              body
-            )}
-          </View>
-        );
-      })}
+    <View style={styles.grid}>
+      {rows.map((row) => (
+        <View key={row[0]?.key} style={styles.gridRow}>
+          {row.map((tile) => (
+            <StatTile
+              key={tile.key}
+              value={tile.value}
+              label={tile.label}
+              tone={tile.tone}
+              icon={tile.icon}
+              href={tile.href}
+            />
+          ))}
+          {row.length === 1 ? <View style={styles.gridSpacer} /> : null}
+        </View>
+      ))}
     </View>
   );
 }
 
-/** Placeholder shaped like StatTiles. */
-export function StatTilesSkeleton({ count = 4 }: { count?: number }) {
+export function StatGridSkeleton({ count = 4 }: { count?: number }) {
+  const rows = Math.ceil(count / 2);
   return (
-    <View style={styles.tiles}>
-      {Array.from({ length: count }, (_, i) => (
-        <View key={i} style={styles.tileCell}>
-          <GlassCard padding={space.lg} style={styles.tile}>
-            <Skeleton width={48} height={34} />
-            <Skeleton width="70%" height={14} />
-          </GlassCard>
+    <View style={styles.grid}>
+      {Array.from({ length: rows }, (_, r) => (
+        <View key={r} style={styles.gridRow}>
+          {[0, 1].map((c) => (
+            <GlassCard key={c} padding={space.lg} style={styles.skeletonTile}>
+              <Skeleton width={36} height={36} />
+              <Skeleton width={48} height={30} />
+              <Skeleton width="60%" height={14} />
+            </GlassCard>
+          ))}
         </View>
       ))}
     </View>
@@ -193,27 +273,31 @@ export function ListSkeleton({ rows = 2 }: { rows?: number }) {
 
 export type QuickAction = { key: string; label: string; icon: IconName; href: Href };
 
+/** Equal-width, equal-height shortcut tiles in one row. */
 export function QuickActions({ actions }: { actions: QuickAction[] }) {
   const colors = useColors();
+  const dark = useColorScheme() === 'dark';
   return (
-    <View style={styles.tiles}>
+    <View style={styles.actions}>
       {actions.map((action) => (
-        <View key={action.key} style={styles.actionCell}>
-          <Link href={action.href} asChild>
-            <PressableScale
-              accessibilityRole="button"
-              accessibilityLabel={action.label}
-              style={styles.fill}
-            >
-              <GlassCard padding={space.lg} style={styles.action}>
-                <IconTile name={action.icon} size={44} />
-                <Text numberOfLines={2} style={[styles.actionLabel, { color: colors.label }]}>
-                  {action.label}
-                </Text>
-              </GlassCard>
-            </PressableScale>
-          </Link>
-        </View>
+        <Link key={action.key} href={action.href} asChild>
+          <PressableScale
+            accessibilityRole="button"
+            accessibilityLabel={action.label}
+            style={StyleSheet.flatten([
+              styles.action,
+              { backgroundColor: colors.secondarySystemGroupedBackground },
+              dark
+                ? { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.separator }
+                : elevation.card,
+            ])}
+          >
+            <IconTile name={action.icon} size={44} solid />
+            <Text numberOfLines={2} style={[styles.actionLabel, { color: colors.label }]}>
+              {action.label}
+            </Text>
+          </PressableScale>
+        </Link>
       ))}
     </View>
   );
@@ -233,30 +317,72 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   headerTitle: { ...type.title },
   link: { ...type.label },
-  hero: { gap: space.md },
-  heroContext: { ...type.label, opacity: 0.8 },
-  heroBody: { gap: space.xs },
-  heroCaption: { ...type.small, opacity: 0.8 },
-  heroFigure: { ...type.hero, fontVariant: ['tabular-nums'] },
-  heroMessage: { ...type.display },
-  heroSecondary: { ...type.small, opacity: 0.8 },
+  top: { gap: space.md },
+  topRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  topText: { flex: 1, justifyContent: 'center' },
+  greeting: { ...type.small },
+  name: { ...type.display },
+  bell: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    paddingHorizontal: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: { fontFamily: fonts.semibold, fontSize: 11, lineHeight: 14 },
+  contextRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  context: { ...type.small, flexShrink: 1 },
+  chip: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
+    paddingHorizontal: space.md,
+    paddingVertical: space.md,
+    borderRadius: radius.control,
+    borderCurve: 'continuous',
+    overflow: 'hidden',
+  },
+  chipValue: { ...type.bodyStrong, fontVariant: ['tabular-nums'] },
+  chipLabel: { ...type.label, flexShrink: 1, opacity: 0.9 },
   heroSkeleton: { gap: space.md, opacity: 0.35 },
-  track: { height: 6, borderRadius: radius.pill, overflow: 'hidden' },
-  trackBase: { ...StyleSheet.absoluteFill, opacity: 0.25 },
-  trackFill: { height: 6, borderRadius: radius.pill },
-  tiles: { flexDirection: 'row', flexWrap: 'wrap', gap: space.md },
-  tileCell: { flexGrow: 1, flexBasis: '45%' },
-  actionCell: { flexGrow: 1, flexBasis: '28%' },
-  fill: { flex: 1 },
-  tile: { flex: 1, gap: space.xs },
-  tileValue: { ...type.stat, fontVariant: ['tabular-nums'] },
-  tileLabelRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  dot: { width: 8, height: 8, borderRadius: 4 },
-  tileLabel: { ...type.label, flexShrink: 1 },
-  action: { flex: 1, gap: space.md, minHeight: hitTarget },
-  actionLabel: { ...type.headline },
+  bar: {
+    height: 8,
+    flexDirection: 'row',
+    gap: 2,
+    borderRadius: radius.pill,
+    overflow: 'hidden',
+  },
+  grid: { gap: space.md },
+  gridRow: { flexDirection: 'row', gap: space.md },
+  gridSpacer: { flex: 1 },
+  skeletonTile: { flex: 1, gap: space.sm },
   list: { gap: space.md },
   listSkeletonCard: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   listSkeletonText: { flex: 1, gap: space.sm },
+  actions: { flexDirection: 'row', gap: space.md },
+  action: {
+    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: space.md,
+    minHeight: 112,
+    paddingVertical: space.lg,
+    paddingHorizontal: space.md,
+    borderRadius: radius.card,
+    borderCurve: 'continuous',
+  },
+  actionLabel: { ...type.label },
   muted: { ...type.body },
 });

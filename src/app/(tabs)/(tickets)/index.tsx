@@ -1,4 +1,3 @@
-import { SegmentedControl } from '@expo/ui/community/segmented-control';
 import { Stack, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useMemo, useState } from 'react';
@@ -6,6 +5,7 @@ import { FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-nat
 import { useTranslation } from 'react-i18next';
 
 import { EmptyState } from '@/components/EmptyState';
+import { FilterChips } from '@/components/FilterChips';
 import { Skeleton } from '@/components/Skeleton';
 import { useAuth } from '@/lib/auth';
 import { TicketRow } from '@/features/tickets/components/TicketRow';
@@ -21,24 +21,33 @@ export default function TicketsScreen() {
   const colors = useColors();
   const { role } = useAuth();
   const [search, setSearch] = useState('');
-  const [segment, setSegment] = useState(0);
+  const [filter, setFilter] = useState<string>('all');
 
-  const status: TicketStatus | null = segment === 0 ? null : (TICKET_STATUSES[segment - 1] ?? null);
-  const tickets = useTickets({ status, category: null });
+  const status: TicketStatus | null = TICKET_STATUSES.find((s) => s === filter) ?? null;
+  const tickets = useTickets({ status: null, category: null });
   useTicketsRealtime();
 
-  const segments = useMemo(
-    () => [t('all'), ...TICKET_STATUSES.map((s) => t(`status.${s}`))],
-    [t],
-  );
+  const chips = useMemo(() => {
+    const all = tickets.data ?? [];
+    return [
+      { key: 'all', label: t('all'), count: tickets.data ? all.length : undefined },
+      ...TICKET_STATUSES.map((s) => ({
+        key: s,
+        label: t(`status.${s}`),
+        count: tickets.data ? all.filter((x) => x.status === s).length : undefined,
+      })),
+    ];
+  }, [t, tickets.data]);
 
   const query = search.trim().toLocaleLowerCase();
   const data = useMemo(
     () =>
-      (tickets.data ?? []).filter((ticket) =>
-        query ? ticket.title.toLocaleLowerCase().includes(query) : true,
+      (tickets.data ?? []).filter(
+        (ticket) =>
+          (status === null || ticket.status === status) &&
+          (query ? ticket.title.toLocaleLowerCase().includes(query) : true),
       ),
-    [tickets.data, query],
+    [tickets.data, query, status],
   );
 
   const canCreate = role === 'resident' || role === 'manager';
@@ -63,10 +72,7 @@ export default function TicketsScreen() {
     );
   } else if (filtered) {
     empty = (
-      <EmptyState
-        title={t('list.emptyFilteredTitle')}
-        message={t('list.emptyFilteredMessage')}
-      />
+      <EmptyState title={t('list.emptyFilteredTitle')} message={t('list.emptyFilteredMessage')} />
     );
   } else {
     empty = (
@@ -120,12 +126,9 @@ export default function TicketsScreen() {
           />
         }
         ListHeaderComponent={
-          <SegmentedControl
-            values={segments}
-            selectedIndex={segment}
-            onChange={(event) => setSegment(event.nativeEvent.selectedSegmentIndex)}
-            style={styles.segmented}
-          />
+          <View style={styles.chips}>
+            <FilterChips options={chips} value={filter} onChange={setFilter} />
+          </View>
         }
         ItemSeparatorComponent={Separator}
         ListEmptyComponent={empty}
@@ -149,7 +152,7 @@ function Separator() {
 
 const styles = StyleSheet.create({
   content: { padding: space.lg, flexGrow: 1 },
-  segmented: { marginBottom: space.lg },
+  chips: { marginBottom: space.lg },
   separator: { height: space.md },
   skeletons: { gap: space.md },
 });

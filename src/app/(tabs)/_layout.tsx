@@ -1,9 +1,11 @@
 import { NativeTabs } from 'expo-router/native-tabs';
 import { useTranslation } from 'react-i18next';
+import { Platform, useColorScheme } from 'react-native';
 
 import { useUnreadCount } from '@/features/notifications/api';
 import { useAuth } from '@/lib/auth';
-import { useColors } from '@/theme/colors';
+import { hexColors } from '@/theme/colors';
+import { fonts } from '@/theme/tokens';
 
 // Every tab group has an `index` route, so `/` is ambiguous; without this the router picks the
 // first group alphabetically (`(dues)`), which is hidden for managers/technicians -> blank screen.
@@ -13,10 +15,30 @@ export default function TabsLayout() {
   const { t } = useTranslation('tabs');
   const { role } = useAuth();
   const unread = useUnreadCount().data ?? 0;
-  const colors = useColors();
+  const scheme = useColorScheme();
+  const colors = hexColors(scheme);
+
+  // Android-only theming (Material bottom navigation). iOS keeps the system tab bar; iOS 26 draws
+  // its own glass background.
+  const androidProps =
+    Platform.OS === 'android'
+      ? {
+          backgroundColor: colors.secondarySystemGroupedBackground,
+          indicatorColor: colors.tintSoft,
+          labelVisibilityMode: 'labeled' as const,
+          rippleColor: colors.tintSoft,
+          iconColor: { default: colors.secondaryLabel, selected: colors.tint },
+          labelStyle: {
+            default: { fontFamily: fonts.medium, fontSize: 12, color: colors.secondaryLabel },
+            selected: { fontFamily: fonts.semibold, fontSize: 12, color: colors.tint },
+          },
+          badgeBackgroundColor: colors.red,
+          badgeTextColor: '#FFFFFF',
+        }
+      : {};
 
   return (
-    <NativeTabs tintColor={colors.tint}>
+    <NativeTabs tintColor={colors.tint} {...androidProps}>
       <NativeTabs.Trigger name="(home)">
         <NativeTabs.Trigger.Label>{t('home')}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />

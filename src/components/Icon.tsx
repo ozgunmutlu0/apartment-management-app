@@ -19,6 +19,16 @@ export const ICONS = {
   add: { ios: 'plus', android: 'add' },
   check: { ios: 'checkmark.circle.fill', android: 'check_circle' },
   chevron: { ios: 'chevron.right', android: 'chevron_right' },
+  bell: { ios: 'bell.fill', android: 'notifications' },
+  calendar: { ios: 'calendar', android: 'calendar_month' },
+  people: { ios: 'person.2.fill', android: 'group' },
+  checklist: { ios: 'checklist', android: 'checklist' },
+  clock: { ios: 'clock.fill', android: 'schedule' },
+  unassigned: { ios: 'person.fill.questionmark', android: 'person_search' },
+  statusPending: { ios: 'hourglass', android: 'hourglass_top' },
+  statusInReview: { ios: 'magnifyingglass', android: 'search' },
+  statusInProgress: { ios: 'hammer.fill', android: 'construction' },
+  statusResolved: { ios: 'checkmark.circle.fill', android: 'check_circle' },
 } as const satisfies Record<string, { ios: SFSymbol; android: AndroidSymbol }>;
 
 export type IconName = keyof typeof ICONS;

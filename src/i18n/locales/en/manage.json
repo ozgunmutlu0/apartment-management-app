@@ -3,5 +3,23 @@
   "dues": "Manage Dues",
   "duesSubtitle": "Period dues and payments",
   "reports": "Reports",
-  "reportsSubtitle": "Collection and request summaries"
+  "reportsSubtitle": "Collection and request summaries",
+  "generate": "Generate Period Dues",
+  "generateSubtitle": "Open this month's dues for every unit",
+  "overview": "Overview",
+  "tools": "Management tools",
+  "hero": {
+    "eyebrow": "{{month}} collection",
+    "of": "Expected total {{amount}}",
+    "percent": "{{value}}% collected",
+    "breakdown": "{{paid}} paid · {{waiting}} waiting · {{overdue}} overdue",
+    "progress": "Collection rate",
+    "empty": "No dues have been generated for this month yet."
+  },
+  "stats": {
+    "paid": "Units paid",
+    "overdue": "Units overdue",
+    "open": "Open requests",
+    "unassigned": "Unassigned requests"
+  }
 }

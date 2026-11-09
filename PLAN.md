@@ -14,7 +14,7 @@
 | Glass yüzeyler | Liquid Glass yalnızca sistem krom'unda (NativeTabs tab bar, native header, formSheet); içerik kartları (`GlassCard`) düz, opak, ince çizgili karttır |
 | Native kontroller | `@expo/ui` (iOS: SwiftUI — Picker/segmented, DateTimePicker, Switch, ContextMenu, Button; Android: Jetpack Compose karşılıkları). Mevcut değilse RN core + `@react-native-community/datetimepicker` |
 | İkonlar | `expo-symbols` (SF Symbols) iOS; Android için Material ikon fallback'i |
-| Renkler | Özel "kağıt üzerinde teal" palet: tonlu soğuk zemin, beyaz yükseltilmiş kartlar, tek teal vurgu rengi, durum renkleri (yeşil/turuncu/kırmızı/mavi) ve her birinin pill ile ikon karoları için yumuşak dolgusu; iOS'ta `DynamicColorIOS`, Android'de `useColorScheme`, kütüphaneler için `hexColors()`. Boşluk/radius (kart 20 / kontrol 14 / karo 12 / pill), Outfit tipografi (400/500/600 aile token'ları, `fontWeight` yok), gölge ve basma animasyonu `theme/tokens.ts`. Dark mode zorunlu destek |
+| Renkler | Özel "kağıt üzerinde teal" palet: tonlu soğuk zemin, beyaz yükseltilmiş kartlar, tek teal vurgu rengi, durum renkleri (yeşil/turuncu/kırmızı/mavi) ve her birinin pill ile ikon karoları için yumuşak dolgusu, hero kart için `hero`/`onHero`; `theme/navigation.ts` `useStackOptions()` ile header/sheet temasını tek yerden verir (Android tab bar tabs layout'unda temalanır); iOS'ta `DynamicColorIOS`, Android'de `useColorScheme`, kütüphaneler için `hexColors()`. Boşluk/radius (kart 20 / kontrol 14 / karo 12 / pill), Outfit tipografi (400/500/600 aile token'ları, `fontWeight` yok), gölge ve basma animasyonu `theme/tokens.ts`. Dark mode zorunlu destek |
 | Backend | **Supabase** (Auth email+şifre, Postgres + RLS, Storage, Realtime, Edge Functions) |
 | Veri katmanı | `@supabase/supabase-js` + `@tanstack/react-query`; oturum `expo-secure-store` (büyük değer sorunu varsa AsyncStorage) |
 | i18n | `i18next` + `react-i18next` + `expo-localization`; **TR (varsayılan) + EN**; feature başına namespace dosyası |
@@ -22,7 +22,7 @@
 | Bildirim | `expo-notifications` (push) + Supabase Realtime (uygulama içi) + `notifications` tablosu |
 | Kalite | ESLint (`eslint-config-expo`), Prettier, `tsc --noEmit`, `npx expo-doctor` |
 
-**Native-first kuralı:** Ekranda native karşılığı olan hiçbir şey JS ile taklit edilmez (tab bar, header, arama çubuğu, sheet, segmented control, date picker, switch, context menu, alert, action sheet). İçerik kartları (`GlassCard`) opak yükseltilmiş yüzeylerdir (açık modda yumuşak gölge, koyu modda ince çizgi), tutarlı palet + `tokens.ts` ile; Liquid Glass yalnızca sistem krom'una bırakılır.
+**Native-first kuralı:** Ekranda native karşılığı olan hiçbir şey JS ile taklit edilmez (tab bar, header, arama çubuğu, sheet, segmented control, date picker, switch, context menu, alert, action sheet). İçerik kartları (`GlassCard`) opak yükseltilmiş yüzeylerdir (açık modda yumuşak gölge, koyu modda ince çizgi), tutarlı palet + `tokens.ts` ile; Liquid Glass yalnızca sistem krom'una bırakılır. İki bilinçli istisna: çok seçenekli filtreler için `FilterChips` (5 seçenekli segmented control sığmaz ve Android'de temalanamaz) ve `Segmented` içindeki yalnızca-Android pill yedeği (native kontrol paleti alamaz); iOS native kontrolü korur. Tasarım işleri Android emülatöründe adb ekran görüntüleriyle açık ve koyu modda doğrulanır.
 
 ## 2. Roller
 
@@ -72,11 +72,12 @@ src/
       (dues)/_layout.tsx, index.tsx                         # resident
       (manage)/_layout.tsx, index.tsx, dues.tsx, reports.tsx # manager
       (profile)/_layout.tsx, index.tsx, reservations.tsx, notifications.tsx
-  components/               # paylaşılan UI: GlassCard, StatusBadge, EmptyState, SectionList yardımcıları
+  components/               # paylaşılan UI: GlassCard, HeroCard (+ yardımcıları), StatTile, Avatar, FilterChips, Segmented, IconTile, Badge, EmptyState, Skeleton, ...
   features/<feature>/       # api.ts (react-query hook'ları), types.ts, components/
   lib/supabase.ts, lib/queryClient.ts, lib/auth.tsx
   i18n/index.ts, i18n/locales/{tr,en}/<namespace>.json
   theme/colors.ts           # "kağıt üzerinde teal" palet + yumuşak dolgular (DynamicColorIOS / useColorScheme, hexColors)
+  theme/navigation.ts       # useStackOptions(): temalı header/sheet seçenekleri (her Stack layout kullanır)
   theme/tokens.ts           # spacing, radius, Outfit tipografi ölçeği, gölge, basma yayı
 supabase/
   migrations/*.sql

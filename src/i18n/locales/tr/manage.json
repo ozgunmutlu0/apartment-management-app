@@ -3,5 +3,23 @@
   "dues": "Aidat Yönetimi",
   "duesSubtitle": "Dönem aidatları ve ödemeler",
   "reports": "Raporlar",
-  "reportsSubtitle": "Tahsilat ve talep özetleri"
+  "reportsSubtitle": "Tahsilat ve talep özetleri",
+  "generate": "Dönem Aidatı Oluştur",
+  "generateSubtitle": "Tüm daireler için bu ayın aidatını aç",
+  "overview": "Genel durum",
+  "tools": "Yönetim araçları",
+  "hero": {
+    "eyebrow": "{{month}} tahsilatı",
+    "of": "Beklenen toplam {{amount}}",
+    "percent": "%{{value}} tahsil edildi",
+    "breakdown": "{{paid}} ödedi · {{waiting}} bekliyor · {{overdue}} gecikmiş",
+    "progress": "Tahsilat oranı",
+    "empty": "Bu ay için henüz aidat oluşturulmadı."
+  },
+  "stats": {
+    "paid": "Ödeyen daire",
+    "overdue": "Gecikmiş daire",
+    "open": "Açık talep",
+    "unassigned": "Atanmamış talep"
+  }
 }

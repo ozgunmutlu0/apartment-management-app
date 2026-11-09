@@ -15,7 +15,9 @@
     "avgHours": "{{value}} saat",
     "avgDays": "{{value}} gün",
     "noResolved": "Henüz çözülen talep yok",
-    "empty": "Bu dönemde talep yok."
+    "empty": "Bu dönemde talep yok.",
+    "byStatusCaption": "Durum dağılımı, açık ve kapanan talepler",
+    "byCategoryCaption": "Hangi alanlarda talep açıldığı"
   },
   "dues": {
     "title": "Aidat",
@@ -23,7 +25,8 @@
     "collected": "Tahsil edilen",
     "expected": "Beklenen",
     "overdueTotal": "Gecikmiş toplam",
-    "empty": "Bu dönemde aidat kaydı yok."
+    "empty": "Bu dönemde aidat kaydı yok.",
+    "rateCaption": "Tahsil edilen tutarın beklenene oranı"
   },
   "top": {
     "title": "En çok bildirilen kategoriler"

@@ -1,25 +1,60 @@
-import { SegmentedControl } from '@expo/ui/community/segmented-control';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
 import { GlassCard } from '@/components/GlassCard';
 import { SectionLabel } from '@/components/SectionLabel';
+import { Segmented } from '@/components/Segmented';
 import { Skeleton } from '@/components/Skeleton';
-import { useDuesFormat } from '@/features/dues/utils';
+import { StatTile } from '@/components/StatTile';
 import { REPORT_PERIODS, useReport, type ReportPeriod } from '@/features/reports/api';
 import { BarRow } from '@/features/reports/components/BarRow';
 import { TICKET_CATEGORIES, TICKET_STATUSES } from '@/features/tickets/types';
-import { useColors } from '@/theme/colors';
+import { useColors, useStatusColors } from '@/theme/colors';
 import { space, type } from '@/theme/tokens';
+
+function ChartCard({
+  title,
+  caption,
+  children,
+}: {
+  title: string;
+  caption?: string;
+  children: React.ReactNode;
+}) {
+  const colors = useColors();
+  return (
+    <GlassCard style={styles.card}>
+      <View style={styles.cardHead}>
+        <Text style={[styles.title, { color: colors.label }]} accessibilityRole="header">
+          {title}
+        </Text>
+        {caption ? (
+          <Text style={[styles.caption, { color: colors.secondaryLabel }]}>{caption}</Text>
+        ) : null}
+      </View>
+      {children}
+    </GlassCard>
+  );
+}
 
 export default function ReportsScreen() {
   const { t, i18n } = useTranslation('reports');
   const { t: tt } = useTranslation('tickets');
   const { t: tc } = useTranslation('common');
   const colors = useColors();
-  const fmt = useDuesFormat();
+  const statusColors = useStatusColors();
+  // StatTile figures are one line of 28pt in a half-width card: drop the decimals.
+  const money = useMemo(
+    () =>
+      new Intl.NumberFormat(i18n.language, {
+        style: 'currency',
+        currency: 'TRY',
+        maximumFractionDigits: 0,
+      }),
+    [i18n.language],
+  );
   const [periodIndex, setPeriodIndex] = useState(0);
   const period: ReportPeriod = REPORT_PERIODS[periodIndex];
   const report = useReport(period);
@@ -47,9 +82,9 @@ export default function ReportsScreen() {
   const avg = data?.tickets.avgResolutionHours ?? null;
   const avgLabel =
     avg === null
-      ? t('tickets.noResolved')
+      ? '-'
       : avg < 48
-        ? t('tickets.avgHours', { value: avg.toFixed(1) })
+        ? t('tickets.avgHours', { value: avg.toFixed(avg < 10 ? 1 : 0) })
         : t('tickets.avgDays', { value: (avg / 24).toFixed(1) });
 
   return (
@@ -60,10 +95,10 @@ export default function ReportsScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
     >
       <View style={styles.periodBlock}>
-        <SegmentedControl
+        <Segmented
           values={REPORT_PERIODS.map((p) => t(`period.${p}`))}
           selectedIndex={periodIndex}
-          onChange={(e) => setPeriodIndex(e.nativeEvent.selectedSegmentIndex)}
+          onChange={setPeriodIndex}
         />
         {data ? (
           <Text style={[styles.range, { color: colors.secondaryLabel }]}>
@@ -75,11 +110,13 @@ export default function ReportsScreen() {
       {report.isPending ? (
         <>
           <View style={styles.tiles}>
-            <GlassCard style={styles.tile}>
+            <GlassCard style={styles.skeletonTile}>
+              <Skeleton width={36} height={36} />
               <Skeleton width={60} height={28} />
               <Skeleton width="70%" height={14} />
             </GlassCard>
-            <GlassCard style={styles.tile}>
+            <GlassCard style={styles.skeletonTile}>
+              <Skeleton width={36} height={36} />
               <Skeleton width={60} height={28} />
               <Skeleton width="70%" height={14} />
             </GlassCard>
@@ -102,53 +139,41 @@ export default function ReportsScreen() {
           <View>
             <SectionLabel>{t('tickets.title')}</SectionLabel>
             <View style={styles.tiles}>
-              <GlassCard style={styles.tile}>
-                <Text style={[styles.big, { color: colors.label }]}>{data.tickets.total}</Text>
-                <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-                  {t('tickets.total')}
-                </Text>
-              </GlassCard>
-              <GlassCard style={styles.tile}>
-                <Text
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                  style={[styles.big, { color: colors.label }]}
-                >
-                  {avgLabel}
-                </Text>
-                <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-                  {t('tickets.avgResolution')}
-                </Text>
-              </GlassCard>
+              <StatTile
+                icon="ticket"
+                tone="tint"
+                value={data.tickets.total}
+                label={t('tickets.total')}
+              />
+              <StatTile
+                icon="clock"
+                tone={avg === null ? 'neutral' : 'green'}
+                value={avgLabel}
+                label={avg === null ? t('tickets.noResolved') : t('tickets.avgResolution')}
+              />
             </View>
           </View>
 
           {data.tickets.total === 0 ? (
-            <GlassCard style={styles.card}>
+            <GlassCard>
               <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
                 {t('tickets.empty')}
               </Text>
             </GlassCard>
           ) : (
             <>
-              <GlassCard style={styles.card}>
-                <Text style={[styles.title, { color: colors.label }]}>
-                  {t('tickets.byStatus')}
-                </Text>
+              <ChartCard title={t('tickets.byStatus')} caption={t('tickets.byStatusCaption')}>
                 {TICKET_STATUSES.map((s) => (
                   <BarRow
                     key={s}
                     label={tt(`status.${s}`)}
                     value={data.tickets.byStatus[s]}
                     max={maxStatus}
-                    color={colors.tint}
+                    color={statusColors[s]}
                   />
                 ))}
-              </GlassCard>
-              <GlassCard style={styles.card}>
-                <Text style={[styles.title, { color: colors.label }]}>
-                  {t('tickets.byCategory')}
-                </Text>
+              </ChartCard>
+              <ChartCard title={t('tickets.byCategory')} caption={t('tickets.byCategoryCaption')}>
                 {categoryRows.map((row) => (
                   <BarRow
                     key={row.key}
@@ -158,88 +183,78 @@ export default function ReportsScreen() {
                     color={row.color}
                   />
                 ))}
-              </GlassCard>
+              </ChartCard>
             </>
           )}
 
           <View>
             <SectionLabel>{t('dues.title')}</SectionLabel>
             {data.dues.count === 0 ? (
-              <GlassCard style={styles.card}>
+              <GlassCard>
                 <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
                   {t('dues.empty')}
                 </Text>
               </GlassCard>
             ) : (
               <View style={styles.group}>
-                <GlassCard style={styles.card}>
-                  <BarRow
+                <View style={styles.tiles}>
+                  <StatTile
+                    icon="statusResolved"
+                    tone="green"
+                    value={money.format(data.dues.collected)}
+                    label={t('dues.collected')}
+                  />
+                  <StatTile
+                    icon="dues"
+                    tone="tint"
+                    value={money.format(data.dues.expected)}
+                    label={t('dues.expected')}
+                  />
+                </View>
+                <View style={styles.tiles}>
+                  <StatTile
+                    icon="error"
+                    tone={data.dues.overdueTotal > 0 ? 'red' : 'neutral'}
+                    value={money.format(data.dues.overdueTotal)}
+                    label={t('dues.overdueTotal')}
+                  />
+                  <StatTile
+                    icon="reports"
+                    tone="green"
+                    value={`${Math.round((data.dues.rate ?? 0) * 100)}%`}
                     label={t('dues.collectionRate')}
+                  />
+                </View>
+                <ChartCard title={t('dues.collectionRate')} caption={t('dues.rateCaption')}>
+                  <BarRow
+                    label={t('dues.collected')}
                     value={data.dues.rate ?? 0}
                     max={1}
                     color={colors.green}
                     valueLabel={`${Math.round((data.dues.rate ?? 0) * 100)}%`}
                   />
-                </GlassCard>
-                <View style={styles.tiles}>
-                  <GlassCard style={styles.tile}>
-                    <Text
-                      numberOfLines={1}
-                      adjustsFontSizeToFit
-                      style={[styles.big, { color: colors.green }]}
-                    >
-                      {fmt.money(data.dues.collected)}
-                    </Text>
-                    <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-                      {t('dues.collected')}
-                    </Text>
-                  </GlassCard>
-                  <GlassCard style={styles.tile}>
-                    <Text
-                      numberOfLines={1}
-                      adjustsFontSizeToFit
-                      style={[styles.big, { color: colors.label }]}
-                    >
-                      {fmt.money(data.dues.expected)}
-                    </Text>
-                    <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-                      {t('dues.expected')}
-                    </Text>
-                  </GlassCard>
-                </View>
-                <GlassCard style={styles.tile}>
-                  <Text
-                    style={[
-                      styles.big,
-                      { color: data.dues.overdueTotal > 0 ? colors.red : colors.label },
-                    ]}
-                  >
-                    {fmt.money(data.dues.overdueTotal)}
-                  </Text>
-                  <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-                    {t('dues.overdueTotal')}
-                  </Text>
-                </GlassCard>
+                </ChartCard>
               </View>
             )}
           </View>
 
           {data.tickets.total > 0 ? (
-            <GlassCard style={styles.card}>
-              <Text style={[styles.title, { color: colors.label }]}>{t('top.title')}</Text>
+            <ChartCard title={t('top.title')}>
               {categoryRows
                 .filter((r) => r.count > 0)
                 .slice(0, 3)
                 .map((row, index) => (
                   <View key={row.key} style={styles.topRow}>
-                    <Text style={[styles.rank, { color: colors.secondaryLabel }]}>{index + 1}</Text>
-                    <Text style={[styles.topLabel, { color: colors.label }]}>
+                    <View style={[styles.rankBadge, { backgroundColor: colors.tintSoft }]}>
+                      <Text style={[styles.rank, { color: colors.tint }]}>{index + 1}</Text>
+                    </View>
+                    <Text style={[styles.topLabel, { color: colors.label }]} numberOfLines={1}>
                       {tt(`category.${row.key}`)}
                     </Text>
                     <Text style={[styles.topCount, { color: colors.label }]}>{row.count}</Text>
                   </View>
                 ))}
-            </GlassCard>
+            </ChartCard>
           ) : null}
         </>
       ) : null}
@@ -248,18 +263,25 @@ export default function ReportsScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: space.lg, gap: space.xl },
+  content: { padding: space.lg, gap: space.xl, paddingBottom: space.xxl + space.xl },
   periodBlock: { gap: space.sm },
   range: { ...type.caption, textAlign: 'center' },
   card: { gap: space.lg },
+  cardHead: { gap: 2 },
   group: { gap: space.md },
   title: { ...type.headline },
   tiles: { flexDirection: 'row', gap: space.md },
-  tile: { flex: 1, gap: space.xs },
-  big: { ...type.stat, fontVariant: ['tabular-nums'] },
+  skeletonTile: { flex: 1, gap: space.sm },
   caption: { ...type.small },
   topRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
-  rank: { width: 20, ...type.bodyStrong, fontVariant: ['tabular-nums'] },
+  rankBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rank: { ...type.label, fontVariant: ['tabular-nums'] },
   topLabel: { flex: 1, ...type.body },
   topCount: { ...type.bodyStrong, fontVariant: ['tabular-nums'] },
 });

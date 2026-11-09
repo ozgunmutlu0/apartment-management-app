@@ -157,11 +157,11 @@ npx expo-doctor
 ```
 src/
   app/                 # Expo Router: sign-in, sign-up, (tabs)/(home|tickets|announcements|dues|manage|profile)
-  components/          # shared UI (GlassCard, EmptyState, ...)
+  components/          # shared UI (GlassCard, HeroCard, StatTile, Avatar, FilterChips, Segmented, EmptyState, ...)
   features/<feature>/  # api.ts (react-query hooks), types.ts, components/
   lib/                 # supabase client, auth, queryClient, database.types.ts
   i18n/                # i18next setup, locales/{tr,en}/<namespace>.json
-  theme/               # colors.ts (teal-on-paper palette), tokens.ts (spacing, radius, Outfit type, elevation)
+  theme/               # colors.ts (teal-on-paper palette, hero/onHero), navigation.ts (useStackOptions), tokens.ts (spacing, radius, Outfit type, elevation)
 supabase/
   migrations/          # schema, functions/triggers, RLS, storage/realtime, join building, notifications/push
   seed.sql             # demo data

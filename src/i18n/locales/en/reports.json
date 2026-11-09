@@ -15,7 +15,9 @@
     "avgHours": "{{value}} h",
     "avgDays": "{{value}} days",
     "noResolved": "No resolved requests yet",
-    "empty": "No requests in this period."
+    "empty": "No requests in this period.",
+    "byStatusCaption": "Open and closed requests by status",
+    "byCategoryCaption": "Where requests are being raised"
   },
   "dues": {
     "title": "Dues",
@@ -23,7 +25,8 @@
     "collected": "Collected",
     "expected": "Expected",
     "overdueTotal": "Total overdue",
-    "empty": "No dues in this period."
+    "empty": "No dues in this period.",
+    "rateCaption": "Collected amount versus expected"
   },
   "top": {
     "title": "Most reported categories"

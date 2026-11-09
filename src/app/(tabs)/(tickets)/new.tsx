@@ -1,5 +1,4 @@
 import { MenuView } from '@expo/ui/community/menu';
-import { SegmentedControl } from '@expo/ui/community/segmented-control';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
@@ -10,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { AuthField } from '@/components/AuthField';
 import { GlassCard } from '@/components/GlassCard';
 import { IconTile } from '@/components/IconTile';
+import { FilterChips } from '@/components/FilterChips';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { SectionLabel } from '@/components/SectionLabel';
 import { errorMessage, useCreateTicket } from '@/features/tickets/api';
@@ -151,10 +151,11 @@ export default function NewTicketScreen() {
             </View>
           </MenuView>
           <SectionLabel style={styles.inner}>{t('new.priority')}</SectionLabel>
-          <SegmentedControl
-            values={TICKET_PRIORITIES.map((p) => t(`priority.${p}`))}
-            selectedIndex={priorityIndex}
-            onChange={(event) => setPriorityIndex(event.nativeEvent.selectedSegmentIndex)}
+          <FilterChips
+            options={TICKET_PRIORITIES.map((p, i) => ({ key: String(i), label: t(`priority.${p}`) }))}
+            value={String(priorityIndex)}
+            onChange={(key) => setPriorityIndex(Number(key))}
+            inset={16}
           />
         </GlassCard>
       </View>
@@ -216,7 +217,12 @@ export default function NewTicketScreen() {
             />
           ) : null}
           {photos.length < MAX_PHOTOS ? (
-            <PrimaryButton variant="tonal" icon="add" title={t('new.addPhoto')} onPress={onAddPhoto} />
+            <PrimaryButton
+              variant="tonal"
+              icon="add"
+              title={t('new.addPhoto')}
+              onPress={onAddPhoto}
+            />
           ) : null}
         </GlassCard>
       </View>
@@ -225,7 +231,6 @@ export default function NewTicketScreen() {
     </ScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   content: { padding: space.lg, gap: space.xl },

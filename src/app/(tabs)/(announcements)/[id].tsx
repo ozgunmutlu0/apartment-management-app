@@ -8,6 +8,7 @@ import { GlassCard } from '@/components/GlassCard';
 import { Skeleton } from '@/components/Skeleton';
 import { useAnnouncement } from '@/features/announcements/api';
 import { AnnouncementActionsMenu } from '@/features/announcements/components/AnnouncementActionsMenu';
+import { AnnouncementTile } from '@/features/announcements/components/AnnouncementCard';
 import { CategoryBadge } from '@/features/announcements/components/CategoryBadge';
 import { useAnnouncementActions } from '@/features/announcements/components/useAnnouncementActions';
 import { formatDateTime } from '@/features/announcements/format';
@@ -28,9 +29,13 @@ export default function AnnouncementDetailScreen() {
   if (isPending) {
     return (
       <View style={[styles.content, { backgroundColor: colors.systemGroupedBackground }]}>
-        <Skeleton width={80} height={24} radius={999} />
-        <Skeleton width="80%" height={26} />
-        <Skeleton width="50%" height={14} />
+        <View style={styles.header}>
+          <Skeleton width={56} height={56} />
+          <View style={styles.headerText}>
+            <Skeleton width="85%" height={26} />
+            <Skeleton width="50%" height={14} />
+          </View>
+        </View>
         <GlassCard style={styles.bodyCard}>
           <Skeleton height={16} />
           <Skeleton height={16} />
@@ -80,6 +85,21 @@ export default function AnnouncementDetailScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.content}
       >
+        <View style={styles.header}>
+          <AnnouncementTile announcement={data} size={56} />
+          <View style={styles.headerText}>
+            <Text
+              selectable
+              accessibilityRole="header"
+              style={[styles.title, { color: colors.label }]}
+            >
+              {data.title}
+            </Text>
+            <Text style={[styles.meta, { color: colors.secondaryLabel }]}>
+              {t('by')} {author} · {formatDateTime(data.created_at, i18n.language)}
+            </Text>
+          </View>
+        </View>
         <View style={styles.badges}>
           <CategoryBadge category={data.category} />
           {data.pinned ? (
@@ -93,12 +113,6 @@ export default function AnnouncementDetailScreen() {
             </View>
           ) : null}
         </View>
-        <Text selectable style={[styles.title, { color: colors.label }]}>
-          {data.title}
-        </Text>
-        <Text style={[styles.meta, { color: colors.secondaryLabel }]}>
-          {t('by')} {author} · {formatDateTime(data.created_at, i18n.language)}
-        </Text>
         {data.body ? (
           <GlassCard style={styles.bodyCard}>
             <Text selectable style={[styles.body, { color: colors.label }]}>
@@ -113,8 +127,10 @@ export default function AnnouncementDetailScreen() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  content: { padding: space.lg, gap: space.md },
-  badges: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  content: { padding: space.lg, gap: space.lg, paddingBottom: space.xxl + space.xl },
+  header: { flexDirection: 'row', alignItems: 'flex-start', gap: space.md },
+  headerText: { flex: 1, flexShrink: 1, gap: space.xs },
+  badges: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   pinned: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -125,7 +141,7 @@ const styles = StyleSheet.create({
   },
   pinnedText: { ...type.label },
   title: { ...type.title },
-  meta: { ...type.caption },
-  bodyCard: { gap: space.sm, marginTop: space.sm },
+  meta: { ...type.small },
+  bodyCard: { gap: space.sm },
   body: { ...type.body, lineHeight: 26 },
 });

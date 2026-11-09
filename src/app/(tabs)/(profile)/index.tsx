@@ -1,15 +1,18 @@
-import { SegmentedControl } from '@expo/ui/community/segmented-control';
 import { useRouter } from 'expo-router';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { Avatar } from '@/components/Avatar';
 import { Badge } from '@/components/Badge';
 import { GlassCard } from '@/components/GlassCard';
-import { Icon, type IconName } from '@/components/Icon';
+import { HeroCard, HeroEyebrow } from '@/components/HeroCard';
+import type { IconName } from '@/components/Icon';
 import { IconTile } from '@/components/IconTile';
 import { PressableRow } from '@/components/PressableRow';
 import { SectionLabel } from '@/components/SectionLabel';
+import { Segmented } from '@/components/Segmented';
+import { Enter } from '@/features/manage/components/Enter';
 import { useUnreadCount } from '@/features/notifications/api';
 import { clearPushToken } from '@/features/notifications/push';
 import { useResidence, useUpdateProfile } from '@/features/profile/api';
@@ -28,10 +31,13 @@ function Group({ title, children }: { title?: string; children: ReactNode }) {
   );
 }
 
+/** Stacked account row: small secondary label above, value in body. */
 function Row({ label, value, last }: { label: string; value: string; last?: boolean }) {
   const colors = useColors();
   return (
     <View
+      accessible
+      accessibilityLabel={`${label}: ${value}`}
       style={[
         styles.row,
         !last && {
@@ -41,47 +47,22 @@ function Row({ label, value, last }: { label: string; value: string; last?: bool
       ]}
     >
       <Text style={[styles.label, { color: colors.secondaryLabel }]}>{label}</Text>
-      <Text style={[styles.value, { color: colors.label }]} numberOfLines={1}>
+      <Text style={[styles.value, { color: colors.label }]} numberOfLines={2}>
         {value}
       </Text>
     </View>
   );
 }
 
-/** First letter of the first and last word, upper-cased with the active language (Turkish i/İ). */
-function initialsOf(name: string | null | undefined, locale: string): string | null {
-  const words = (name ?? '').trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return null;
-  const first = Array.from(words[0] ?? '')[0] ?? '';
-  const last = words.length > 1 ? (Array.from(words[words.length - 1] ?? '')[0] ?? '') : '';
-  return (first + last).toLocaleUpperCase(locale);
-}
-
-function IdentityHeader({
-  name,
-  email,
-  role,
-  locale,
-}: {
-  name?: string | null;
-  email?: string | null;
-  role: string;
-  locale: string;
-}) {
+function Fact({ label, value }: { label: string; value: string }) {
+  const language = useTranslation().i18n.language;
   const colors = useColors();
-  const initials = initialsOf(name, locale);
   return (
-    <View style={styles.identity}>
-      <View style={[styles.avatar, { backgroundColor: colors.tintSoft }]}>
-        {initials ? (
-          <Text style={[styles.initials, { color: colors.tint }]}>{initials}</Text>
-        ) : (
-          <Icon name="profile" size={36} color={colors.tint} />
-        )}
-      </View>
-      {name ? <Text style={[styles.name, { color: colors.label }]}>{name}</Text> : null}
-      {email ? <Text style={[styles.email, { color: colors.secondaryLabel }]}>{email}</Text> : null}
-      <Badge label={role} tone="tint" />
+    <View accessible accessibilityLabel={`${label}: ${value}`} style={styles.fact}>
+      <HeroEyebrow numberOfLines={1}>{label.toLocaleUpperCase(language)}</HeroEyebrow>
+      <Text style={[styles.factValue, { color: colors.onHero }]} numberOfLines={2}>
+        {value}
+      </Text>
     </View>
   );
 }
@@ -94,10 +75,18 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { profile, user, role, signOut } = useAuth();
   const updateProfile = useUpdateProfile();
-  const unreadCount = useUnreadCount().data ?? 0;
+  const unread = useUnreadCount();
+  const unreadCount = unread.data ?? 0;
   const residence = useResidence(profile?.building_id ?? null, profile?.unit_id ?? null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const language: SupportedLanguage = i18n.language === 'en' ? 'en' : 'tr';
+
+  const refresh = async () => {
+    setRefreshing(true);
+    await Promise.all([unread.refetch(), residence.refetch()]);
+    setRefreshing(false);
+  };
 
   const changeLanguage = (lang: SupportedLanguage) => {
     if (lang === language) return;
@@ -121,10 +110,21 @@ export default function ProfileScreen() {
     ]);
   };
 
-  const unitValue =
-    residence.data?.block && residence.data.number
-      ? t('unitValue', { block: residence.data.block, number: residence.data.number })
-      : '-';
+  const roleLabel = t(`roles.${role}`);
+  const block = residence.data?.block;
+  const number = residence.data?.number;
+  const unitShort = number ? (block ? `${block}-${number}` : number) : null;
+  const memberSince = profile?.created_at
+    ? new Intl.DateTimeFormat(i18n.language, { month: 'short', year: 'numeric' }).format(
+        new Date(profile.created_at),
+      )
+    : null;
+
+  const facts: { key: string; label: string; value: string }[] = [];
+  if (residence.data?.buildingName)
+    facts.push({ key: 'building', label: t('building'), value: residence.data.buildingName });
+  if (unitShort) facts.push({ key: 'unit', label: t('unit'), value: unitShort });
+  if (memberSince) facts.push({ key: 'since', label: t('memberSince'), value: memberSince });
 
   const shortcuts: {
     key: string;
@@ -135,13 +135,13 @@ export default function ProfileScreen() {
   }[] = [
     {
       key: 'reservations',
-      icon: 'reservation',
+      icon: 'calendar',
       title: tTabs('screens.reservations'),
       href: '/reservations',
     },
     {
       key: 'notifications',
-      icon: 'notification',
+      icon: 'bell',
       title: tTabs('screens.notifications'),
       href: '/notifications',
       value: unreadCount > 0 ? String(unreadCount) : undefined,
@@ -153,91 +153,110 @@ export default function ProfileScreen() {
       style={{ backgroundColor: colors.systemGroupedBackground }}
       contentContainerStyle={styles.content}
       contentInsetAdjustmentBehavior="automatic"
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
     >
-      <IdentityHeader
-        name={profile?.full_name}
-        email={user?.email}
-        role={t(`roles.${role}`)}
-        locale={i18n.language}
-      />
+      <Enter index={0}>
+        <HeroCard>
+          <View style={styles.identity}>
+            <Avatar name={profile?.full_name} size={72} inverted />
+            {profile?.full_name ? (
+              <Text
+                accessibilityRole="header"
+                style={[styles.name, { color: colors.onHero }]}
+                numberOfLines={2}
+              >
+                {profile.full_name}
+              </Text>
+            ) : null}
+            {user?.email ? (
+              <Text style={[styles.email, { color: colors.onHero }]} numberOfLines={1}>
+                {user.email}
+              </Text>
+            ) : null}
+            <Badge label={roleLabel} tone="tint" style={styles.roleBadge} />
+          </View>
+          {facts.length > 0 ? (
+            <>
+              <View style={[styles.divider, { backgroundColor: colors.onHero }]} />
+              <View style={styles.facts}>
+                {facts.map((f) => (
+                  <Fact key={f.key} label={f.label} value={f.value} />
+                ))}
+              </View>
+            </>
+          ) : null}
+        </HeroCard>
+      </Enter>
 
-      <Group title={t('account')}>
-        <Row label={t('name')} value={profile?.full_name ?? '-'} />
-        <Row label={t('email')} value={user?.email ?? '-'} />
-        <Row label={t('phone')} value={profile?.phone || t('phonePlaceholder')} />
-        <Row label={t('role')} value={t(`roles.${role}`)} />
-        <PressableRow
-          title={t('edit.title')}
-          tone="accent"
-          chevron
-          onPress={() => router.push('/edit')}
-          last
-        />
-      </Group>
-
-      <Group title={t('residence')}>
-        <Row label={t('building')} value={residence.data?.buildingName ?? '-'} />
-        <Row label={t('unit')} value={unitValue} last />
-      </Group>
-
-      <Group title={t('language.title')}>
-        <View style={styles.segment}>
-          <SegmentedControl
-            values={supportedLanguages.map((l) => t(`language.${l}`))}
-            selectedIndex={supportedLanguages.indexOf(language)}
-            onChange={(e) => {
-              const next = supportedLanguages[e.nativeEvent.selectedSegmentIndex];
-              if (next) changeLanguage(next);
-            }}
-          />
-        </View>
-      </Group>
-
-      <Group title={t('shortcuts')}>
-        {shortcuts.map((item, index) => (
+      <Enter index={1}>
+        <Group title={t('account')}>
+          <Row label={t('name')} value={profile?.full_name || '-'} />
+          <Row label={t('email')} value={user?.email ?? '-'} />
+          <Row label={t('phone')} value={profile?.phone || t('phonePlaceholder')} />
+          <Row label={t('role')} value={roleLabel} />
           <PressableRow
-            key={item.key}
-            title={item.title}
-            icon={<IconTile name={item.icon} size={36} />}
-            tone="default"
+            title={t('edit.title')}
+            tone="accent"
             chevron
-            value={item.value}
-            onPress={() => router.push(item.href)}
-            last={index === shortcuts.length - 1}
+            onPress={() => router.push('/edit')}
+            last
           />
-        ))}
-      </Group>
+        </Group>
+      </Enter>
 
-      <GlassCard padding={0}>
-        <PressableRow title={t('signOut.button')} destructive onPress={confirmSignOut} last />
-      </GlassCard>
+      <Enter index={2}>
+        <View>
+          <SectionLabel>{t('language.title')}</SectionLabel>
+          <GlassCard padding={space.sm}>
+            <Segmented
+              values={supportedLanguages.map((l) => t(`language.${l}`))}
+              selectedIndex={supportedLanguages.indexOf(language)}
+              onChange={(index) => {
+                const next = supportedLanguages[index];
+                if (next) changeLanguage(next);
+              }}
+            />
+          </GlassCard>
+        </View>
+      </Enter>
+
+      <Enter index={3}>
+        <Group title={t('shortcuts')}>
+          {shortcuts.map((item, index) => (
+            <PressableRow
+              key={item.key}
+              title={item.title}
+              icon={<IconTile name={item.icon} size={36} />}
+              tone="default"
+              chevron
+              value={item.value}
+              onPress={() => router.push(item.href)}
+              last={index === shortcuts.length - 1}
+            />
+          ))}
+        </Group>
+      </Enter>
+
+      <Enter index={4}>
+        <GlassCard padding={0}>
+          <PressableRow title={t('signOut.button')} destructive onPress={confirmSignOut} last />
+        </GlassCard>
+      </Enter>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { padding: space.lg, gap: space.xl },
-  identity: { alignItems: 'center', gap: space.sm, paddingVertical: space.sm },
-  avatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  initials: { ...type.title },
-  name: { ...type.title, textAlign: 'center' },
-  email: { ...type.small, textAlign: 'center', marginBottom: space.xs },
-  row: {
-    minHeight: 48,
-    paddingHorizontal: space.lg,
-    paddingVertical: space.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: space.md,
-  },
-  label: { ...type.body },
-  value: { ...type.body, flexShrink: 1, textAlign: 'right' },
-  segment: { padding: space.sm },
+  content: { padding: space.lg, gap: space.xl, paddingBottom: space.xxl + space.xl },
+  identity: { alignItems: 'center', gap: space.xs },
+  roleBadge: { alignSelf: 'center', marginTop: space.sm },
+  name: { ...type.stat, textAlign: 'center', marginTop: space.sm, alignSelf: 'stretch' },
+  email: { ...type.small, textAlign: 'center', opacity: 0.85, marginBottom: space.sm },
+  divider: { height: StyleSheet.hairlineWidth, opacity: 0.3, marginTop: space.xl },
+  facts: { flexDirection: 'row', marginTop: space.lg },
+  fact: { flex: 1, gap: space.xs, paddingHorizontal: space.sm, alignItems: 'center' },
+  factValue: { ...type.bodyStrong, textAlign: 'center' },
+  row: { paddingHorizontal: space.lg, paddingVertical: space.md, gap: 2 },
+  label: { ...type.caption },
+  value: { ...type.body },
 });

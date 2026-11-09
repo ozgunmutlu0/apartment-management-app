@@ -1,4 +1,3 @@
-import { SegmentedControl } from '@expo/ui/community/segmented-control';
 import { DateTimePicker } from '@expo/ui/community/datetime-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -6,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { FilterChips } from '@/components/FilterChips';
 import { SectionLabel } from '@/components/SectionLabel';
 import { useRecordPayment } from '@/features/dues/api';
 import { FormGroup, FormRow } from '@/features/dues/components/FormRow';
@@ -86,11 +86,12 @@ export default function RecordPaymentScreen() {
 
       <View>
         <SectionLabel>{t('manage.record.method')}</SectionLabel>
-        <SegmentedControl
-        values={PAYMENT_METHODS.map((m) => t(`method.${m}`))}
-        selectedIndex={methodIndex}
-        onChange={(e) => setMethodIndex(e.nativeEvent.selectedSegmentIndex)}
-      />
+        <FilterChips
+          options={PAYMENT_METHODS.map((m, i) => ({ key: String(i), label: t(`method.${m}`) }))}
+          value={String(methodIndex)}
+          onChange={(key) => setMethodIndex(Number(key))}
+          inset={space.lg}
+        />
       </View>
 
       {error ? <Text style={[styles.error, { color: colors.red }]}>{error}</Text> : null}

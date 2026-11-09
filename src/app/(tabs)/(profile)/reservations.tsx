@@ -206,7 +206,7 @@ export default function ReservationsScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: space.lg, gap: space.xl },
+  content: { padding: space.lg, gap: space.xl, paddingBottom: space.xxl + space.xl },
   section: { gap: space.md },
   sub: { ...type.headline, marginTop: space.xs },
   card: { gap: space.md },

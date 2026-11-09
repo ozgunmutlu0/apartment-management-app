@@ -3,13 +3,7 @@ import { useFocusEffect, useRouter, Stack } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  FlatList,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
+import { FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
 import { GlassCard } from '@/components/GlassCard';
@@ -40,6 +34,8 @@ export default function AnnouncementsScreen() {
   const { pin, confirmDelete } = useAnnouncementActions();
   const [filter, setFilter] = useState<Filter>('all');
   const [query, setQuery] = useState('');
+  // The Android menu host sizes to its content (unbounded width), so give the card an explicit width.
+  const [listWidth, setListWidth] = useState(0);
 
   // Realtime is not enabled for announcements: refetch whenever the screen gains focus.
   useFocusEffect(
@@ -120,10 +116,12 @@ export default function AnnouncementsScreen() {
         <View style={styles.list}>
           {[0, 1, 2].map((i) => (
             <GlassCard key={i} style={styles.skeleton}>
-              <Skeleton width={80} height={24} radius={999} />
-              <Skeleton width="70%" height={20} />
-              <Skeleton height={14} />
-              <Skeleton width="40%" height={12} />
+              <Skeleton width={44} height={44} />
+              <View style={styles.skeletonText}>
+                <Skeleton width="70%" height={20} />
+                <Skeleton height={14} />
+                <Skeleton width="40%" height={12} />
+              </View>
             </GlassCard>
           ))}
         </View>
@@ -140,6 +138,7 @@ export default function AnnouncementsScreen() {
           data={items}
           keyExtractor={(a) => a.id}
           contentInsetAdjustmentBehavior="automatic"
+          onLayout={(e) => setListWidth(e.nativeEvent.layout.width)}
           style={{ backgroundColor: colors.systemGroupedBackground }}
           contentContainerStyle={styles.list}
           refreshControl={
@@ -172,7 +171,9 @@ export default function AnnouncementsScreen() {
                 onTogglePin={() => pin(item)}
                 onDelete={() => confirmDelete(item)}
               >
-                {card}
+                <View style={listWidth > 0 ? { width: listWidth - space.lg * 2 } : undefined}>
+                  {card}
+                </View>
               </AnnouncementActionsMenu>
             );
           }}
@@ -184,7 +185,8 @@ export default function AnnouncementsScreen() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  list: { padding: space.lg, gap: space.md, flexGrow: 1 },
-  skeleton: { gap: space.sm },
+  list: { padding: space.lg, gap: space.md, flexGrow: 1, paddingBottom: space.xxl + space.xl },
+  skeleton: { flexDirection: 'row', alignItems: 'flex-start', gap: space.md },
+  skeletonText: { flex: 1, gap: space.sm },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: space.lg },
 });

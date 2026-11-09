@@ -25,6 +25,9 @@ export type SemanticColors = {
   tint: ColorValue;
   /** Text and glyphs placed on a `tint` fill. */
   onTint: ColorValue;
+  /** Hero surface fill (deep teal in both schemes) and content on it. */
+  hero: ColorValue;
+  onHero: ColorValue;
   green: ColorValue;
   orange: ColorValue;
   red: ColorValue;
@@ -53,6 +56,8 @@ const palette: Record<keyof SemanticColors, Pair> = {
   secondarySystemGroupedBackground: { light: '#FFFFFF', dark: '#151F1D' },
   tint: { light: '#06525C', dark: '#7FC4CC' },
   onTint: { light: '#FFFFFF', dark: '#06252A' },
+  hero: { light: '#06525C', dark: '#0F3D44' },
+  onHero: { light: '#FFFFFF', dark: '#E8F0EE' },
   green: { light: '#2A6D37', dark: '#8FCB9B' },
   orange: { light: '#94561A', dark: '#E2A455' },
   red: { light: '#B3372B', dark: '#EE8D80' },

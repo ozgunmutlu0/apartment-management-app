@@ -1,6 +1,6 @@
 import { MenuView, type MenuAction } from '@expo/ui/community/menu';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 
 import { GlassCard } from '@/components/GlassCard';
 import { IconTile, type Tone } from '@/components/IconTile';
@@ -70,6 +70,8 @@ export function NotificationRow({
   const colors = useColors();
   const titleOf = useNotificationTitle();
   const unread = notification.read_at === null;
+  // The Android menu host sizes to its content (unbounded), so pin the row to the list width.
+  const { width } = useWindowDimensions();
 
   const readAction: MenuAction = { id: 'read', title: t('markRead'), image: 'checkmark' };
   const deleteAction: MenuAction = {
@@ -89,37 +91,39 @@ export function NotificationRow({
         else if (nativeEvent.event === 'delete') onDelete();
       }}
     >
-      <PressableScale
-        accessibilityRole="button"
-        accessibilityState={{ selected: unread }}
-        onPress={onPress}
-      >
-        <GlassCard style={styles.row}>
-          <IconTile name={iconOf(notification)} tone={toneOf(notification)} />
-          <View style={styles.body}>
-            <Text
-              style={[styles.title, unread ? type.headline : type.body, { color: colors.label }]}
-              numberOfLines={2}
-            >
-              {titleOf(notification)}
-            </Text>
-            {notification.body ? (
-              <Text style={[styles.text, { color: colors.secondaryLabel }]} numberOfLines={2}>
-                {notification.body}
+      <View style={{ width: width - space.lg * 2 }}>
+        <PressableScale
+          accessibilityRole="button"
+          accessibilityState={{ selected: unread }}
+          onPress={onPress}
+        >
+          <GlassCard flat={Platform.OS === 'android'} style={styles.row}>
+            <IconTile name={iconOf(notification)} tone={toneOf(notification)} />
+            <View style={styles.body}>
+              <Text
+                style={[styles.title, unread ? type.headline : type.body, { color: colors.label }]}
+                numberOfLines={2}
+              >
+                {titleOf(notification)}
               </Text>
+              {notification.body ? (
+                <Text style={[styles.text, { color: colors.secondaryLabel }]} numberOfLines={2}>
+                  {notification.body}
+                </Text>
+              ) : null}
+              <Text style={[styles.time, { color: colors.secondaryLabel }]}>
+                {formatRelative(notification.created_at)}
+              </Text>
+            </View>
+            {unread ? (
+              <View
+                accessibilityLabel={t('unread')}
+                style={[styles.dot, { backgroundColor: colors.tint }]}
+              />
             ) : null}
-            <Text style={[styles.time, { color: colors.secondaryLabel }]}>
-              {formatRelative(notification.created_at)}
-            </Text>
-          </View>
-          {unread ? (
-            <View
-              accessibilityLabel={t('unread')}
-              style={[styles.dot, { backgroundColor: colors.tint }]}
-            />
-          ) : null}
-        </GlassCard>
-      </PressableScale>
+          </GlassCard>
+        </PressableScale>
+      </View>
     </MenuView>
   );
 }

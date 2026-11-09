@@ -11,7 +11,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { View, useColorScheme } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
 import { PrimaryButton } from '@/components/PrimaryButton';
@@ -19,7 +19,7 @@ import { NotificationsProvider } from '@/features/notifications/NotificationsPro
 import { AuthProvider, useAuth } from '@/lib/auth';
 import { queryClient } from '@/lib/queryClient';
 import { NavigationTheme } from '@/theme/NavigationTheme';
-import { useColors } from '@/theme/colors';
+import { hexColors, useColors } from '@/theme/colors';
 
 // Keep the splash screen up until the session and profile are resolved.
 void SplashScreen.preventAutoHideAsync();
@@ -46,6 +46,7 @@ function ProfileErrorScreen() {
 }
 
 function RootNavigator() {
+  const colors = hexColors(useColorScheme());
   const { session, profile, isLoading, profileError } = useAuth();
   // A font error must not trap the splash screen: fall back to the system font.
   const [fontsLoaded, fontError] = useFonts({
@@ -66,7 +67,12 @@ function RootNavigator() {
   const hasBuilding = signedIn && !!profile.building_id;
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: colors.systemGroupedBackground },
+      }}
+    >
       <Stack.Protected guard={hasBuilding}>
         <Stack.Screen name="(tabs)" />
       </Stack.Protected>

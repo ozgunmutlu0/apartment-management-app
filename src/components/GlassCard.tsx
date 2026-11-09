@@ -6,10 +6,12 @@ import { elevation, radius } from '@/theme/tokens';
 export type GlassCardProps = ViewProps & {
   padding?: number;
   /**
-   * `surface` (default): raised card. `tint`: solid accent fill for hero cards, put `colors.onTint`
+   * `surface` (default): raised card. `tint`: solid accent fill for hero cards, put `colors.onHero`
    * content on it. `quiet`: secondarySystemBackground fill, no shadow.
    */
   variant?: 'surface' | 'tint' | 'quiet';
+  /** Hairline instead of shadow. For cards inside a native host (Android menu host clips the shadow to a square). */
+  flat?: boolean;
 };
 
 /**
@@ -21,6 +23,7 @@ export function GlassCard({
   style,
   padding = 16,
   variant = 'surface',
+  flat = false,
   children,
   ...rest
 }: GlassCardProps) {
@@ -31,11 +34,11 @@ export function GlassCard({
       style={[
         styles.card,
         { padding },
-        variant === 'tint' && { backgroundColor: colors.tint },
+        variant === 'tint' && { backgroundColor: colors.hero },
         variant === 'quiet' && { backgroundColor: colors.secondarySystemBackground },
         variant === 'surface' && [
           { backgroundColor: colors.secondarySystemGroupedBackground },
-          dark
+          dark || flat
             ? { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.separator }
             : elevation.card,
         ],

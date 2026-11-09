@@ -119,7 +119,7 @@ export default function NotificationsScreen() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  list: { padding: space.lg, gap: space.md, flexGrow: 1 },
+  list: { padding: space.lg, gap: space.md, flexGrow: 1, paddingBottom: space.xxl + space.xl },
   headerButton: { ...type.body },
   skeletonRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   skeletonText: { flex: 1, gap: space.sm },

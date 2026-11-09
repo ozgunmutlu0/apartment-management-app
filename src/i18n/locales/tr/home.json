@@ -1,6 +1,4 @@
 {
-  "greeting": "Merhaba, {{name}}",
-  "greetingNoName": "Merhaba",
   "subtitle": "{{building}} · Daire {{unit}}",
   "subtitleBuilding": "{{building}}",
   "seeAll": "Tümünü gör",
@@ -15,7 +13,10 @@
     "assignedOpen": "Size atanan açık işler",
     "inProgressList": "Üzerinde çalışılanlar",
     "noneActive": "Şu an üzerinde çalışılan iş yok.",
-    "unassignedCount": "{{count}} atanmamış talep"
+    "unassignedCount": "{{count}} atanmamış talep",
+    "recent": "Son talepler",
+    "noneAll": "Henüz talep yok.",
+    "distributionLabel": "Talep dağılımı: {{summary}}"
   },
   "dues": {
     "title": "Aidat",
@@ -25,7 +26,9 @@
     "monthCollection": "Bu ay tahsilat",
     "collectedOf": "{{collected}} / {{expected}}",
     "noDues": "Bu ay için aidat oluşturulmadı.",
-    "ofExpected": "Hedef {{expected}}"
+    "ofExpected": "Hedef {{expected}}",
+    "view": "Aidatlarımı gör",
+    "percent": "%{{value}}"
   },
   "announcements": {
     "title": "Duyurular",
@@ -45,5 +48,18 @@
   },
   "hero": {
     "activeJobs": "Aktif işleriniz"
+  },
+  "greeting": {
+    "morning": "Günaydın,",
+    "afternoon": "İyi günler,",
+    "evening": "İyi akşamlar,",
+    "night": "İyi geceler,",
+    "fallback": "Hoş geldiniz"
+  },
+  "bell": "Bildirimler",
+  "bellUnread": "Bildirimler, {{count}} okunmamış",
+  "chips": {
+    "unassigned": "Atanmamış",
+    "open": "Açık"
   }
 }

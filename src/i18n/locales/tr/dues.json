@@ -3,7 +3,9 @@
     "outstanding": "Ödenecek tutar",
     "overdue": "Gecikmiş: {{count}}",
     "nextDue": "Sonraki son ödeme tarihi: {{date}}",
-    "allPaid": "Tüm aidatlarınız ödenmiş"
+    "allPaid": "Tüm aidatlarınız ödenmiş",
+    "progress": "Ödeme ilerlemesi",
+    "paidPeriods": "{{paid}} / {{total}} dönem ödendi"
   },
   "status": { "paid": "Ödendi", "unpaid": "Ödenmedi", "overdue": "Gecikmiş" },
   "method": { "cash": "Nakit", "bank_transfer": "Havale/EFT", "card": "Kart", "other": "Diğer" },

@@ -6,7 +6,15 @@ import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'rea
 
 import { EmptyState } from '@/components/EmptyState';
 import { GlassCard } from '@/components/GlassCard';
+import {
+  HeroCaption,
+  HeroCard,
+  HeroEyebrow,
+  HeroFigure,
+  HeroProgress,
+} from '@/components/HeroCard';
 import { Icon } from '@/components/Icon';
+import { IconTile } from '@/components/IconTile';
 import { PressableScale } from '@/components/PressableScale';
 import { Skeleton } from '@/components/Skeleton';
 import { useManagerDues } from '@/features/dues/api';
@@ -24,7 +32,7 @@ import { useColors } from '@/theme/colors';
 import { radius, space, type } from '@/theme/tokens';
 
 export default function ManageDuesScreen() {
-  const { t } = useTranslation('dues');
+  const { t, i18n } = useTranslation('dues');
   const { t: tc } = useTranslation('common');
   const colors = useColors();
   const router = useRouter();
@@ -89,29 +97,22 @@ export default function ManageDuesScreen() {
           </View>
         </Pressable>
       </View>
-      <GlassCard padding={space.xl} style={styles.stats}>
-        <View style={styles.statsRow}>
-          <View style={styles.statCol}>
-            <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-              {t('manage.stats.collected')}
-            </Text>
-            <Text style={[styles.statValue, { color: colors.green }]}>
-              {fmt.money(stats.collected)}
-            </Text>
-          </View>
-          <View style={[styles.statCol, styles.statEnd]}>
-            <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-              {t('manage.stats.expected')}
-            </Text>
-            <Text style={[styles.statValue, { color: colors.label }]}>
-              {fmt.money(stats.expected)}
-            </Text>
-          </View>
-        </View>
-        <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
+      <HeroCard>
+        <HeroEyebrow>{t('manage.stats.collected').toLocaleUpperCase(i18n.language)}</HeroEyebrow>
+        <HeroFigure style={styles.figure} numberOfLines={1} adjustsFontSizeToFit>
+          {fmt.money(stats.collected)}
+        </HeroFigure>
+        <HeroCaption>
+          {t('manage.stats.expected')}: {fmt.money(stats.expected)}
+        </HeroCaption>
+        <HeroProgress
+          value={stats.expected > 0 ? stats.collected / stats.expected : 0}
+          accessibilityLabel={t('manage.stats.collected')}
+        />
+        <HeroCaption style={styles.paidCount}>
           {t('manage.stats.paidCount', { paid: stats.paid, total: stats.total })}
-        </Text>
-      </GlassCard>
+        </HeroCaption>
+      </HeroCard>
     </View>
   );
 
@@ -155,18 +156,18 @@ export default function ManageDuesScreen() {
         ListHeaderComponent={header}
         ListEmptyComponent={
           isLoading ? (
-          <View style={styles.separator}>
-            {[0, 1, 2].map((i) => (
-              <GlassCard key={i} style={styles.row}>
-                <View style={styles.rowMain}>
-                  <Skeleton width="40%" height={18} />
-                  <Skeleton width="60%" height={14} />
-                </View>
-                <Skeleton width={72} height={18} />
-              </GlassCard>
-            ))}
-          </View>
-        ) : (
+            <View style={styles.separator}>
+              {[0, 1, 2].map((i) => (
+                <GlassCard key={i} style={styles.row}>
+                  <View style={styles.rowMain}>
+                    <Skeleton width="40%" height={18} />
+                    <Skeleton width="60%" height={14} />
+                  </View>
+                  <Skeleton width={72} height={18} />
+                </GlassCard>
+              ))}
+            </View>
+          ) : (
             <EmptyState
               icon="dues"
               title={t('manage.empty.title')}
@@ -181,28 +182,40 @@ export default function ManageDuesScreen() {
           return (
             <PressableScale accessibilityRole="button" onPress={() => open(item)}>
               <GlassCard style={styles.row}>
-              <View style={styles.rowMain}>
-                <Text style={[styles.unit, { color: colors.label }]}>
-                  {t('manage.unit', { label: item.unitLabel })}
-                </Text>
-                <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-                  {item.residentNames.length > 0
-                    ? item.residentNames.join(', ')
-                    : t('manage.noResident')}
-                </Text>
-                {partial ? (
-                  <Text style={[styles.caption, { color: colors.orange }]}>
-                    {t('manage.partial')} ·{' '}
-                    {t('remaining', { amount: fmt.money(remainingOf(item)) })}
+                <IconTile
+                  name={status === 'paid' ? 'check' : status === 'overdue' ? 'error' : 'clock'}
+                  tone={
+                    status === 'paid'
+                      ? 'green'
+                      : status === 'overdue'
+                        ? 'red'
+                        : partial
+                          ? 'orange'
+                          : 'neutral'
+                  }
+                />
+                <View style={styles.rowMain}>
+                  <Text style={[styles.unit, { color: colors.label }]}>
+                    {t('manage.unit', { label: item.unitLabel })}
                   </Text>
-                ) : null}
-              </View>
-              <View style={styles.rowEnd}>
-                <Text style={[styles.amount, { color: colors.label }]}>
-                  {fmt.money(Number(item.amount))}
-                </Text>
-                <DueStatusBadge status={status} />
-              </View>
+                  <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
+                    {item.residentNames.length > 0
+                      ? item.residentNames.join(', ')
+                      : t('manage.noResident')}
+                  </Text>
+                  {partial ? (
+                    <Text style={[styles.caption, { color: colors.orange }]}>
+                      {t('manage.partial')} ·{' '}
+                      {t('remaining', { amount: fmt.money(remainingOf(item)) })}
+                    </Text>
+                  ) : null}
+                </View>
+                <View style={styles.rowEnd}>
+                  <Text style={[styles.amount, { color: colors.label }]}>
+                    {fmt.money(Number(item.amount))}
+                  </Text>
+                  <DueStatusBadge status={status} />
+                </View>
               </GlassCard>
             </PressableScale>
           );
@@ -214,7 +227,7 @@ export default function ManageDuesScreen() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', padding: space.xl, gap: space.md },
-  content: { paddingHorizontal: space.lg, paddingBottom: space.xxl },
+  content: { paddingHorizontal: space.lg, paddingBottom: space.xxl + space.xl },
   header: { gap: space.lg, paddingVertical: space.sm, marginBottom: space.sm },
   periodRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   navButton: {
@@ -225,15 +238,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   periodLabel: { ...type.title },
-  stats: { gap: space.md },
-  statsRow: { flexDirection: 'row', justifyContent: 'space-between', gap: space.md },
-  statCol: { flex: 1, gap: space.xs },
-  statEnd: { alignItems: 'flex-end' },
-  statValue: { ...type.stat, fontVariant: ['tabular-nums'] },
+  figure: { marginTop: space.xs, marginBottom: space.xs },
+  paidCount: { marginTop: space.sm },
   caption: { ...type.small },
   separator: { gap: space.sm },
-  row: { flexDirection: 'row', gap: space.md, justifyContent: 'space-between' },
-  rowMain: { flex: 1, gap: space.xs },
+  row: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  rowMain: { flex: 1, flexShrink: 1, gap: space.xs },
   rowEnd: { alignItems: 'flex-end', gap: space.sm },
   unit: { ...type.headline },
   amount: { ...type.bodyStrong, fontVariant: ['tabular-nums'] },

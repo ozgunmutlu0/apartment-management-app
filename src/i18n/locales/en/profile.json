@@ -8,6 +8,7 @@
   "residence": "Residence",
   "building": "Building",
   "unit": "Unit",
+  "memberSince": "Member since",
   "unitValue": "Block {{block}} / No. {{number}}",
   "edit": {
     "title": "Edit Profile",

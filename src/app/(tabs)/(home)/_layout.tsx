@@ -1,14 +1,19 @@
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
+import { useStackOptions } from '@/theme/navigation';
+
 export const unstable_settings = { anchor: 'index' };
 
 export default function Layout() {
   const { t } = useTranslation('tabs');
+  const { screenOptions } = useStackOptions();
 
   return (
-    <Stack screenOptions={{ headerLargeTitleEnabled: true, headerLargeTitleShadowVisible: false }}>
-      <Stack.Screen name="index" options={{ title: t('home') }} />
+    <Stack screenOptions={screenOptions}>
+      {/* The home screen draws its own in-content header (avatar, greeting, bell). */}
+      <Stack.Screen name="index" options={{ title: t('home'), headerShown: false }} />
+      <Stack.Screen name="notifications" options={{ title: t('screens.notifications') }} />
     </Stack>
   );
 }

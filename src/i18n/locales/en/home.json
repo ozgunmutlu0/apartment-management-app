@@ -1,6 +1,4 @@
 {
-  "greeting": "Hello, {{name}}",
-  "greetingNoName": "Hello",
   "subtitle": "{{building}} · Unit {{unit}}",
   "subtitleBuilding": "{{building}}",
   "seeAll": "See all",
@@ -15,7 +13,10 @@
     "assignedOpen": "Open jobs assigned to you",
     "inProgressList": "In progress",
     "noneActive": "Nothing is being worked on right now.",
-    "unassignedCount": "{{count}} unassigned"
+    "unassignedCount": "{{count}} unassigned",
+    "recent": "Recent requests",
+    "noneAll": "No requests yet.",
+    "distributionLabel": "Request distribution: {{summary}}"
   },
   "dues": {
     "title": "Dues",
@@ -25,7 +26,9 @@
     "monthCollection": "Collected this month",
     "collectedOf": "{{collected}} / {{expected}}",
     "noDues": "No dues have been created for this month.",
-    "ofExpected": "of {{expected}}"
+    "ofExpected": "of {{expected}}",
+    "view": "View my dues",
+    "percent": "{{value}}%"
   },
   "announcements": {
     "title": "Announcements",
@@ -45,5 +48,18 @@
   },
   "hero": {
     "activeJobs": "Your active jobs"
+  },
+  "greeting": {
+    "morning": "Good morning,",
+    "afternoon": "Good afternoon,",
+    "evening": "Good evening,",
+    "night": "Good night,",
+    "fallback": "Welcome"
+  },
+  "bell": "Notifications",
+  "bellUnread": "Notifications, {{count}} unread",
+  "chips": {
+    "unassigned": "Unassigned",
+    "open": "Open"
   }
 }

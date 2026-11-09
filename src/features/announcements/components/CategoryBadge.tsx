@@ -1,25 +1,11 @@
-import { SymbolView } from 'expo-symbols';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, useColorScheme, View } from 'react-native';
 
-import { useColors } from '@/theme/colors';
+import { Badge } from '@/components/Badge';
 
 import type { AnnouncementCategory } from '../types';
-import { CATEGORY_SYMBOLS, categoryColor } from './category';
 
+/** Neutral pill: categories are not states, so they never get their own hue. */
 export function CategoryBadge({ category }: { category: AnnouncementCategory }) {
   const { t } = useTranslation('announcements');
-  const colors = useColors();
-  const color = categoryColor(category, colors, useColorScheme());
-  return (
-    <View style={styles.row}>
-      <SymbolView name={CATEGORY_SYMBOLS[category]} size={16} tintColor={color} />
-      <Text style={[styles.label, { color }]}>{t(`categories.${category}`)}</Text>
-    </View>
-  );
+  return <Badge tone="neutral" label={t(`categories.${category}`)} />;
 }
-
-const styles = StyleSheet.create({
-  row: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  label: { fontSize: 13, fontWeight: '500' },
-});

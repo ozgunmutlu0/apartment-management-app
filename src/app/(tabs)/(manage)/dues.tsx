@@ -7,7 +7,8 @@ import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'rea
 import { EmptyState } from '@/components/EmptyState';
 import { GlassCard } from '@/components/GlassCard';
 import { Icon } from '@/components/Icon';
-import { PrimaryButton } from '@/components/PrimaryButton';
+import { PressableScale } from '@/components/PressableScale';
+import { Skeleton } from '@/components/Skeleton';
 import { useManagerDues } from '@/features/dues/api';
 import { DueStatusBadge } from '@/features/dues/components/DueStatusBadge';
 import type { ManagerDue } from '@/features/dues/types';
@@ -20,6 +21,7 @@ import {
   useDuesFormat,
 } from '@/features/dues/utils';
 import { useColors } from '@/theme/colors';
+import { radius, space, type } from '@/theme/tokens';
 
 export default function ManageDuesScreen() {
   const { t } = useTranslation('dues');
@@ -61,11 +63,13 @@ export default function ManageDuesScreen() {
           hitSlop={12}
           onPress={() => setPeriod((p) => shiftPeriod(p, -1))}
         >
-          <SymbolView
-            name={{ ios: 'chevron.left', android: 'chevron_left' }}
-            size={22}
-            tintColor={colors.tint}
-          />
+          <View style={[styles.navButton, { backgroundColor: colors.tintSoft }]}>
+            <SymbolView
+              name={{ ios: 'chevron.left', android: 'chevron_left' }}
+              size={16}
+              tintColor={colors.tint}
+            />
+          </View>
         </Pressable>
         <Text style={[styles.periodLabel, { color: colors.label }]} accessibilityRole="header">
           {fmt.month(period)}
@@ -76,16 +80,18 @@ export default function ManageDuesScreen() {
           hitSlop={12}
           onPress={() => setPeriod((p) => shiftPeriod(p, 1))}
         >
-          <SymbolView
-            name={{ ios: 'chevron.right', android: 'chevron_right' }}
-            size={22}
-            tintColor={colors.tint}
-          />
+          <View style={[styles.navButton, { backgroundColor: colors.tintSoft }]}>
+            <SymbolView
+              name={{ ios: 'chevron.right', android: 'chevron_right' }}
+              size={16}
+              tintColor={colors.tint}
+            />
+          </View>
         </Pressable>
       </View>
-      <GlassCard style={styles.stats}>
+      <GlassCard padding={space.xl} style={styles.stats}>
         <View style={styles.statsRow}>
-          <View>
+          <View style={styles.statCol}>
             <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
               {t('manage.stats.collected')}
             </Text>
@@ -93,7 +99,7 @@ export default function ManageDuesScreen() {
               {fmt.money(stats.collected)}
             </Text>
           </View>
-          <View style={styles.statEnd}>
+          <View style={[styles.statCol, styles.statEnd]}>
             <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
               {t('manage.stats.expected')}
             </Text>
@@ -112,8 +118,11 @@ export default function ManageDuesScreen() {
   if (isError && !data) {
     return (
       <View style={styles.center}>
-        <EmptyState icon="error" title={t('manage.error')} />
-        <PrimaryButton variant="plain" title={tc('buttons.retry')} onPress={() => void refetch()} />
+        <EmptyState
+          icon="error"
+          title={t('manage.error')}
+          action={{ title: tc('buttons.retry'), onPress: () => void refetch() }}
+        />
       </View>
     );
   }
@@ -145,7 +154,19 @@ export default function ManageDuesScreen() {
         }
         ListHeaderComponent={header}
         ListEmptyComponent={
-          isLoading ? undefined : (
+          isLoading ? (
+          <View style={styles.separator}>
+            {[0, 1, 2].map((i) => (
+              <GlassCard key={i} style={styles.row}>
+                <View style={styles.rowMain}>
+                  <Skeleton width="40%" height={18} />
+                  <Skeleton width="60%" height={14} />
+                </View>
+                <Skeleton width={72} height={18} />
+              </GlassCard>
+            ))}
+          </View>
+        ) : (
             <EmptyState
               icon="dues"
               title={t('manage.empty.title')}
@@ -153,22 +174,13 @@ export default function ManageDuesScreen() {
             />
           )
         }
-        ItemSeparatorComponent={() => (
-          <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.separator }} />
-        )}
+        ItemSeparatorComponent={() => <View style={{ height: space.sm }} />}
         renderItem={({ item }) => {
           const status = effectiveStatus(item);
           const partial = status !== 'paid' && item.payments.length > 0;
           return (
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => open(item)}
-              style={({ pressed }) => [
-                styles.row,
-                { backgroundColor: colors.secondarySystemGroupedBackground },
-                pressed && styles.pressed,
-              ]}
-            >
+            <PressableScale accessibilityRole="button" onPress={() => open(item)}>
+              <GlassCard style={styles.row}>
               <View style={styles.rowMain}>
                 <Text style={[styles.unit, { color: colors.label }]}>
                   {t('manage.unit', { label: item.unitLabel })}
@@ -191,7 +203,8 @@ export default function ManageDuesScreen() {
                 </Text>
                 <DueStatusBadge status={status} />
               </View>
-            </Pressable>
+              </GlassCard>
+            </PressableScale>
           );
         }}
       />
@@ -200,20 +213,28 @@ export default function ManageDuesScreen() {
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, justifyContent: 'center', padding: 24, gap: 12 },
-  content: { paddingHorizontal: 16, paddingBottom: 32 },
-  header: { gap: 12, paddingVertical: 8 },
+  center: { flex: 1, justifyContent: 'center', padding: space.xl, gap: space.md },
+  content: { paddingHorizontal: space.lg, paddingBottom: space.xxl },
+  header: { gap: space.lg, paddingVertical: space.sm, marginBottom: space.sm },
   periodRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  periodLabel: { fontSize: 20, fontWeight: '600' },
-  stats: { gap: 8 },
-  statsRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  navButton: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  periodLabel: { ...type.title },
+  stats: { gap: space.md },
+  statsRow: { flexDirection: 'row', justifyContent: 'space-between', gap: space.md },
+  statCol: { flex: 1, gap: space.xs },
   statEnd: { alignItems: 'flex-end' },
-  statValue: { fontSize: 22, fontWeight: '600' },
-  caption: { fontSize: 14 },
-  row: { flexDirection: 'row', gap: 12, padding: 14, justifyContent: 'space-between' },
-  pressed: { opacity: 0.6 },
-  rowMain: { flex: 1, gap: 2 },
-  rowEnd: { alignItems: 'flex-end', gap: 6 },
-  unit: { fontSize: 17, fontWeight: '500' },
-  amount: { fontSize: 17, fontWeight: '600' },
+  statValue: { ...type.stat, fontVariant: ['tabular-nums'] },
+  caption: { ...type.small },
+  separator: { gap: space.sm },
+  row: { flexDirection: 'row', gap: space.md, justifyContent: 'space-between' },
+  rowMain: { flex: 1, gap: space.xs },
+  rowEnd: { alignItems: 'flex-end', gap: space.sm },
+  unit: { ...type.headline },
+  amount: { ...type.bodyStrong, fontVariant: ['tabular-nums'] },
 });

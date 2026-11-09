@@ -1,9 +1,11 @@
 import { SymbolView } from 'expo-symbols';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { GlassCard } from '@/components/GlassCard';
+import { PressableScale } from '@/components/PressableScale';
 import { useColors } from '@/theme/colors';
+import { radius, space, type } from '@/theme/tokens';
 
 import { formatRelative } from '../format';
 import type { Announcement } from '../types';
@@ -20,24 +22,22 @@ export function AnnouncementCard({
   const colors = useColors();
   const author = announcement.author?.full_name ?? t('unknownAuthor');
   return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      style={({ pressed }) => pressed && styles.pressed}
-    >
+    <PressableScale accessibilityRole="button" onPress={onPress}>
       <GlassCard style={styles.card}>
         <View style={styles.top}>
           <CategoryBadge category={announcement.category} />
           {announcement.pinned ? (
-            <View style={styles.pinned} accessible accessibilityLabel={t('pinned')}>
+            <View
+              style={[styles.pinned, { backgroundColor: colors.tintSoft }]}
+              accessible
+              accessibilityLabel={t('pinned')}
+            >
               <SymbolView
                 name={{ ios: 'pin.fill', android: 'push_pin' }}
-                size={14}
-                tintColor={colors.secondaryLabel}
+                size={12}
+                tintColor={colors.tint}
               />
-              <Text style={[styles.pinnedText, { color: colors.secondaryLabel }]}>
-                {t('pinned')}
-              </Text>
+              <Text style={[styles.pinnedText, { color: colors.tint }]}>{t('pinned')}</Text>
             </View>
           ) : null}
         </View>
@@ -51,17 +51,23 @@ export function AnnouncementCard({
           {author} · {formatRelative(announcement.created_at, i18n.language)}
         </Text>
       </GlassCard>
-    </Pressable>
+    </PressableScale>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { gap: 6 },
+  card: { gap: space.sm },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  pinned: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  pinnedText: { fontSize: 12 },
-  title: { fontSize: 17, fontWeight: '600' },
-  body: { fontSize: 15 },
-  meta: { fontSize: 13, marginTop: 2 },
-  pressed: { opacity: 0.7 },
+  pinned: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.xs,
+    height: 24,
+    paddingHorizontal: 10,
+    borderRadius: radius.pill,
+  },
+  pinnedText: { ...type.label },
+  title: { ...type.headline },
+  body: { ...type.small },
+  meta: { ...type.caption, marginTop: space.xs },
 });

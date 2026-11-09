@@ -1,28 +1,24 @@
 import { SegmentedControl } from '@expo/ui/community/segmented-control';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
 import { GlassCard } from '@/components/GlassCard';
+import { SectionLabel } from '@/components/SectionLabel';
+import { Skeleton } from '@/components/Skeleton';
 import { useDuesFormat } from '@/features/dues/utils';
 import { REPORT_PERIODS, useReport, type ReportPeriod } from '@/features/reports/api';
 import { BarRow } from '@/features/reports/components/BarRow';
 import { TICKET_CATEGORIES, TICKET_STATUSES } from '@/features/tickets/types';
-import { useColors, useStatusColors } from '@/theme/colors';
+import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 export default function ReportsScreen() {
   const { t, i18n } = useTranslation('reports');
   const { t: tt } = useTranslation('tickets');
+  const { t: tc } = useTranslation('common');
   const colors = useColors();
-  const statusColors = useStatusColors();
   const fmt = useDuesFormat();
   const [periodIndex, setPeriodIndex] = useState(0);
   const period: ReportPeriod = REPORT_PERIODS[periodIndex];
@@ -63,46 +59,80 @@ export default function ReportsScreen() {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
     >
-      <SegmentedControl
-        values={REPORT_PERIODS.map((p) => t(`period.${p}`))}
-        selectedIndex={periodIndex}
-        onChange={(e) => setPeriodIndex(e.nativeEvent.selectedSegmentIndex)}
-      />
-      {data ? (
-        <Text style={[styles.range, { color: colors.secondaryLabel }]}>
-          {t('range', { from: dateFormat.format(data.from), to: dateFormat.format(data.to) })}
-        </Text>
-      ) : null}
+      <View style={styles.periodBlock}>
+        <SegmentedControl
+          values={REPORT_PERIODS.map((p) => t(`period.${p}`))}
+          selectedIndex={periodIndex}
+          onChange={(e) => setPeriodIndex(e.nativeEvent.selectedSegmentIndex)}
+        />
+        {data ? (
+          <Text style={[styles.range, { color: colors.secondaryLabel }]}>
+            {t('range', { from: dateFormat.format(data.from), to: dateFormat.format(data.to) })}
+          </Text>
+        ) : null}
+      </View>
 
       {report.isPending ? (
-        <ActivityIndicator style={styles.loader} />
+        <>
+          <View style={styles.tiles}>
+            <GlassCard style={styles.tile}>
+              <Skeleton width={60} height={28} />
+              <Skeleton width="70%" height={14} />
+            </GlassCard>
+            <GlassCard style={styles.tile}>
+              <Skeleton width={60} height={28} />
+              <Skeleton width="70%" height={14} />
+            </GlassCard>
+          </View>
+          <GlassCard style={styles.card}>
+            <Skeleton width="40%" height={20} />
+            <Skeleton height={10} radius={999} />
+            <Skeleton height={10} radius={999} />
+            <Skeleton height={10} radius={999} />
+          </GlassCard>
+        </>
       ) : report.isError ? (
-        <EmptyState icon="error" title={t('error')} />
+        <EmptyState
+          icon="error"
+          title={t('error')}
+          action={{ title: tc('buttons.retry'), onPress: () => void report.refetch() }}
+        />
       ) : data ? (
         <>
-          <GlassCard style={styles.card}>
-            <Text style={[styles.title, { color: colors.label }]}>{t('tickets.title')}</Text>
-            <View style={styles.stats}>
-              <View style={styles.stat}>
+          <View>
+            <SectionLabel>{t('tickets.title')}</SectionLabel>
+            <View style={styles.tiles}>
+              <GlassCard style={styles.tile}>
                 <Text style={[styles.big, { color: colors.label }]}>{data.tickets.total}</Text>
                 <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
                   {t('tickets.total')}
                 </Text>
-              </View>
-              <View style={styles.stat}>
-                <Text style={[styles.big, { color: colors.label }]}>{avgLabel}</Text>
+              </GlassCard>
+              <GlassCard style={styles.tile}>
+                <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  style={[styles.big, { color: colors.label }]}
+                >
+                  {avgLabel}
+                </Text>
                 <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
                   {t('tickets.avgResolution')}
                 </Text>
-              </View>
+              </GlassCard>
             </View>
-            {data.tickets.total === 0 ? (
+          </View>
+
+          {data.tickets.total === 0 ? (
+            <GlassCard style={styles.card}>
               <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
                 {t('tickets.empty')}
               </Text>
-            ) : (
-              <>
-                <Text style={[styles.sub, { color: colors.secondaryLabel }]}>
+            </GlassCard>
+          ) : (
+            <>
+              <GlassCard style={styles.card}>
+                <Text style={[styles.title, { color: colors.label }]}>
                   {t('tickets.byStatus')}
                 </Text>
                 {TICKET_STATUSES.map((s) => (
@@ -111,10 +141,12 @@ export default function ReportsScreen() {
                     label={tt(`status.${s}`)}
                     value={data.tickets.byStatus[s]}
                     max={maxStatus}
-                    color={statusColors[s]}
+                    color={colors.tint}
                   />
                 ))}
-                <Text style={[styles.sub, { color: colors.secondaryLabel }]}>
+              </GlassCard>
+              <GlassCard style={styles.card}>
+                <Text style={[styles.title, { color: colors.label }]}>
                   {t('tickets.byCategory')}
                 </Text>
                 {categoryRows.map((row) => (
@@ -126,44 +158,56 @@ export default function ReportsScreen() {
                     color={row.color}
                   />
                 ))}
-              </>
-            )}
-          </GlassCard>
+              </GlassCard>
+            </>
+          )}
 
-          <GlassCard style={styles.card}>
-            <Text style={[styles.title, { color: colors.label }]}>{t('dues.title')}</Text>
+          <View>
+            <SectionLabel>{t('dues.title')}</SectionLabel>
             {data.dues.count === 0 ? (
-              <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-                {t('dues.empty')}
-              </Text>
+              <GlassCard style={styles.card}>
+                <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
+                  {t('dues.empty')}
+                </Text>
+              </GlassCard>
             ) : (
-              <>
-                <BarRow
-                  label={t('dues.collectionRate')}
-                  value={data.dues.rate ?? 0}
-                  max={1}
-                  color={colors.green}
-                  valueLabel={`${Math.round((data.dues.rate ?? 0) * 100)}%`}
-                />
-                <View style={styles.stats}>
-                  <View style={styles.stat}>
-                    <Text style={[styles.big, { color: colors.green }]}>
+              <View style={styles.group}>
+                <GlassCard style={styles.card}>
+                  <BarRow
+                    label={t('dues.collectionRate')}
+                    value={data.dues.rate ?? 0}
+                    max={1}
+                    color={colors.green}
+                    valueLabel={`${Math.round((data.dues.rate ?? 0) * 100)}%`}
+                  />
+                </GlassCard>
+                <View style={styles.tiles}>
+                  <GlassCard style={styles.tile}>
+                    <Text
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      style={[styles.big, { color: colors.green }]}
+                    >
                       {fmt.money(data.dues.collected)}
                     </Text>
                     <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
                       {t('dues.collected')}
                     </Text>
-                  </View>
-                  <View style={styles.stat}>
-                    <Text style={[styles.big, { color: colors.label }]}>
+                  </GlassCard>
+                  <GlassCard style={styles.tile}>
+                    <Text
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      style={[styles.big, { color: colors.label }]}
+                    >
                       {fmt.money(data.dues.expected)}
                     </Text>
                     <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
                       {t('dues.expected')}
                     </Text>
-                  </View>
+                  </GlassCard>
                 </View>
-                <View style={styles.stat}>
+                <GlassCard style={styles.tile}>
                   <Text
                     style={[
                       styles.big,
@@ -175,10 +219,10 @@ export default function ReportsScreen() {
                   <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
                     {t('dues.overdueTotal')}
                   </Text>
-                </View>
-              </>
+                </GlassCard>
+              </View>
             )}
-          </GlassCard>
+          </View>
 
           {data.tickets.total > 0 ? (
             <GlassCard style={styles.card}>
@@ -192,7 +236,7 @@ export default function ReportsScreen() {
                     <Text style={[styles.topLabel, { color: colors.label }]}>
                       {tt(`category.${row.key}`)}
                     </Text>
-                    <Text style={[styles.topCount, { color: row.color }]}>{row.count}</Text>
+                    <Text style={[styles.topCount, { color: colors.label }]}>{row.count}</Text>
                   </View>
                 ))}
             </GlassCard>
@@ -204,18 +248,18 @@ export default function ReportsScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, gap: 14 },
-  loader: { marginTop: 24 },
-  range: { fontSize: 13, textAlign: 'center' },
-  card: { gap: 12 },
-  title: { fontSize: 20, fontWeight: '600' },
-  sub: { fontSize: 13, textTransform: 'uppercase', marginTop: 4 },
-  stats: { flexDirection: 'row', gap: 12 },
-  stat: { flex: 1, gap: 2 },
-  big: { fontSize: 22, fontWeight: '600' },
-  caption: { fontSize: 13 },
-  topRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  rank: { width: 20, fontSize: 17, fontWeight: '600' },
-  topLabel: { flex: 1, fontSize: 17 },
-  topCount: { fontSize: 17, fontWeight: '600' },
+  content: { padding: space.lg, gap: space.xl },
+  periodBlock: { gap: space.sm },
+  range: { ...type.caption, textAlign: 'center' },
+  card: { gap: space.lg },
+  group: { gap: space.md },
+  title: { ...type.headline },
+  tiles: { flexDirection: 'row', gap: space.md },
+  tile: { flex: 1, gap: space.xs },
+  big: { ...type.stat, fontVariant: ['tabular-nums'] },
+  caption: { ...type.small },
+  topRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  rank: { width: 20, ...type.bodyStrong, fontVariant: ['tabular-nums'] },
+  topLabel: { flex: 1, ...type.body },
+  topCount: { ...type.bodyStrong, fontVariant: ['tabular-nums'] },
 });

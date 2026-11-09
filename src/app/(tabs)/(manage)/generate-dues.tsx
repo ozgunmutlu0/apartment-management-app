@@ -15,6 +15,7 @@ import {
   useDuesFormat,
 } from '@/features/dues/utils';
 import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 /** formSheet: generate one due per unit for a period. Optional param: period (YYYY-MM-01). */
 export default function GenerateDuesScreen() {
@@ -112,8 +113,8 @@ export default function GenerateDuesScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, gap: 12 },
-  input: { fontSize: 17, minWidth: 120, textAlign: 'right' },
-  caption: { fontSize: 13, marginLeft: 4 },
-  message: { fontSize: 15 },
+  content: { padding: space.lg, gap: space.lg },
+  input: { ...type.body, minWidth: 120, textAlign: 'right', fontVariant: ['tabular-nums'] },
+  caption: { ...type.small, marginLeft: space.xs },
+  message: { ...type.small, marginLeft: space.xs },
 });

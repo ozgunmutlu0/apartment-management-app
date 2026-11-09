@@ -1,12 +1,16 @@
 import { DateTimePicker } from '@expo/ui/community/datetime-picker';
 import { Picker } from '@expo/ui/community/picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { Badge } from '@/components/Badge';
+import { EmptyState } from '@/components/EmptyState';
+import { GlassCard } from '@/components/GlassCard';
 import { PrimaryButton } from '@/components/PrimaryButton';
-import { FormGroup, FormRow } from '@/features/dues/components/FormRow';
+import { SectionLabel } from '@/components/SectionLabel';
+import { Skeleton } from '@/components/Skeleton';
 import {
   reservationErrorKey,
   useAreaDayReservations,
@@ -27,6 +31,17 @@ import {
   zonedInstant,
 } from '@/features/reservations/time';
 import { useColors } from '@/theme/colors';
+import { radius, space, type } from '@/theme/tokens';
+
+function FormRow({ label, children }: { label: string; children: ReactNode }) {
+  const colors = useColors();
+  return (
+    <View style={styles.formRow}>
+      <Text style={[styles.formLabel, { color: colors.label }]}>{label}</Text>
+      {children}
+    </View>
+  );
+}
 
 /**
  * formSheet: book a common area. Param: areaId. All wall-clock values are interpreted in the
@@ -98,78 +113,83 @@ export default function NewReservationScreen() {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
-      {areas.isSuccess && !area ? (
-        <Text style={[styles.secondary, { color: colors.secondaryLabel }]}>
-          {t('form.notFound')}
-        </Text>
-      ) : null}
+      {areas.isSuccess && !area ? <EmptyState icon="error" title={t('form.notFound')} /> : null}
       {area ? (
         <>
-          <Text style={[styles.caption, { color: colors.secondaryLabel }]}>{t('form.area')}</Text>
-          <Picker selectedValue={area.id} onValueChange={(v) => setAreaId(String(v))}>
-            {(areas.data ?? []).map((a) => (
-              <Picker.Item key={a.id} value={a.id} label={a.name} />
-            ))}
-          </Picker>
-          <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-            {t('form.hours', { open: formatMinutes(open), close: formatMinutes(close) })}
-          </Text>
-
-          <FormGroup>
-            <FormRow label={t('form.date')}>
-              <DateTimePicker
-                value={pickedDay}
-                mode="date"
-                display="compact"
-                presentation="inline"
-                minimumDate={pickerDate(today)}
-                onValueChange={(_e, date) => setPickedDay(date)}
-              />
-            </FormRow>
-          </FormGroup>
-
-          <Text style={[styles.caption, { color: colors.secondaryLabel }]}>{t('form.booked')}</Text>
-          <View
-            style={[styles.booked, { backgroundColor: colors.secondarySystemGroupedBackground }]}
-          >
-            {booked.isPending ? (
+          <View>
+            <SectionLabel>{t('form.area')}</SectionLabel>
+            <GlassCard style={styles.card}>
+              <Picker selectedValue={area.id} onValueChange={(v) => setAreaId(String(v))}>
+                {(areas.data ?? []).map((a) => (
+                  <Picker.Item key={a.id} value={a.id} label={a.name} />
+                ))}
+              </Picker>
               <Text style={[styles.secondary, { color: colors.secondaryLabel }]}>
-                {t('form.loadingSlots')}
+                {t('form.hours', { open: formatMinutes(open), close: formatMinutes(close) })}
               </Text>
-            ) : (booked.data ?? []).length === 0 ? (
-              <Text style={[styles.secondary, { color: colors.secondaryLabel }]}>
-                {t('form.noneBooked')}
-              </Text>
-            ) : (
-              (booked.data ?? []).map((b) => (
-                <Text key={b.id} style={[styles.bookedItem, { color: colors.red }]}>
-                  {fmt.timeRange(b.starts_at, b.ends_at)}
+            </GlassCard>
+          </View>
+
+          <View>
+            <SectionLabel>{t('form.date')}</SectionLabel>
+            <GlassCard style={styles.card}>
+              <FormRow label={t('form.date')}>
+                <DateTimePicker
+                  value={pickedDay}
+                  mode="date"
+                  display="compact"
+                  presentation="inline"
+                  minimumDate={pickerDate(today)}
+                  onValueChange={(_e, date) => setPickedDay(date)}
+                />
+              </FormRow>
+            </GlassCard>
+          </View>
+
+          <View>
+            <SectionLabel>{t('form.booked')}</SectionLabel>
+            <GlassCard variant="quiet" style={styles.card}>
+              {booked.isPending ? (
+                <View style={styles.bookedRow}>
+                  <Skeleton width={96} height={24} radius={radius.pill} />
+                  <Skeleton width={96} height={24} radius={radius.pill} />
+                </View>
+              ) : (booked.data ?? []).length === 0 ? (
+                <Text style={[styles.secondary, { color: colors.secondaryLabel }]}>
+                  {t('form.noneBooked')}
                 </Text>
-              ))
-            )}
+              ) : (
+                <View style={styles.bookedRow}>
+                  {(booked.data ?? []).map((b) => (
+                    <Badge key={b.id} tone="red" label={fmt.timeRange(b.starts_at, b.ends_at)} />
+                  ))}
+                </View>
+              )}
+            </GlassCard>
           </View>
 
           {starts.length === 0 && !booked.isPending ? (
             <Text style={[styles.secondary, { color: colors.red }]}>{t('form.noSlots')}</Text>
           ) : (
-            <>
-              <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-                {t('form.start')}
-              </Text>
-              <Picker selectedValue={start ?? 0} onValueChange={(v) => setStartChoice(Number(v))}>
-                {starts.map((m) => (
-                  <Picker.Item key={m} value={m} label={formatMinutes(m)} />
-                ))}
-              </Picker>
-              <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-                {t('form.end')}
-              </Text>
-              <Picker selectedValue={end ?? 0} onValueChange={(v) => setEndChoice(Number(v))}>
-                {ends.map((m) => (
-                  <Picker.Item key={m} value={m} label={formatMinutes(m)} />
-                ))}
-              </Picker>
-            </>
+            <View>
+              <SectionLabel>{t('form.start')}</SectionLabel>
+              <GlassCard style={styles.card}>
+                <Picker selectedValue={start ?? 0} onValueChange={(v) => setStartChoice(Number(v))}>
+                  {starts.map((m) => (
+                    <Picker.Item key={m} value={m} label={formatMinutes(m)} />
+                  ))}
+                </Picker>
+              </GlassCard>
+              <View style={styles.gap} />
+              <SectionLabel>{t('form.end')}</SectionLabel>
+              <GlassCard style={styles.card}>
+                <Picker selectedValue={end ?? 0} onValueChange={(v) => setEndChoice(Number(v))}>
+                  {ends.map((m) => (
+                    <Picker.Item key={m} value={m} label={formatMinutes(m)} />
+                  ))}
+                </Picker>
+              </GlassCard>
+            </View>
           )}
 
           {error ? (
@@ -190,9 +210,16 @@ export default function NewReservationScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, gap: 10 },
-  caption: { fontSize: 13, marginLeft: 4, marginTop: 4 },
-  secondary: { fontSize: 15 },
-  booked: { borderRadius: 16, borderCurve: 'continuous', padding: 14, gap: 4 },
-  bookedItem: { fontSize: 15, fontWeight: '500' },
+  content: { padding: space.lg, gap: space.xl },
+  card: { gap: space.sm },
+  gap: { height: space.lg },
+  secondary: { ...type.small },
+  formRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: space.md,
+  },
+  formLabel: { ...type.body },
+  bookedRow: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
 });

@@ -1,22 +1,19 @@
 import { Picker } from '@expo/ui/community/picker';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { AuthField } from '@/components/AuthField';
 import { GlassCard } from '@/components/GlassCard';
+import { IconTile } from '@/components/IconTile';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { SectionLabel } from '@/components/SectionLabel';
+import { BrandBlock } from '@/features/auth/components/BrandBlock';
 import { useAuth } from '@/lib/auth';
 import { authErrorMessage } from '@/lib/authErrors';
 import { supabase } from '@/lib/supabase';
 import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 type BuildingLookup = {
   id: string;
@@ -91,12 +88,7 @@ export default function JoinBuildingScreen() {
         keyboardShouldPersistTaps="handled"
         contentInsetAdjustmentBehavior="automatic"
       >
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.label }]}>{t('join.title')}</Text>
-          <Text style={[styles.subtitle, { color: colors.secondaryLabel }]}>
-            {t('join.subtitle')}
-          </Text>
-        </View>
+        <BrandBlock title={t('join.title')} subtitle={t('join.subtitle')} />
 
         <GlassCard style={styles.form}>
           <AuthField
@@ -107,31 +99,13 @@ export default function JoinBuildingScreen() {
             }}
             placeholder={t('join.code')}
             accessibilityLabel={t('join.code')}
+            style={styles.code}
             autoCapitalize="characters"
             autoCorrect={false}
             autoComplete="off"
             returnKeyType="search"
             onSubmitEditing={lookup}
           />
-
-          {building ? (
-            <>
-              <View style={styles.row}>
-                <Text style={{ color: colors.secondaryLabel }}>{t('join.building')}</Text>
-                <Text style={[styles.buildingName, { color: colors.label }]}>{building.name}</Text>
-              </View>
-              <Text style={{ color: colors.secondaryLabel }}>{t('join.unit')}</Text>
-              <Picker selectedValue={unitId} onValueChange={(value) => setUnitId(String(value))}>
-                {building.units.map((unit) => (
-                  <Picker.Item
-                    key={unit.id}
-                    value={unit.id}
-                    label={t('join.unitLabel', { block: unit.block, number: unit.number })}
-                  />
-                ))}
-              </Picker>
-            </>
-          ) : null}
 
           {error ? (
             <Text accessibilityRole="alert" style={[styles.error, { color: colors.red }]}>
@@ -151,6 +125,30 @@ export default function JoinBuildingScreen() {
           )}
         </GlassCard>
 
+        {building ? (
+          <View>
+            <SectionLabel>{t('join.building')}</SectionLabel>
+            <GlassCard style={styles.preview}>
+              <View style={styles.previewHead}>
+                <IconTile symbol={{ ios: 'building.2.fill', android: 'apartment' }} />
+                <Text style={[styles.buildingName, { color: colors.label }]}>{building.name}</Text>
+              </View>
+              <Text style={[styles.rowLabel, { color: colors.secondaryLabel }]}>
+                {t('join.unit')}
+              </Text>
+              <Picker selectedValue={unitId} onValueChange={(value) => setUnitId(String(value))}>
+                {building.units.map((unit) => (
+                  <Picker.Item
+                    key={unit.id}
+                    value={unit.id}
+                    label={t('join.unitLabel', { block: unit.block, number: unit.number })}
+                  />
+                ))}
+              </Picker>
+            </GlassCard>
+          </View>
+        ) : null}
+
         <PrimaryButton variant="plain" title={t('join.signOut')} onPress={() => void signOut()} />
       </ScrollView>
     </KeyboardAvoidingView>
@@ -159,12 +157,12 @@ export default function JoinBuildingScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  content: { flexGrow: 1, justifyContent: 'center', padding: 20, gap: 20 },
-  header: { gap: 6 },
-  title: { fontSize: 30, fontWeight: '600', letterSpacing: -0.7, textAlign: 'left' },
-  subtitle: { fontSize: 16 },
-  form: { gap: 12 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  buildingName: { fontSize: 17, fontWeight: '600' },
-  error: { fontSize: 14 },
+  content: { flexGrow: 1, justifyContent: 'center', padding: space.xl, gap: space.xl },
+  form: { gap: space.md },
+  code: { ...type.title, minHeight: 64, textAlign: 'center', letterSpacing: 4 },
+  preview: { gap: space.md },
+  previewHead: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  rowLabel: { ...type.small },
+  buildingName: { ...type.headline, flexShrink: 1 },
+  error: { ...type.small },
 });

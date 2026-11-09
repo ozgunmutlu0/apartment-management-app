@@ -84,7 +84,7 @@ Dark mode:
 |---|---|
 | App | React Native 0.88, Expo SDK 58, TypeScript (strict) |
 | Navigation | Expo Router, NativeTabs (Liquid Glass tab bar on iOS 26), native stack, formSheet |
-| UI | `@expo/ui`, `expo-symbols`, custom palette + design tokens, dark mode |
+| UI | `@expo/ui`, `expo-symbols`, teal-on-paper palette, Outfit font + design tokens, `react-native-reanimated` press motion, dark mode |
 | Data | `@supabase/supabase-js`, `@tanstack/react-query` |
 | Backend | Supabase: Auth, Postgres + RLS, Storage, Realtime, Edge Functions |
 | i18n | i18next, react-i18next, expo-localization (Turkish default, English) |
@@ -161,7 +161,7 @@ src/
   features/<feature>/  # api.ts (react-query hooks), types.ts, components/
   lib/                 # supabase client, auth, queryClient, database.types.ts
   i18n/                # i18next setup, locales/{tr,en}/<namespace>.json
-  theme/               # colors.ts (custom palette), tokens.ts (spacing, radius, type)
+  theme/               # colors.ts (teal-on-paper palette), tokens.ts (spacing, radius, Outfit type, elevation)
 supabase/
   migrations/          # schema, functions/triggers, RLS, storage/realtime, join building, notifications/push
   seed.sql             # demo data

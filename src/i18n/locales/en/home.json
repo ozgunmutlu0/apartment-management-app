@@ -14,7 +14,8 @@
     "unassigned": "Unassigned requests",
     "assignedOpen": "Open jobs assigned to you",
     "inProgressList": "In progress",
-    "noneActive": "Nothing is being worked on right now."
+    "noneActive": "Nothing is being worked on right now.",
+    "unassignedCount": "{{count}} unassigned"
   },
   "dues": {
     "title": "Dues",
@@ -23,7 +24,8 @@
     "allPaid": "All your dues are paid",
     "monthCollection": "Collected this month",
     "collectedOf": "{{collected}} / {{expected}}",
-    "noDues": "No dues have been created for this month."
+    "noDues": "No dues have been created for this month.",
+    "ofExpected": "of {{expected}}"
   },
   "announcements": {
     "title": "Announcements",
@@ -40,5 +42,8 @@
     "newAnnouncement": "New announcement",
     "duesManagement": "Dues management",
     "reports": "Reports"
+  },
+  "hero": {
+    "activeJobs": "Your active jobs"
   }
 }

@@ -1,13 +1,15 @@
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, type TextInputInstance } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, type TextInputInstance } from 'react-native';
 
-import { AuthField } from '@/components/AuthField';
+import { TextField } from '@/components/AuthField';
+import { GlassCard } from '@/components/GlassCard';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useUpdateProfile } from '@/features/profile/api';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 /** Presented as a formSheet (see (profile)/_layout.tsx). */
 export default function EditProfileScreen() {
@@ -43,31 +45,39 @@ export default function EditProfileScreen() {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
-      <AuthField
-        value={name}
-        onChangeText={setName}
-        placeholder={t('edit.namePlaceholder')}
-        accessibilityLabel={t('name')}
-        textContentType="name"
-        autoComplete="name"
-        autoCapitalize="words"
-        returnKeyType="next"
-        onSubmitEditing={() => phoneRef.current?.focus()}
-      />
-      <AuthField
-        ref={phoneRef}
-        value={phone}
-        onChangeText={setPhone}
-        placeholder={t('edit.phonePlaceholder')}
-        accessibilityLabel={t('phone')}
-        keyboardType="phone-pad"
-        textContentType="telephoneNumber"
-        autoComplete="tel"
-        returnKeyType="done"
-        onSubmitEditing={save}
-      />
+      <GlassCard style={styles.card}>
+        <View style={styles.field}>
+          <Text style={[styles.label, { color: colors.secondaryLabel }]}>{t('name')}</Text>
+          <TextField
+            value={name}
+            onChangeText={setName}
+            placeholder={t('edit.namePlaceholder')}
+            accessibilityLabel={t('name')}
+            textContentType="name"
+            autoComplete="name"
+            autoCapitalize="words"
+            returnKeyType="next"
+            onSubmitEditing={() => phoneRef.current?.focus()}
+          />
+        </View>
+        <View style={styles.field}>
+          <Text style={[styles.label, { color: colors.secondaryLabel }]}>{t('phone')}</Text>
+          <TextField
+            ref={phoneRef}
+            value={phone}
+            onChangeText={setPhone}
+            placeholder={t('edit.phonePlaceholder')}
+            accessibilityLabel={t('phone')}
+            keyboardType="phone-pad"
+            textContentType="telephoneNumber"
+            autoComplete="tel"
+            returnKeyType="done"
+            onSubmitEditing={save}
+          />
+        </View>
+      </GlassCard>
       {error ? (
-        <Text accessibilityRole="alert" style={{ color: colors.red }}>
+        <Text accessibilityRole="alert" style={[styles.error, { color: colors.red }]}>
           {error}
         </Text>
       ) : null}
@@ -78,5 +88,9 @@ export default function EditProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 20, gap: 12 },
+  content: { padding: space.lg, gap: space.lg },
+  card: { gap: space.lg },
+  field: { gap: space.sm },
+  label: { ...type.label },
+  error: { ...type.small },
 });

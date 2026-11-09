@@ -1,10 +1,9 @@
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,11 +13,14 @@ import {
 
 import { AuthField } from '@/components/AuthField';
 import { GlassCard } from '@/components/GlassCard';
+import { PressableScale } from '@/components/PressableScale';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { SectionLabel } from '@/components/SectionLabel';
+import { BrandBlock } from '@/features/auth/components/BrandBlock';
 import { useAuth } from '@/lib/auth';
 import { authErrorMessage } from '@/lib/authErrors';
 import { useColors } from '@/theme/colors';
-import { type } from '@/theme/tokens';
+import { hitTarget, space, type } from '@/theme/tokens';
 
 const DEMO_PASSWORD = 'Demo1234!';
 const DEMO_ACCOUNTS = [
@@ -30,8 +32,8 @@ const DEMO_ACCOUNTS = [
 
 export default function SignInScreen() {
   const { t } = useTranslation('auth');
-  const { t: tc } = useTranslation('common');
   const colors = useColors();
+  const router = useRouter();
   const { signIn } = useAuth();
   const passwordRef = useRef<TextInputInstance>(null);
   const [email, setEmail] = useState('');
@@ -66,10 +68,7 @@ export default function SignInScreen() {
         keyboardShouldPersistTaps="handled"
         contentInsetAdjustmentBehavior="automatic"
       >
-        <View style={styles.header}>
-          <Text style={[styles.appName, { color: colors.label }]}>{tc('appName')}</Text>
-          <Text style={[styles.slogan, { color: colors.secondaryLabel }]}>{tc('slogan')}</Text>
-        </View>
+        <BrandBlock />
 
         <GlassCard style={styles.form}>
           <AuthField
@@ -108,29 +107,41 @@ export default function SignInScreen() {
         </GlassCard>
 
         <View style={styles.footer}>
-          <Text style={{ color: colors.secondaryLabel }}>{t('signIn.noAccount')}</Text>
-          <Link href="/sign-up" style={{ color: colors.tint, fontWeight: '600' }}>
-            {t('signIn.createAccount')}
-          </Link>
+          <Text style={[styles.footerText, { color: colors.secondaryLabel }]}>
+            {t('signIn.noAccount')}
+          </Text>
+          <PrimaryButton
+            variant="tonal"
+            title={t('signIn.createAccount')}
+            onPress={() => router.push('/sign-up')}
+          />
         </View>
 
         {__DEV__ ? (
-          <View style={styles.demo}>
-            <Text style={[styles.demoTitle, { color: colors.secondaryLabel }]}>
-              {t('signIn.demoAccounts')}
-            </Text>
-            {DEMO_ACCOUNTS.map((demo) => (
-              <Pressable
-                key={demo}
-                onPress={() => {
-                  setEmail(demo);
-                  setPassword(DEMO_PASSWORD);
-                  setError(null);
-                }}
-              >
-                <Text style={{ color: colors.tint, fontSize: 15 }}>{demo}</Text>
-              </Pressable>
-            ))}
+          <View>
+            <SectionLabel>{t('signIn.demoAccounts')}</SectionLabel>
+            <GlassCard variant="quiet" padding={0}>
+              {DEMO_ACCOUNTS.map((demo, index) => (
+                <PressableScale
+                  key={demo}
+                  accessibilityRole="button"
+                  style={[
+                    styles.demoItem,
+                    index > 0 && {
+                      borderTopWidth: StyleSheet.hairlineWidth,
+                      borderTopColor: colors.separator,
+                    },
+                  ]}
+                  onPress={() => {
+                    setEmail(demo);
+                    setPassword(DEMO_PASSWORD);
+                    setError(null);
+                  }}
+                >
+                  <Text style={[styles.demoText, { color: colors.tint }]}>{demo}</Text>
+                </PressableScale>
+              ))}
+            </GlassCard>
           </View>
         ) : null}
       </ScrollView>
@@ -140,13 +151,11 @@ export default function SignInScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  content: { flexGrow: 1, justifyContent: 'center', padding: 24, gap: 24 },
-  header: { gap: 8, marginBottom: 8 },
-  appName: { ...type.display },
-  slogan: { ...type.body },
-  form: { gap: 12 },
+  content: { flexGrow: 1, justifyContent: 'center', padding: space.xl, gap: space.xl },
+  form: { gap: space.md },
   error: { ...type.small },
-  footer: { flexDirection: 'row', justifyContent: 'center', gap: 6 },
-  demo: { alignItems: 'center', gap: 8, marginTop: 8 },
-  demoTitle: { fontSize: 13 },
+  footer: { alignItems: 'stretch', gap: space.md },
+  footerText: { ...type.body, textAlign: 'center' },
+  demoItem: { minHeight: hitTarget, justifyContent: 'center', paddingHorizontal: space.lg },
+  demoText: { ...type.small },
 });

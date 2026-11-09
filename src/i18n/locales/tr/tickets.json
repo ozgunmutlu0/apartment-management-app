@@ -55,6 +55,7 @@
   },
   "detail": {
     "notFound": "Talep bulunamadı",
+    "details": "Ayrıntılar",
     "errorTitle": "Talep yüklenemedi",
     "createdBy": "Oluşturan",
     "createdAt": "Oluşturulma",

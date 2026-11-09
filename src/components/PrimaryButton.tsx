@@ -1,12 +1,17 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, type PressableProps } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View, type PressableProps } from 'react-native';
 
+import { Icon, type IconName } from '@/components/Icon';
+import { PressableScale } from '@/components/PressableScale';
 import { useColors } from '@/theme/colors';
-import { radius } from '@/theme/tokens';
+import { radius, type } from '@/theme/tokens';
 
 export type PrimaryButtonProps = Omit<PressableProps, 'children' | 'style'> & {
   title: string;
   loading?: boolean;
-  variant?: 'filled' | 'plain';
+  /** `filled` (primary), `tonal` (soft accent fill), `plain` (text only). */
+  variant?: 'filled' | 'tonal' | 'plain';
+  /** Optional leading glyph. */
+  icon?: IconName;
 };
 
 export function PrimaryButton({
@@ -14,41 +19,46 @@ export function PrimaryButton({
   loading,
   disabled,
   variant = 'filled',
+  icon,
   ...rest
 }: PrimaryButtonProps) {
   const colors = useColors();
-  const filled = variant === 'filled';
+  const fg = variant === 'filled' ? colors.onTint : colors.tint;
+  const inactive = disabled || loading;
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
-      disabled={disabled || loading}
-      style={({ pressed }) => [
+      disabled={inactive}
+      style={[
         styles.button,
-        filled && { backgroundColor: colors.tint },
-        (disabled || loading) && styles.disabled,
-        pressed && styles.pressed,
+        variant === 'filled' && { backgroundColor: colors.tint },
+        variant === 'tonal' && { backgroundColor: colors.tintSoft },
+        inactive && styles.disabled,
       ]}
       {...rest}
     >
       {loading ? (
-        <ActivityIndicator color={filled ? (colors.onTint as string) : undefined} />
+        <ActivityIndicator color={variant === 'filled' ? (colors.onTint as string) : undefined} />
       ) : (
-        <Text style={[styles.title, { color: filled ? colors.onTint : colors.tint }]}>{title}</Text>
+        <View style={styles.content}>
+          {icon ? <Icon name={icon} size={18} color={fg} /> : null}
+          <Text style={[styles.title, { color: fg }]}>{title}</Text>
+        </View>
       )}
-    </Pressable>
+    </PressableScale>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 48,
+    minHeight: 52,
     borderRadius: radius.control,
     borderCurve: 'continuous',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
-  title: { fontSize: 16, fontWeight: '600', letterSpacing: -0.1 },
-  disabled: { opacity: 0.45 },
-  pressed: { opacity: 0.8, transform: [{ scale: 0.98 }] },
+  content: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  title: { ...type.bodyStrong },
+  disabled: { opacity: 0.5 },
 });

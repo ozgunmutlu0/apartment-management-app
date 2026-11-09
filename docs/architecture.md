@@ -56,4 +56,4 @@ Session tokens are stored with `expo-secure-store` (AsyncStorage fallback for la
 
 ## UI principles
 
-Native-first: NativeTabs, native stack headers (large titles, search bars), formSheet modals, Liquid Glass only for system chrome (tab bar, headers, sheets) with flat opaque cards for content, `@expo/ui` for native controls, SF Symbols via `expo-symbols`. Colors come from the custom palette in `src/theme/colors.ts` and spacing/radius/type from `src/theme/tokens.ts`; dark mode is supported everywhere.
+Native-first: NativeTabs, native stack headers (large titles, search bars), formSheet modals, Liquid Glass only for system chrome (tab bar, headers, sheets) with opaque raised cards for content (soft shadow in light, hairline in dark), `@expo/ui` for native controls, SF Symbols via `expo-symbols`. Colors come from the teal-on-paper palette in `src/theme/colors.ts` (one teal accent, soft state fills) and spacing/radius/Outfit type/elevation from `src/theme/tokens.ts`; dark mode is supported everywhere.

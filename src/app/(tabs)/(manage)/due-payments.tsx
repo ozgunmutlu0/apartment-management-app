@@ -1,13 +1,15 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useDeletePayment, useManagerDues } from '@/features/dues/api';
+import { PressableScale } from '@/components/PressableScale';
 import { FormGroup } from '@/features/dues/components/FormRow';
 import { remainingOf, useDuesFormat } from '@/features/dues/utils';
 import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 /** formSheet: payments of one due (view, delete, record another). Params: dueId, period. */
 export default function DuePaymentsScreen() {
@@ -52,16 +54,7 @@ export default function DuePaymentsScreen() {
       ) : (
         <FormGroup>
           {due.payments.map((p, i) => (
-            <View
-              key={p.id}
-              style={[
-                styles.row,
-                i > 0 && {
-                  borderTopColor: colors.separator,
-                  borderTopWidth: StyleSheet.hairlineWidth,
-                },
-              ]}
-            >
+            <View key={p.id} style={styles.row}>
               <View style={styles.main}>
                 <Text style={[styles.amount, { color: colors.label }]}>
                   {fmt.money(Number(p.amount))}
@@ -73,13 +66,14 @@ export default function DuePaymentsScreen() {
                   })}
                 </Text>
               </View>
-              <Pressable
+              <PressableScale
                 accessibilityRole="button"
                 accessibilityLabel={tc('buttons.delete')}
                 onPress={() => confirmDelete(p.id, Number(p.amount))}
+                hitSlop={8}
               >
                 <Text style={[styles.delete, { color: colors.red }]}>{tc('buttons.delete')}</Text>
-              </Pressable>
+              </PressableScale>
             </View>
           ))}
         </FormGroup>
@@ -100,10 +94,10 @@ export default function DuePaymentsScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, gap: 12 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 },
+  content: { padding: space.lg, gap: space.lg },
+  row: { flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: space.md },
   main: { flex: 1, gap: 2 },
-  amount: { fontSize: 17, fontWeight: '600' },
-  detail: { fontSize: 14 },
-  delete: { fontSize: 17 },
+  amount: { ...type.title, fontVariant: ['tabular-nums'] },
+  detail: { ...type.small },
+  delete: { ...type.bodyStrong },
 });

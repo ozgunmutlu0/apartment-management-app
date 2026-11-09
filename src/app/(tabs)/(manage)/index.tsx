@@ -1,10 +1,14 @@
 import { useRouter, type Href } from 'expo-router';
-import { SymbolView, type AndroidSymbol, type SFSymbol } from 'expo-symbols';
+import type { AndroidSymbol, SFSymbol } from 'expo-symbols';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { GlassCard } from '@/components/GlassCard';
+import { Icon } from '@/components/Icon';
+import { IconTile } from '@/components/IconTile';
+import { PressableScale } from '@/components/PressableScale';
 import { useColors } from '@/theme/colors';
-import { radius, type } from '@/theme/tokens';
+import { space, type } from '@/theme/tokens';
 
 type MenuItem = {
   href: Href;
@@ -39,70 +43,32 @@ export default function ManageScreen() {
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.content}
     >
-      <View
-        style={[
-          styles.group,
-          {
-            backgroundColor: colors.secondarySystemGroupedBackground,
-            borderColor: colors.separator,
-          },
-        ]}
-      >
-        {items.map((item, i) => (
-          <Pressable
-            key={item.title}
-            accessibilityRole="button"
-            onPress={() => router.push(item.href)}
-            android_ripple={{ color: colors.separator }}
-            style={({ pressed }) => [
-              styles.row,
-              i > 0 && {
-                borderTopColor: colors.separator,
-                borderTopWidth: StyleSheet.hairlineWidth,
-              },
-              pressed && styles.pressed,
-            ]}
-          >
-            <View style={styles.iconBox}>
-              <SymbolView name={item.symbol} size={20} tintColor={colors.tint} />
-            </View>
+      {items.map((item) => (
+        <PressableScale
+          key={item.title}
+          accessibilityRole="button"
+          onPress={() => router.push(item.href)}
+        >
+          <GlassCard style={styles.card}>
+            <IconTile symbol={item.symbol} size={56} />
             <View style={styles.text}>
               <Text style={[styles.title, { color: colors.label }]}>{item.title}</Text>
               <Text style={[styles.subtitle, { color: colors.secondaryLabel }]}>
                 {item.subtitle}
               </Text>
             </View>
-            <SymbolView
-              name={{ ios: 'chevron.right', android: 'chevron_right' }}
-              size={14}
-              tintColor={colors.secondaryLabel}
-            />
-          </Pressable>
-        ))}
-      </View>
+            <Icon name="chevron" size={14} color={colors.tertiaryLabel} />
+          </GlassCard>
+        </PressableScale>
+      ))}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16 },
-  group: {
-    borderRadius: radius.card,
-    borderCurve: 'continuous',
-    borderWidth: StyleSheet.hairlineWidth,
-    overflow: 'hidden',
-  },
-  row: {
-    minHeight: 64,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  pressed: { opacity: 0.6 },
-  iconBox: { width: 28, alignItems: 'center', justifyContent: 'center' },
-  text: { flex: 1, gap: 2 },
-  title: { ...type.bodyStrong },
+  content: { padding: space.lg, gap: space.md },
+  card: { flexDirection: 'row', alignItems: 'center', gap: space.lg },
+  text: { flex: 1, gap: space.xs },
+  title: { ...type.headline },
   subtitle: { ...type.small },
 });

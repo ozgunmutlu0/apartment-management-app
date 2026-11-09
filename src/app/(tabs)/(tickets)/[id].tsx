@@ -1,21 +1,16 @@
 import { MenuView, type MenuAction } from '@expo/ui/community/menu';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AuthField } from '@/components/AuthField';
 import { EmptyState } from '@/components/EmptyState';
 import { GlassCard } from '@/components/GlassCard';
+import { IconTile } from '@/components/IconTile';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { SectionLabel } from '@/components/SectionLabel';
+import { Skeleton } from '@/components/Skeleton';
 import {
   errorMessage,
   useAddTicketNote,
@@ -25,14 +20,15 @@ import {
   useTicketsRealtime,
   useUpdateTicketStatus,
 } from '@/features/tickets/api';
-import { CategoryIcon } from '@/features/tickets/components/CategoryIcon';
+import { CATEGORY_ICONS } from '@/features/tickets/components/CategoryIcon';
 import { PhotoGrid } from '@/features/tickets/components/PhotoGrid';
 import { StatusBadge } from '@/features/tickets/components/StatusBadge';
 import { Timeline } from '@/features/tickets/components/Timeline';
-import { formatDateTime, unitLabel } from '@/features/tickets/format';
+import { formatDateTime, formatRelative, unitLabel } from '@/features/tickets/format';
 import { TICKET_STATUSES, type TicketStatus } from '@/features/tickets/types';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
+import { hitTarget, radius, space, type } from '@/theme/tokens';
 
 const NO_ASSIGNEE = 'none';
 
@@ -57,18 +53,35 @@ export default function TicketDetailScreen() {
   const ticket = ticketQuery.data;
 
   if (ticketQuery.isPending) {
-    return <ActivityIndicator style={styles.loading} />;
+    return (
+      <View style={[styles.content, styles.fill, { backgroundColor: colors.systemGroupedBackground }]}>
+        <View style={styles.headerRow}>
+          <Skeleton width={56} height={56} />
+          <View style={styles.headerText}>
+            <Skeleton width="80%" height={22} />
+            <Skeleton width={96} height={24} radius={radius.pill} />
+          </View>
+        </View>
+        <GlassCard style={styles.card}>
+          <Skeleton width="100%" height={16} />
+          <Skeleton width="90%" height={16} />
+          <Skeleton width="60%" height={16} />
+        </GlassCard>
+      </View>
+    );
   }
   if (ticketQuery.isError || !ticket) {
     return (
-      <View style={styles.center}>
+      <View style={[styles.center, { backgroundColor: colors.systemGroupedBackground }]}>
         <EmptyState
           icon="error"
           title={ticketQuery.isError ? t('detail.errorTitle') : t('detail.notFound')}
+          action={
+            ticketQuery.isError
+              ? { title: tc('buttons.retry'), onPress: () => void ticketQuery.refetch() }
+              : undefined
+          }
         />
-        {ticketQuery.isError ? (
-          <PrimaryButton title={tc('buttons.retry')} onPress={() => void ticketQuery.refetch()} />
-        ) : null}
       </View>
     );
   }
@@ -122,8 +135,6 @@ export default function TicketDetailScreen() {
   const busy = updateStatus.isPending || assign.isPending || addNote.isPending;
   const canAct = isManager || isTechnician;
   const unit = unitLabel(ticket.unit);
-  const labelStyle = [styles.label, { color: colors.secondaryLabel }];
-  const valueStyle = [styles.value, { color: colors.label }];
 
   return (
     <>
@@ -141,38 +152,32 @@ export default function TicketDetailScreen() {
           />
         }
       >
-        <GlassCard style={styles.card}>
-          <View style={styles.headerRow}>
-            <CategoryIcon category={ticket.category} size={32} />
-            <View style={styles.headerText}>
-              <Text style={[styles.title, { color: colors.label }]}>{ticket.title}</Text>
+        <View style={styles.headerRow}>
+          <IconTile symbol={CATEGORY_ICONS[ticket.category]} size={56} />
+          <View style={styles.headerText}>
+            <Text style={[styles.title, { color: colors.label }]}>{ticket.title}</Text>
+            <View style={styles.metaRow}>
               <StatusBadge status={ticket.status} />
+              <Text style={[styles.meta, { color: colors.secondaryLabel }]}>
+                {formatRelative(ticket.created_at)}
+                {unit ? ` · ${t('unit', { label: unit })}` : ''}
+              </Text>
             </View>
           </View>
-          <Field label={t('detail.category')} value={t(`category.${ticket.category}`)} />
-          <Field label={t('detail.priority')} value={t(`priority.${ticket.priority}`)} />
-          <Field
-            label={t('detail.createdBy')}
-            value={[ticket.creatorName, unit ? t('unit', { label: unit }) : null]
-              .filter(Boolean)
-              .join(' · ')}
-          />
-          <Field label={t('detail.assignedTo')} value={ticket.assigneeName ?? t('detail.unassigned')} />
-          <Field label={t('detail.createdAt')} value={formatDateTime(ticket.created_at)} />
-          <Field label={t('detail.updatedAt')} value={formatDateTime(ticket.updated_at)} />
-          {ticket.resolved_at ? (
-            <Field label={t('detail.resolvedAt')} value={formatDateTime(ticket.resolved_at)} />
-          ) : null}
-        </GlassCard>
+        </View>
 
-        <GlassCard style={styles.card}>
-          <Text style={labelStyle}>{t('detail.description')}</Text>
-          <Text style={valueStyle}>{ticket.description || t('detail.noDescription')}</Text>
-        </GlassCard>
+        <View>
+          <SectionLabel>{t('detail.description')}</SectionLabel>
+          <GlassCard>
+            <Text style={[styles.value, { color: colors.label }]}>
+              {ticket.description || t('detail.noDescription')}
+            </Text>
+          </GlassCard>
+        </View>
 
         {ticket.photos.length > 0 ? (
-          <GlassCard style={styles.card}>
-            <Text style={labelStyle}>{t('detail.photos')}</Text>
+          <View>
+            <SectionLabel>{t('detail.photos')}</SectionLabel>
             <PhotoGrid
               photos={ticket.photos.map((p) => ({ key: p.id, uri: p.url }))}
               onPress={(index) =>
@@ -182,56 +187,91 @@ export default function TicketDetailScreen() {
                 })
               }
             />
-          </GlassCard>
+          </View>
         ) : null}
+
+        <View>
+          <SectionLabel>{t('detail.details')}</SectionLabel>
+          <GlassCard style={styles.card}>
+            <Field label={t('detail.category')} value={t(`category.${ticket.category}`)} />
+            <Field label={t('detail.priority')} value={t(`priority.${ticket.priority}`)} />
+            <Field
+              label={t('detail.createdBy')}
+              value={[ticket.creatorName, unit ? t('unit', { label: unit }) : null]
+                .filter(Boolean)
+                .join(' · ')}
+            />
+            <Field
+              label={t('detail.assignedTo')}
+              value={ticket.assigneeName ?? t('detail.unassigned')}
+            />
+            <Field label={t('detail.createdAt')} value={formatDateTime(ticket.created_at)} />
+            <Field label={t('detail.updatedAt')} value={formatDateTime(ticket.updated_at)} />
+            {ticket.resolved_at ? (
+              <Field label={t('detail.resolvedAt')} value={formatDateTime(ticket.resolved_at)} />
+            ) : null}
+          </GlassCard>
+        </View>
 
         {canAct ? (
-          <GlassCard style={styles.card}>
-            <Text style={labelStyle}>{t('detail.actions')}</Text>
-            <AuthField
-              value={note}
-              onChangeText={setNote}
-              placeholder={t('detail.notePlaceholder')}
-              multiline
-              maxLength={2000}
-              style={styles.noteInput}
-              textAlignVertical="top"
-            />
-            <View style={styles.actionRow}>
-              <MenuView
-                title={t('detail.changeStatus')}
-                actions={statusActions}
-                onPressAction={({ nativeEvent }) => onChangeStatus(nativeEvent.event as TicketStatus)}
-              >
-                <ActionLabel text={t('detail.changeStatus')} />
-              </MenuView>
-              {isManager ? (
+          <View>
+            <SectionLabel>{t('detail.actions')}</SectionLabel>
+            <GlassCard style={styles.card}>
+              <AuthField
+                value={note}
+                onChangeText={setNote}
+                placeholder={t('detail.notePlaceholder')}
+                multiline
+                maxLength={2000}
+                style={styles.noteInput}
+                textAlignVertical="top"
+              />
+              <PrimaryButton
+                title={t('detail.addNote')}
+                loading={busy}
+                disabled={!note.trim()}
+                onPress={onAddNote}
+              />
+              <View style={styles.actionRow}>
                 <MenuView
-                  title={t('detail.assign')}
-                  actions={
-                    assignActions.length > 0
-                      ? assignActions
-                      : [{ id: 'empty', title: t('detail.noTechnicians'), attributes: { disabled: true } }]
+                  title={t('detail.changeStatus')}
+                  actions={statusActions}
+                  onPressAction={({ nativeEvent }) =>
+                    onChangeStatus(nativeEvent.event as TicketStatus)
                   }
-                  onPressAction={({ nativeEvent }) => onAssign(nativeEvent.event)}
                 >
-                  <ActionLabel text={t('detail.assign')} />
+                  <ActionLabel text={t('detail.changeStatus')} />
                 </MenuView>
-              ) : null}
-            </View>
-            <PrimaryButton
-              title={t('detail.addNote')}
-              loading={busy}
-              disabled={!note.trim()}
-              onPress={onAddNote}
-            />
-          </GlassCard>
+                {isManager ? (
+                  <MenuView
+                    title={t('detail.assign')}
+                    actions={
+                      assignActions.length > 0
+                        ? assignActions
+                        : [
+                            {
+                              id: 'empty',
+                              title: t('detail.noTechnicians'),
+                              attributes: { disabled: true },
+                            },
+                          ]
+                    }
+                    onPressAction={({ nativeEvent }) => onAssign(nativeEvent.event)}
+                  >
+                    <ActionLabel text={t('detail.assign')} />
+                  </MenuView>
+                ) : null}
+              </View>
+            </GlassCard>
+          </View>
         ) : null}
 
-        <GlassCard style={styles.card}>
-          <Text style={labelStyle}>{t('detail.timeline')}</Text>
-          <Timeline events={ticket.events} />
-        </GlassCard>
+        <View>
+          <SectionLabel>{t('detail.timeline')}</SectionLabel>
+          <GlassCard>
+            <Timeline events={ticket.events} />
+          </GlassCard>
+        </View>
       </ScrollView>
     </>
   );
@@ -250,34 +290,35 @@ function Field({ label, value }: { label: string; value: string }) {
 function ActionLabel({ text }: { text: string }) {
   const colors = useColors();
   return (
-    <View style={[styles.actionButton, { backgroundColor: colors.secondarySystemBackground }]}>
+    <View style={[styles.actionButton, { backgroundColor: colors.tintSoft }]}>
       <Text style={[styles.actionText, { color: colors.tint }]}>{text}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  loading: { marginTop: 80 },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
-  content: { padding: 16, gap: 14 },
-  card: { gap: 10 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  headerText: { flex: 1, gap: 4 },
-  title: { fontSize: 20, fontWeight: '600' },
-  field: { flexDirection: 'row', justifyContent: 'space-between', gap: 12 },
-  fieldLabel: { fontSize: 15 },
-  fieldValue: { fontSize: 15, flexShrink: 1, textAlign: 'right' },
-  label: { fontSize: 13, fontWeight: '600', textTransform: 'uppercase' },
-  value: { fontSize: 16 },
-  noteInput: { minHeight: 80, paddingTop: 12 },
-  actionRow: { flexDirection: 'row', gap: 10, flexWrap: 'wrap' },
+  fill: { flex: 1 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.md },
+  content: { padding: space.lg, gap: space.xl },
+  card: { gap: space.md },
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  headerText: { flex: 1, gap: space.sm },
+  title: { ...type.title },
+  metaRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: space.sm },
+  meta: { ...type.caption },
+  field: { flexDirection: 'row', justifyContent: 'space-between', gap: space.md },
+  fieldLabel: { ...type.small },
+  fieldValue: { ...type.small, flexShrink: 1, textAlign: 'right' },
+  value: { ...type.body },
+  noteInput: { minHeight: 96, paddingTop: space.md },
+  actionRow: { flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' },
   actionButton: {
-    minHeight: 44,
-    paddingHorizontal: 16,
-    borderRadius: 12,
+    minHeight: hitTarget,
+    paddingHorizontal: space.lg,
+    borderRadius: radius.control,
     borderCurve: 'continuous',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionText: { fontSize: 16, fontWeight: '600' },
+  actionText: { ...type.bodyStrong },
 });

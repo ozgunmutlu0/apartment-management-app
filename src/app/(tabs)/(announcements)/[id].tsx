@@ -1,9 +1,11 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
+import { GlassCard } from '@/components/GlassCard';
+import { Skeleton } from '@/components/Skeleton';
 import { useAnnouncement } from '@/features/announcements/api';
 import { AnnouncementActionsMenu } from '@/features/announcements/components/AnnouncementActionsMenu';
 import { CategoryBadge } from '@/features/announcements/components/CategoryBadge';
@@ -11,6 +13,7 @@ import { useAnnouncementActions } from '@/features/announcements/components/useA
 import { formatDateTime } from '@/features/announcements/format';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
+import { radius, space, type } from '@/theme/tokens';
 
 export default function AnnouncementDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -24,8 +27,15 @@ export default function AnnouncementDetailScreen() {
 
   if (isPending) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator />
+      <View style={[styles.content, { backgroundColor: colors.systemGroupedBackground }]}>
+        <Skeleton width={80} height={24} radius={999} />
+        <Skeleton width="80%" height={26} />
+        <Skeleton width="50%" height={14} />
+        <GlassCard style={styles.bodyCard}>
+          <Skeleton height={16} />
+          <Skeleton height={16} />
+          <Skeleton width="60%" height={16} />
+        </GlassCard>
       </View>
     );
   }
@@ -65,17 +75,21 @@ export default function AnnouncementDetailScreen() {
           }}
         />
       ) : null}
-      <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.content}>
+      <ScrollView
+        style={{ backgroundColor: colors.systemGroupedBackground }}
+        contentInsetAdjustmentBehavior="automatic"
+        contentContainerStyle={styles.content}
+      >
         <View style={styles.badges}>
           <CategoryBadge category={data.category} />
           {data.pinned ? (
-            <View style={styles.pinned}>
+            <View style={[styles.pinned, { backgroundColor: colors.tintSoft }]}>
               <SymbolView
                 name={{ ios: 'pin.fill', android: 'push_pin' }}
-                size={14}
-                tintColor={colors.secondaryLabel}
+                size={12}
+                tintColor={colors.tint}
               />
-              <Text style={[styles.meta, { color: colors.secondaryLabel }]}>{t('pinned')}</Text>
+              <Text style={[styles.pinnedText, { color: colors.tint }]}>{t('pinned')}</Text>
             </View>
           ) : null}
         </View>
@@ -86,9 +100,11 @@ export default function AnnouncementDetailScreen() {
           {t('by')} {author} · {formatDateTime(data.created_at, i18n.language)}
         </Text>
         {data.body ? (
-          <Text selectable style={[styles.body, { color: colors.label }]}>
-            {data.body}
-          </Text>
+          <GlassCard style={styles.bodyCard}>
+            <Text selectable style={[styles.body, { color: colors.label }]}>
+              {data.body}
+            </Text>
+          </GlassCard>
         ) : null}
       </ScrollView>
     </>
@@ -97,10 +113,19 @@ export default function AnnouncementDetailScreen() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  content: { padding: 20, gap: 12 },
+  content: { padding: space.lg, gap: space.md },
   badges: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  pinned: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  title: { fontSize: 24, fontWeight: '600', letterSpacing: -0.5 },
-  meta: { fontSize: 13 },
-  body: { fontSize: 17, lineHeight: 24, marginTop: 8 },
+  pinned: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.xs,
+    height: 24,
+    paddingHorizontal: 10,
+    borderRadius: radius.pill,
+  },
+  pinnedText: { ...type.label },
+  title: { ...type.title },
+  meta: { ...type.caption },
+  bodyCard: { gap: space.sm, marginTop: space.sm },
+  body: { ...type.body, lineHeight: 26 },
 });

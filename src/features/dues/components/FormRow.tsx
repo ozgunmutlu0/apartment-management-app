@@ -1,7 +1,9 @@
-import type { ReactNode } from 'react';
+import { Children, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { GlassCard } from '@/components/GlassCard';
 import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 /** Label on the left, native control on the right (grouped-form look). */
 export function FormRow({ label, children }: { label: string; children: ReactNode }) {
@@ -14,25 +16,38 @@ export function FormRow({ label, children }: { label: string; children: ReactNod
   );
 }
 
-/** Rounded grouped container for FormRows. */
+/** Raised surface card for FormRows (or any rows); hairline separators sit between children only. */
 export function FormGroup({ children }: { children: ReactNode }) {
   const colors = useColors();
+  const items = Children.toArray(children);
   return (
-    <View style={[styles.group, { backgroundColor: colors.secondarySystemGroupedBackground }]}>
-      {children}
-    </View>
+    <GlassCard padding={0} style={styles.group}>
+      {items.map((child, i) => (
+        <View
+          key={i}
+          style={
+            i > 0 && {
+              borderTopColor: colors.separator,
+              borderTopWidth: StyleSheet.hairlineWidth,
+            }
+          }
+        >
+          {child}
+        </View>
+      ))}
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
-  group: { borderRadius: 16, borderCurve: 'continuous', paddingHorizontal: 16 },
+  group: { paddingHorizontal: space.lg },
   row: {
-    minHeight: 50,
+    minHeight: 52,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: space.md,
   },
-  label: { fontSize: 17 },
+  label: { ...type.body },
   control: { flexShrink: 1, alignItems: 'flex-end' },
 });

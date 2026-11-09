@@ -3,14 +3,16 @@ import { DateTimePicker } from '@expo/ui/community/datetime-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, TextInput } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { SectionLabel } from '@/components/SectionLabel';
 import { useRecordPayment } from '@/features/dues/api';
 import { FormGroup, FormRow } from '@/features/dues/components/FormRow';
 import { PAYMENT_METHODS } from '@/features/dues/types';
 import { parseAmount, useDuesFormat } from '@/features/dues/utils';
 import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 /** formSheet: record a payment for a due. Params: dueId, unitLabel, remaining. */
 export default function RecordPaymentScreen() {
@@ -82,14 +84,14 @@ export default function RecordPaymentScreen() {
         </FormRow>
       </FormGroup>
 
-      <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-        {t('manage.record.method')}
-      </Text>
-      <SegmentedControl
+      <View>
+        <SectionLabel>{t('manage.record.method')}</SectionLabel>
+        <SegmentedControl
         values={PAYMENT_METHODS.map((m) => t(`method.${m}`))}
         selectedIndex={methodIndex}
         onChange={(e) => setMethodIndex(e.nativeEvent.selectedSegmentIndex)}
       />
+      </View>
 
       {error ? <Text style={[styles.error, { color: colors.red }]}>{error}</Text> : null}
       <PrimaryButton title={t('manage.record.save')} loading={record.isPending} onPress={save} />
@@ -98,9 +100,8 @@ export default function RecordPaymentScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, gap: 12 },
-  value: { fontSize: 17 },
-  input: { fontSize: 17, minWidth: 100, textAlign: 'right' },
-  caption: { fontSize: 13, marginLeft: 4, marginTop: 4 },
-  error: { fontSize: 15 },
+  content: { padding: space.lg, gap: space.lg },
+  value: { ...type.body, fontVariant: ['tabular-nums'] },
+  input: { ...type.bodyStrong, minWidth: 100, textAlign: 'right', fontVariant: ['tabular-nums'] },
+  error: { ...type.small, marginLeft: space.xs },
 });

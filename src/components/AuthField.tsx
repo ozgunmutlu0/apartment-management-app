@@ -1,26 +1,41 @@
-import type { Ref } from 'react';
+import { useState, type Ref } from 'react';
 import { StyleSheet, TextInput, type TextInputInstance, type TextInputProps } from 'react-native';
 
 import { useColors } from '@/theme/colors';
-import { radius } from '@/theme/tokens';
+import { radius, type } from '@/theme/tokens';
 
-/** Native text input styled with system colors (used by the auth screens). */
+/**
+ * Filled text field: quiet fill, no border at rest, 1.5pt accent border on focus. Also exported as
+ * `TextField` for non-auth forms.
+ */
 export function AuthField({
   style,
   ref,
+  onFocus,
+  onBlur,
   ...rest
 }: TextInputProps & { ref?: Ref<TextInputInstance> }) {
   const colors = useColors();
+  const [focused, setFocused] = useState(false);
   return (
     <TextInput
       ref={ref}
-      placeholderTextColor={colors.secondaryLabel}
+      placeholderTextColor={colors.tertiaryLabel}
+      selectionColor={colors.tint as string}
+      onFocus={(e) => {
+        setFocused(true);
+        onFocus?.(e);
+      }}
+      onBlur={(e) => {
+        setFocused(false);
+        onBlur?.(e);
+      }}
       style={[
         styles.input,
         {
           color: colors.label,
-          backgroundColor: colors.systemBackground,
-          borderColor: colors.separator,
+          backgroundColor: colors.secondarySystemBackground,
+          borderColor: focused ? colors.tint : 'transparent',
         },
         style,
       ]}
@@ -29,13 +44,15 @@ export function AuthField({
   );
 }
 
+export const TextField = AuthField;
+
 const styles = StyleSheet.create({
   input: {
-    minHeight: 48,
-    paddingHorizontal: 14,
+    minHeight: 52,
+    paddingHorizontal: 16,
     borderRadius: radius.control,
     borderCurve: 'continuous',
-    borderWidth: StyleSheet.hairlineWidth,
-    fontSize: 16,
+    borderWidth: 1.5,
+    ...type.body,
   },
 });

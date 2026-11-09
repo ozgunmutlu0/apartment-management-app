@@ -1,9 +1,12 @@
 import { DynamicColorIOS, Platform, useColorScheme, type ColorValue } from 'react-native';
 
 /**
- * Semantic colors: warm paper grounds, warm near-black ink, one accent (blueprint blue).
- * The interface is almost entirely neutral; hue appears only for the accent and for state
- * (waiting, working, done, urgent). No violet, no gradients, no pure black.
+ * Semantic colors, "teal on paper": cool-neutral paper grounds, deep teal ink/accent (#06525C, a
+ * light teal in dark mode), "soft layered": raised white cards (`secondarySystemGroupedBackground`)
+ * on a tinted ground (`systemGroupedBackground`), soft tinted fills (`*Soft`) behind same-hue text
+ * and glyphs. The interface is almost entirely neutral; hue appears only for the accent and for
+ * state (waiting, reviewing, working, done, urgent). No violet, no gradients, no pure black. In dark
+ * mode elevation is a lighter surface, not a shadow.
  *
  * iOS uses DynamicColorIOS so light/dark switch natively without re-rendering; Android resolves
  * the same pairs through useColorScheme().
@@ -25,26 +28,41 @@ export type SemanticColors = {
   green: ColorValue;
   orange: ColorValue;
   red: ColorValue;
-  teal: ColorValue;
+  /** State only ("in review"); deliberately distinct from the teal accent. */
+  blue: ColorValue;
   separator: ColorValue;
+  /** Chevrons, placeholders, disabled glyphs. Decorative; below text contrast. */
+  tertiaryLabel: ColorValue;
+  /** Soft fills, used behind text/glyphs of the same hue (all pairs reach 4.5:1). */
+  tintSoft: ColorValue;
+  greenSoft: ColorValue;
+  orangeSoft: ColorValue;
+  redSoft: ColorValue;
+  blueSoft: ColorValue;
 };
 
 type Pair = { light: string; dark: string };
 
 const palette: Record<keyof SemanticColors, Pair> = {
-  label: { light: '#1D1B17', dark: '#EEEBE3' },
-  secondaryLabel: { light: '#5F5A50', dark: '#A8A397' },
-  systemBackground: { light: '#FBFAF7', dark: '#151412' },
-  secondarySystemBackground: { light: '#F0EDE5', dark: '#24221E' },
-  systemGroupedBackground: { light: '#F4F1EA', dark: '#151412' },
-  secondarySystemGroupedBackground: { light: '#FDFCF9', dark: '#1E1D19' },
-  tint: { light: '#2C5AA0', dark: '#8DB1E8' },
-  onTint: { light: '#FFFFFF', dark: '#0F1623' },
-  green: { light: '#3F7A3A', dark: '#9BC48A' },
-  orange: { light: '#A8641A', dark: '#E2A455' },
+  label: { light: '#0F1E1D', dark: '#E8F0EE' },
+  secondaryLabel: { light: '#51625E', dark: '#9BAEA9' },
+  tertiaryLabel: { light: '#8A9A96', dark: '#6B7D79' },
+  systemBackground: { light: '#FFFFFF', dark: '#0C1413' },
+  secondarySystemBackground: { light: '#E9EFED', dark: '#1D2927' },
+  systemGroupedBackground: { light: '#F1F5F4', dark: '#0C1413' },
+  secondarySystemGroupedBackground: { light: '#FFFFFF', dark: '#151F1D' },
+  tint: { light: '#06525C', dark: '#7FC4CC' },
+  onTint: { light: '#FFFFFF', dark: '#06252A' },
+  green: { light: '#2A6D37', dark: '#8FCB9B' },
+  orange: { light: '#94561A', dark: '#E2A455' },
   red: { light: '#B3372B', dark: '#EE8D80' },
-  teal: { light: '#2B7A74', dark: '#77C0B8' },
-  separator: { light: '#DDD8CC', dark: '#34312B' },
+  blue: { light: '#2F5F9E', dark: '#8FB4E6' },
+  separator: { light: '#D3DDDA', dark: '#2A3835' },
+  tintSoft: { light: '#DCECEC', dark: '#12393E' },
+  greenSoft: { light: '#DFEEE1', dark: '#1A3322' },
+  orangeSoft: { light: '#F6E9D6', dark: '#3A2A14' },
+  redSoft: { light: '#F7DEDA', dark: '#401F1B' },
+  blueSoft: { light: '#DEE8F5', dark: '#1B2C45' },
 };
 
 function build(pick: (pair: Pair) => ColorValue): SemanticColors {
@@ -64,7 +82,12 @@ export function hexColors(
   return out;
 }
 
-const ios = build((p) => DynamicColorIOS({ light: p.light, dark: p.dark }));
+// DynamicColorIOS throws off iOS, so it is only evaluated there.
+const ios = (
+  Platform.OS === 'ios'
+    ? build((p) => DynamicColorIOS({ light: p.light, dark: p.dark }))
+    : build((p) => p.light)
+) as SemanticColors;
 const androidLight = build((p) => p.light);
 const androidDark = build((p) => p.dark);
 
@@ -78,21 +101,32 @@ export const Colors: SemanticColors = Platform.OS === 'ios' ? ios : androidLight
 
 export type TicketStatus = 'pending' | 'in_review' | 'in_progress' | 'resolved';
 
-/** Status colors: grey waiting, accent reviewing, amber working, green done. Reactive version. */
+/** Status colors: grey waiting, blue reviewing, amber working, green done. Reactive version. */
 export function useStatusColors(): Record<TicketStatus, ColorValue> {
   const c = useColors();
   return {
     pending: c.secondaryLabel,
-    in_review: c.tint,
+    in_review: c.blue,
     in_progress: c.orange,
     resolved: c.green,
+  };
+}
+
+/** Soft fill per status, to sit behind the matching `useStatusColors()` text/glyph. */
+export function useStatusSoftColors(): Record<TicketStatus, ColorValue> {
+  const c = useColors();
+  return {
+    pending: c.secondarySystemBackground,
+    in_review: c.blueSoft,
+    in_progress: c.orangeSoft,
+    resolved: c.greenSoft,
   };
 }
 
 /** Static version (see note on `Colors`). */
 export const statusColors: Record<TicketStatus, ColorValue> = {
   pending: Colors.secondaryLabel,
-  in_review: Colors.tint,
+  in_review: Colors.blue,
   in_progress: Colors.orange,
   resolved: Colors.green,
 };

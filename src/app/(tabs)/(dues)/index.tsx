@@ -4,40 +4,60 @@ import { RefreshControl, SectionList, StyleSheet, Text, View } from 'react-nativ
 
 import { EmptyState } from '@/components/EmptyState';
 import { GlassCard } from '@/components/GlassCard';
-import { PrimaryButton } from '@/components/PrimaryButton';
+import { Icon } from '@/components/Icon';
+import { SectionLabel } from '@/components/SectionLabel';
+import { Skeleton } from '@/components/Skeleton';
 import { useResidentDues, useResidentSummary } from '@/features/dues/api';
 import { DueStatusBadge } from '@/features/dues/components/DueStatusBadge';
 import type { DueWithPayments } from '@/features/dues/types';
 import { effectiveStatus, remainingOf, useDuesFormat } from '@/features/dues/utils';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 function SummaryCard() {
   const { t } = useTranslation('dues');
   const colors = useColors();
   const fmt = useDuesFormat();
   const { data } = useResidentSummary();
-  if (!data) return null;
+  if (!data) {
+    return (
+      <GlassCard variant="tint" style={styles.summary}>
+        <Skeleton width={120} height={14} />
+        <Skeleton width={180} height={40} />
+      </GlassCard>
+    );
+  }
+  const allPaid = data.outstanding === 0;
   return (
-    <GlassCard style={styles.summary}>
-      <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-        {t('summary.outstanding')}
-      </Text>
-      <Text style={[styles.total, { color: colors.label }]} accessibilityRole="header">
-        {fmt.money(data.outstanding)}
-      </Text>
-      {data.overdueCount > 0 ? (
-        <Text style={[styles.overdue, { color: colors.red }]}>
-          {t('summary.overdue', { count: data.overdueCount })}
-        </Text>
-      ) : null}
-      <Text style={[styles.caption, { color: colors.secondaryLabel }]}>
-        {data.nextDueDate
-          ? t('summary.nextDue', { date: fmt.date(data.nextDueDate) })
-          : data.outstanding === 0
-            ? t('summary.allPaid')
-            : ''}
-      </Text>
+    <GlassCard variant="tint" padding={space.xl} style={styles.summary}>
+      {allPaid ? (
+        <>
+          <Icon name="check" size={32} color={colors.onTint} />
+          <Text style={[styles.heroTitle, { color: colors.onTint }]} accessibilityRole="header">
+            {t('summary.allPaid')}
+          </Text>
+        </>
+      ) : (
+        <>
+          <Text style={[styles.heroCaption, { color: colors.onTint }]}>
+            {t('summary.outstanding')}
+          </Text>
+          <Text style={[styles.total, { color: colors.onTint }]} accessibilityRole="header">
+            {fmt.money(data.outstanding)}
+          </Text>
+          {data.overdueCount > 0 ? (
+            <Text style={[styles.heroLine, { color: colors.onTint }]}>
+              {t('summary.overdue', { count: data.overdueCount })}
+            </Text>
+          ) : null}
+          {data.nextDueDate ? (
+            <Text style={[styles.heroCaption, { color: colors.onTint }]}>
+              {t('summary.nextDue', { date: fmt.date(data.nextDueDate) })}
+            </Text>
+          ) : null}
+        </>
+      )}
     </GlassCard>
   );
 }
@@ -51,7 +71,7 @@ function DueRow({ due }: { due: DueWithPayments }) {
   const remaining = remainingOf(due);
   const partial = status !== 'paid' && due.payments.length > 0 && remaining > 0;
   return (
-    <View style={[styles.row, { backgroundColor: colors.secondarySystemGroupedBackground }]}>
+    <GlassCard style={styles.row}>
       <View style={styles.rowMain}>
         <Text style={[styles.month, { color: colors.label }]}>{fmt.month(due.period)}</Text>
         <Text style={[styles.detail, { color: colors.secondaryLabel }]}>
@@ -77,7 +97,7 @@ function DueRow({ due }: { due: DueWithPayments }) {
         </Text>
         <DueStatusBadge status={status} />
       </View>
-    </View>
+    </GlassCard>
   );
 }
 
@@ -108,8 +128,11 @@ export default function DuesScreen() {
   if (isError && !data) {
     return (
       <View style={styles.center}>
-        <EmptyState icon="error" title={t('error')} />
-        <PrimaryButton variant="plain" title={tc('buttons.retry')} onPress={() => void refetch()} />
+        <EmptyState
+          icon="error"
+          title={t('error')}
+          action={{ title: tc('buttons.retry'), onPress: () => void refetch() }}
+        />
       </View>
     );
   }
@@ -128,39 +151,46 @@ export default function DuesScreen() {
         <Text style={[styles.info, { color: colors.secondaryLabel }]}>{t('info')}</Text>
       }
       ListEmptyComponent={
-        isLoading ? undefined : (
+        isLoading ? (
+          <View style={styles.skeletons}>
+            {[0, 1, 2].map((i) => (
+              <GlassCard key={i} style={styles.row}>
+                <View style={styles.rowMain}>
+                  <Skeleton width="50%" height={18} />
+                  <Skeleton width="35%" height={14} />
+                </View>
+                <Skeleton width={72} height={18} />
+              </GlassCard>
+            ))}
+          </View>
+        ) : (
           <EmptyState icon="dues" title={t('empty.title')} message={t('empty.message')} />
         )
       }
       renderSectionHeader={({ section }) => (
-        <Text style={[styles.section, { color: colors.secondaryLabel }]}>{section.title}</Text>
+        <SectionLabel style={styles.section}>{section.title}</SectionLabel>
       )}
       renderItem={({ item }) => <DueRow due={item} />}
-      ItemSeparatorComponent={() => (
-        <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: colors.separator }} />
-      )}
+      ItemSeparatorComponent={() => <View style={{ height: space.sm }} />}
     />
   );
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, justifyContent: 'center', padding: 24, gap: 12 },
-  content: { paddingHorizontal: 16, paddingBottom: 32 },
-  summary: { gap: 4, marginTop: 8, marginBottom: 8 },
-  caption: { fontSize: 15 },
-  total: { fontSize: 34, fontWeight: '600', letterSpacing: -0.8, fontVariant: ['tabular-nums'] },
-  overdue: { fontSize: 15, fontWeight: '600' },
-  section: { fontSize: 15, fontWeight: '600', marginTop: 16, marginBottom: 6, marginLeft: 4 },
-  row: {
-    flexDirection: 'row',
-    gap: 12,
-    padding: 14,
-    justifyContent: 'space-between',
-  },
-  rowMain: { flex: 1, gap: 2 },
-  rowEnd: { alignItems: 'flex-end', gap: 6 },
-  month: { fontSize: 17, fontWeight: '500' },
-  detail: { fontSize: 14 },
-  amount: { fontSize: 17, fontWeight: '600' },
-  info: { fontSize: 13, textAlign: 'center', marginTop: 24, paddingHorizontal: 8 },
+  center: { flex: 1, justifyContent: 'center', padding: space.xl, gap: space.md },
+  content: { paddingHorizontal: space.lg, paddingBottom: space.xxl },
+  summary: { gap: space.xs, marginTop: space.sm, marginBottom: space.sm },
+  heroCaption: { ...type.small },
+  heroLine: { ...type.bodyStrong },
+  heroTitle: { ...type.title, marginTop: space.xs },
+  total: { ...type.hero, fontVariant: ['tabular-nums'] },
+  section: { marginTop: space.xl, marginBottom: 0 },
+  skeletons: { gap: space.sm },
+  row: { flexDirection: 'row', gap: space.md, justifyContent: 'space-between' },
+  rowMain: { flex: 1, gap: space.xs },
+  rowEnd: { alignItems: 'flex-end', gap: space.sm },
+  month: { ...type.headline },
+  detail: { ...type.caption },
+  amount: { ...type.bodyStrong, fontVariant: ['tabular-nums'] },
+  info: { ...type.caption, textAlign: 'center', marginTop: space.xl, paddingHorizontal: space.sm },
 });

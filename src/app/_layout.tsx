@@ -1,5 +1,11 @@
 import '@/i18n';
 
+import {
+  Outfit_400Regular,
+  Outfit_500Medium,
+  Outfit_600SemiBold,
+  useFonts,
+} from '@expo-google-fonts/outfit';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -41,12 +47,19 @@ function ProfileErrorScreen() {
 
 function RootNavigator() {
   const { session, profile, isLoading, profileError } = useAuth();
+  // A font error must not trap the splash screen: fall back to the system font.
+  const [fontsLoaded, fontError] = useFonts({
+    Outfit_400Regular,
+    Outfit_500Medium,
+    Outfit_600SemiBold,
+  });
+  const ready = !isLoading && (fontsLoaded || !!fontError);
 
   useEffect(() => {
-    if (!isLoading) void SplashScreen.hideAsync();
-  }, [isLoading]);
+    if (ready) void SplashScreen.hideAsync();
+  }, [ready]);
 
-  if (isLoading) return null;
+  if (!ready) return null;
   if (session && profileError) return <ProfileErrorScreen />;
 
   const signedIn = !!session && !!profile;

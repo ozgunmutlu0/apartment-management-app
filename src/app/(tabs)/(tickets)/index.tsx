@@ -2,16 +2,17 @@ import { SegmentedControl } from '@expo/ui/community/segmented-control';
 import { Stack, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
+import { FlatList, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { EmptyState } from '@/components/EmptyState';
-import { PrimaryButton } from '@/components/PrimaryButton';
+import { Skeleton } from '@/components/Skeleton';
 import { useAuth } from '@/lib/auth';
 import { TicketRow } from '@/features/tickets/components/TicketRow';
 import { useTickets, useTicketsRealtime } from '@/features/tickets/api';
 import { TICKET_STATUSES, type TicketStatus } from '@/features/tickets/types';
 import { useColors } from '@/theme/colors';
+import { radius, space } from '@/theme/tokens';
 
 export default function TicketsScreen() {
   const { t } = useTranslation('tickets');
@@ -45,13 +46,20 @@ export default function TicketsScreen() {
 
   let empty;
   if (tickets.isPending) {
-    empty = <ActivityIndicator style={styles.loading} />;
+    empty = (
+      <View style={styles.skeletons}>
+        {[0, 1, 2, 3].map((i) => (
+          <Skeleton key={i} height={92} radius={radius.card} />
+        ))}
+      </View>
+    );
   } else if (tickets.isError) {
     empty = (
-      <View style={styles.errorBox}>
-        <EmptyState icon="error" title={t('list.errorTitle')} />
-        <PrimaryButton title={tc('buttons.retry')} onPress={() => void tickets.refetch()} />
-      </View>
+      <EmptyState
+        icon="error"
+        title={t('list.errorTitle')}
+        action={{ title: tc('buttons.retry'), onPress: () => void tickets.refetch() }}
+      />
     );
   } else if (filtered) {
     empty = (
@@ -85,7 +93,7 @@ export default function TicketsScreen() {
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={t('list.add')}
-                  hitSlop={8}
+                  hitSlop={space.md}
                   onPress={() => router.push('/(tabs)/(tickets)/new')}
                 >
                   <SymbolView
@@ -140,9 +148,8 @@ function Separator() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, flexGrow: 1 },
-  segmented: { marginBottom: 16 },
-  separator: { height: 10 },
-  loading: { marginTop: 48 },
-  errorBox: { gap: 12, alignItems: 'center' },
+  content: { padding: space.lg, flexGrow: 1 },
+  segmented: { marginBottom: space.lg },
+  separator: { height: space.md },
+  skeletons: { gap: space.md },
 });

@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -15,15 +15,18 @@ import {
 import { AuthField } from '@/components/AuthField';
 import { GlassCard } from '@/components/GlassCard';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { BrandBlock } from '@/features/auth/components/BrandBlock';
 import { useAuth } from '@/lib/auth';
 import { authErrorMessage } from '@/lib/authErrors';
 import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SignUpScreen() {
   const { t } = useTranslation('auth');
   const colors = useColors();
+  const router = useRouter();
   const { signUp } = useAuth();
   const emailRef = useRef<TextInputInstance>(null);
   const passwordRef = useRef<TextInputInstance>(null);
@@ -72,7 +75,7 @@ export default function SignUpScreen() {
         keyboardShouldPersistTaps="handled"
         contentInsetAdjustmentBehavior="automatic"
       >
-        <Text style={[styles.title, { color: colors.label }]}>{t('signUp.title')}</Text>
+        <BrandBlock title={t('signUp.title')} />
 
         <GlassCard style={styles.form}>
           <AuthField
@@ -126,10 +129,14 @@ export default function SignUpScreen() {
         </GlassCard>
 
         <View style={styles.footer}>
-          <Text style={{ color: colors.secondaryLabel }}>{t('signUp.haveAccount')}</Text>
-          <Link href="/sign-in" replace style={{ color: colors.tint, fontWeight: '600' }}>
-            {t('signUp.signIn')}
-          </Link>
+          <Text style={[styles.footerText, { color: colors.secondaryLabel }]}>
+            {t('signUp.haveAccount')}
+          </Text>
+          <PrimaryButton
+            variant="tonal"
+            title={t('signUp.signIn')}
+            onPress={() => router.replace('/sign-in')}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -138,10 +145,10 @@ export default function SignUpScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  content: { flexGrow: 1, justifyContent: 'center', padding: 20, gap: 20 },
-  title: { fontSize: 30, fontWeight: '600', letterSpacing: -0.7, textAlign: 'left' },
-  form: { gap: 12 },
-  hint: { fontSize: 13 },
-  error: { fontSize: 14 },
-  footer: { flexDirection: 'row', justifyContent: 'center', gap: 6 },
+  content: { flexGrow: 1, justifyContent: 'center', padding: space.xl, gap: space.xl },
+  form: { gap: space.md },
+  hint: { ...type.caption },
+  error: { ...type.small },
+  footer: { alignItems: 'stretch', gap: space.md },
+  footerText: { ...type.body, textAlign: 'center' },
 });

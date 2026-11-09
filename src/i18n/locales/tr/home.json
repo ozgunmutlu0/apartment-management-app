@@ -14,7 +14,8 @@
     "unassigned": "Atanmamış talepler",
     "assignedOpen": "Size atanan açık işler",
     "inProgressList": "Üzerinde çalışılanlar",
-    "noneActive": "Şu an üzerinde çalışılan iş yok."
+    "noneActive": "Şu an üzerinde çalışılan iş yok.",
+    "unassignedCount": "{{count}} atanmamış talep"
   },
   "dues": {
     "title": "Aidat",
@@ -23,7 +24,8 @@
     "allPaid": "Tüm aidatlarınız ödenmiş",
     "monthCollection": "Bu ay tahsilat",
     "collectedOf": "{{collected}} / {{expected}}",
-    "noDues": "Bu ay için aidat oluşturulmadı."
+    "noDues": "Bu ay için aidat oluşturulmadı.",
+    "ofExpected": "Hedef {{expected}}"
   },
   "announcements": {
     "title": "Duyurular",
@@ -40,5 +42,8 @@
     "newAnnouncement": "Yeni duyuru",
     "duesManagement": "Aidat yönetimi",
     "reports": "Raporlar"
+  },
+  "hero": {
+    "activeJobs": "Aktif işleriniz"
   }
 }

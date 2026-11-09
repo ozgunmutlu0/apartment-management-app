@@ -3,7 +3,7 @@
 FixMyBuilding: apartment management app (residents, managers, technicians) - tickets with photos, announcements, dues, notifications, reservations. University term project. Public repo: ozgunmutlu0/apartment-management-app (branch `master`). `PLAN.md` (Turkish) is the binding plan; read it before starting a work package (WP).
 
 ## Stack
-Expo SDK 58 (`expo ~58.0.23`), React Native 0.88.1, React 19.3.0, TypeScript ~6.0 strict, expo-router ~58.0.30, `@expo/ui ~58.0.27`, `expo-glass-effect ~58.0.5`, `expo-symbols`, `@supabase/supabase-js ^2.119`, `@tanstack/react-query ^5.107`, `i18next ^27` + `react-i18next ^18`, expo-secure-store, expo-notifications, expo-image(-picker).
+Expo SDK 58 (`expo ~58.0.23`), React Native 0.88.1, React 19.3.0, TypeScript ~6.0 strict, expo-router ~58.0.30, `@expo/ui ~58.0.27`, `expo-glass-effect ~58.0.5`, `expo-symbols`, `@supabase/supabase-js ^2.119`, `@tanstack/react-query ^5.107`, `i18next ^27` + `react-i18next ^18`, expo-secure-store, expo-notifications, expo-image(-picker), expo-font + `@expo-google-fonts/outfit`, `react-native-reanimated` (press/skeleton motion only, respects reduced motion).
 
 ## Commands
 - `npx expo start` (`npm run ios|android|web`)
@@ -15,12 +15,12 @@ Expo SDK 58 (`expo ~58.0.23`), React Native 0.88.1, React 19.3.0, TypeScript ~6.
 - `src/app/(tabs)/_layout.tsx` = `NativeTabs`; role decides visible triggers (`hidden`). Groups: `(home) (tickets) (announcements) (dues) (manage) (profile)`, each with its own native `Stack` `_layout.tsx`.
   - resident: Home, Tickets, Announcements, Dues, Profile. manager: Home, Tickets, Announcements, Manage, Profile. technician: Home, Tickets (assigned), Announcements, Profile.
 - `src/features/<feature>/` = `api.ts` (react-query hooks), `types.ts`, `components/`. Screens stay thin and call these hooks.
-- `src/components/` shared UI (GlassCard, EmptyState, ...). `src/lib/` supabase client, auth context, queryClient, `database.types.ts`.
+- `src/components/` shared UI: GlassCard (variants surface/tint/quiet), PressableScale, IconTile, Badge, PrimaryButton (variants), PressableRow, EmptyState, TextField/AuthField, SectionLabel, Skeleton. `src/lib/` supabase client, auth context, queryClient, `database.types.ts`.
 - `src/i18n/` namespaces per feature in `locales/{tr,en}/<ns>.json`; TR is default, EN second.
-- `src/theme/colors.ts` = custom palette (warm paper grounds, warm ink, one accent "blueprint blue", state colors only; no violet, no pure black, no gradients). iOS via `DynamicColorIOS`, Android via `useColorScheme`; `hexColors()` for libraries that parse colors. `src/theme/tokens.ts` = spacing, radius (card 14 / control 10), type scale (weights 500/600 only). Dark mode required. Use accent for actions/links/selection only; categories are not states, never rainbow them.
+- `src/theme/colors.ts` = custom "teal on paper" palette (tinted cool ground, white raised cards, one teal accent, state colors green/orange/red/blue each with a soft fill for pills and icon tiles, `tertiaryLabel` for chevrons only; no violet, no pure black, no gradients). iOS via `DynamicColorIOS`, Android via `useColorScheme`; `hexColors()` for libraries that parse colors. `src/theme/tokens.ts` = spacing, radius (card 20 / control 14 / tile 12 / pill), Outfit type scale via family tokens 400/500/600 (never `fontWeight`), elevation tokens, press spring. Dark mode required. Use accent for actions/links/selection only; categories are not states, never rainbow them.
 
 ## Native-first rule (PLAN.md section 1)
-Anything with a native equivalent is never imitated in JS: tab bar (NativeTabs), header (native stack, large titles, `headerSearchBarOptions`), sheets (`presentation: 'formSheet'`), glass only for system chrome / floating controls (`expo-glass-effect`); content cards (`GlassCard`) are flat opaque surfaces with a hairline, segmented control / date picker / switch / context menu / alert / action sheet (`@expo/ui`, else RN core). No JS modal or bottom-sheet libraries. Justify before adding any UI library.
+Anything with a native equivalent is never imitated in JS: tab bar (NativeTabs), header (native stack, large titles, `headerSearchBarOptions`), sheets (`presentation: 'formSheet'`), glass only for system chrome / floating controls (`expo-glass-effect`); content cards (`GlassCard`) are opaque raised surfaces (soft shadow in light, hairline in dark), segmented control / date picker / switch / context menu / alert / action sheet (`@expo/ui`, else RN core). No JS modal or bottom-sheet libraries. Justify before adding any UI library.
 
 ## Verified SDK 58 API notes
 - `import { NativeTabs } from 'expo-router/native-tabs'` (NOT `unstable-native-tabs`). Hide per role with `<NativeTabs.Trigger name=".." hidden={...}>`.

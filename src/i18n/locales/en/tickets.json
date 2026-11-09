@@ -55,6 +55,7 @@
   },
   "detail": {
     "notFound": "Request not found",
+    "details": "Details",
     "errorTitle": "Could not load the request",
     "createdBy": "Created by",
     "createdAt": "Created",

@@ -2,17 +2,21 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshControl, ScrollView, StyleSheet, Text } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 
 import { QuickActions, type QuickAction } from '@/features/home/components/parts';
 import {
+  ManagerHero,
   ManagerSections,
+  ResidentHero,
   ResidentSections,
+  TechnicianHero,
   TechnicianSections,
 } from '@/features/home/components/sections';
 import { useResidence } from '@/features/profile/api';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
+import { space } from '@/theme/tokens';
 
 export default function HomeScreen() {
   const { t } = useTranslation('home');
@@ -94,9 +98,13 @@ export default function HomeScreen() {
         contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
       >
-        {subtitle ? (
-          <Text style={[styles.subtitle, { color: colors.secondaryLabel }]}>{subtitle}</Text>
-        ) : null}
+        {role === 'resident' ? (
+          <ResidentHero context={subtitle} />
+        ) : role === 'manager' ? (
+          <ManagerHero context={subtitle} />
+        ) : (
+          <TechnicianHero context={subtitle} />
+        )}
         {actions.length > 0 ? <QuickActions actions={actions} /> : null}
         {role === 'resident' ? (
           <ResidentSections />
@@ -111,6 +119,5 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: 16, gap: 22 },
-  subtitle: { fontSize: 15, marginTop: -8 },
+  content: { padding: space.lg, gap: space.xl },
 });

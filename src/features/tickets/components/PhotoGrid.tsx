@@ -1,7 +1,9 @@
 import { Image } from 'expo-image';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
+import { PressableScale } from '@/components/PressableScale';
 import { useColors } from '@/theme/colors';
+import { radius, space } from '@/theme/tokens';
 
 export type PhotoGridItem = { key: string; uri: string | null };
 
@@ -13,7 +15,7 @@ export type PhotoGridProps = {
   size?: number;
 };
 
-/** Horizontal strip of square thumbnails. */
+/** Horizontal strip of rounded square thumbnails. */
 export function PhotoGrid({ photos, onPress, renderOverlay, size = 96 }: PhotoGridProps) {
   const colors = useColors();
   return (
@@ -24,7 +26,7 @@ export function PhotoGrid({ photos, onPress, renderOverlay, size = 96 }: PhotoGr
     >
       {photos.map((photo, index) => (
         <View key={photo.key}>
-          <Pressable
+          <PressableScale
             accessibilityRole="imagebutton"
             disabled={!onPress || !photo.uri}
             onPress={() => onPress?.(index)}
@@ -38,7 +40,7 @@ export function PhotoGrid({ photos, onPress, renderOverlay, size = 96 }: PhotoGr
                 { width: size, height: size, backgroundColor: colors.secondarySystemBackground },
               ]}
             />
-          </Pressable>
+          </PressableScale>
           {renderOverlay?.(index)}
         </View>
       ))}
@@ -47,6 +49,6 @@ export function PhotoGrid({ photos, onPress, renderOverlay, size = 96 }: PhotoGr
 }
 
 const styles = StyleSheet.create({
-  row: { gap: 10, paddingVertical: 4 },
-  image: { borderRadius: 12, borderCurve: 'continuous' },
+  row: { gap: space.md, paddingVertical: space.xs },
+  image: { borderRadius: radius.control, borderCurve: 'continuous' },
 });

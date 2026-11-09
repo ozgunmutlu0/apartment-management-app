@@ -1,8 +1,12 @@
 import { MenuView, type MenuAction } from '@expo/ui/community/menu';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { GlassCard } from '@/components/GlassCard';
+import { IconTile, type Tone } from '@/components/IconTile';
+import { PressableScale } from '@/components/PressableScale';
 import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 import type { NotificationRow as NotificationData } from '../api';
 import { notificationStatus, notificationTitleKey } from '../links';
@@ -27,6 +31,31 @@ export function useNotificationTitle() {
     }
     return t(`title.${key}`, { title: n.title });
   };
+}
+
+const STATUS_TONE: Record<string, Tone> = {
+  pending: 'neutral',
+  in_review: 'blue',
+  in_progress: 'orange',
+  resolved: 'green',
+};
+
+/** Tone is a state only for ticket status changes; everything else uses the accent. */
+function toneOf(n: NotificationData): Tone {
+  if (notificationTitleKey(n.type) !== 'ticket_status') return 'tint';
+  const status = notificationStatus(n.data);
+  return (status && STATUS_TONE[status]) || 'tint';
+}
+
+function iconOf(n: NotificationData): 'ticket' | 'announcement' | 'notification' {
+  switch (notificationTitleKey(n.type)) {
+    case 'announcement':
+      return 'announcement';
+    case 'generic':
+      return 'notification';
+    default:
+      return 'ticket';
+  }
 }
 
 /** One notification; long-press opens a native context menu (mark read / delete). */
@@ -60,58 +89,46 @@ export function NotificationRow({
         else if (nativeEvent.event === 'delete') onDelete();
       }}
     >
-      <Pressable
+      <PressableScale
         accessibilityRole="button"
         accessibilityState={{ selected: unread }}
         onPress={onPress}
-        style={({ pressed }) => [
-          styles.row,
-          { backgroundColor: colors.secondarySystemGroupedBackground },
-          pressed && styles.pressed,
-        ]}
       >
-        <View style={styles.dotSlot}>
+        <GlassCard style={styles.row}>
+          <IconTile name={iconOf(notification)} tone={toneOf(notification)} />
+          <View style={styles.body}>
+            <Text
+              style={[styles.title, unread ? type.headline : type.body, { color: colors.label }]}
+              numberOfLines={2}
+            >
+              {titleOf(notification)}
+            </Text>
+            {notification.body ? (
+              <Text style={[styles.text, { color: colors.secondaryLabel }]} numberOfLines={2}>
+                {notification.body}
+              </Text>
+            ) : null}
+            <Text style={[styles.time, { color: colors.secondaryLabel }]}>
+              {formatRelative(notification.created_at)}
+            </Text>
+          </View>
           {unread ? (
             <View
               accessibilityLabel={t('unread')}
               style={[styles.dot, { backgroundColor: colors.tint }]}
             />
           ) : null}
-        </View>
-        <View style={styles.body}>
-          <Text
-            style={[styles.title, { color: colors.label, fontWeight: unread ? '600' : '400' }]}
-            numberOfLines={2}
-          >
-            {titleOf(notification)}
-          </Text>
-          {notification.body ? (
-            <Text style={[styles.text, { color: colors.secondaryLabel }]} numberOfLines={2}>
-              {notification.body}
-            </Text>
-          ) : null}
-          <Text style={[styles.time, { color: colors.secondaryLabel }]}>
-            {formatRelative(notification.created_at)}
-          </Text>
-        </View>
-      </Pressable>
+        </GlassCard>
+      </PressableScale>
     </MenuView>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    gap: 8,
-    padding: 14,
-    borderRadius: 20,
-    borderCurve: 'continuous',
-  },
-  pressed: { opacity: 0.6 },
-  dotSlot: { width: 12, paddingTop: 6, alignItems: 'center' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   dot: { width: 10, height: 10, borderRadius: 5 },
-  body: { flex: 1, gap: 3 },
-  title: { fontSize: 16 },
-  text: { fontSize: 14 },
-  time: { fontSize: 12 },
+  body: { flex: 1, gap: 2 },
+  title: {},
+  text: { ...type.small },
+  time: { ...type.caption },
 });

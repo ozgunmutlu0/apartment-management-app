@@ -45,7 +45,8 @@
           "photosPermission": "Allow FixMyBuilding to access your photos to attach them to maintenance requests.",
           "cameraPermission": "Allow FixMyBuilding to use the camera to photograph maintenance issues."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,

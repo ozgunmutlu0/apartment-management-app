@@ -2,17 +2,12 @@ import { Picker } from '@expo/ui/community/picker';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Switch,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
+import { GlassCard } from '@/components/GlassCard';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { SectionLabel } from '@/components/SectionLabel';
+import { TextField } from '@/components/AuthField';
 import {
   useAnnouncement,
   useCreateAnnouncement,
@@ -28,6 +23,7 @@ import {
 } from '@/features/announcements/types';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 export default function AnnouncementFormScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -82,11 +78,6 @@ function AnnouncementForm({ id, initial }: { id?: string; initial: Announcement 
     else create.mutate(input, options);
   };
 
-  const inputStyle = [
-    styles.input,
-    { color: colors.label, backgroundColor: colors.secondarySystemBackground },
-  ];
-
   return (
     <>
       {isEdit ? <Stack.Screen options={{ title: t('form.editTitle') }} /> : null}
@@ -94,55 +85,66 @@ function AnnouncementForm({ id, initial }: { id?: string; initial: Announcement 
         contentInsetAdjustmentBehavior="automatic"
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
+        style={{ backgroundColor: colors.systemGroupedBackground }}
         contentContainerStyle={styles.content}
       >
-        <Text style={[styles.label, { color: colors.secondaryLabel }]}>{t('form.title')}</Text>
-        <TextInput
-          value={title}
-          onChangeText={setTitle}
-          placeholder={t('form.title')}
-          placeholderTextColor={colors.secondaryLabel}
-          maxLength={TITLE_MAX + 20}
-          returnKeyType="next"
-          style={inputStyle}
-        />
-        {submitted && titleError ? (
-          <Text accessibilityRole="alert" style={[styles.error, { color: colors.red }]}>
-            {titleError}
-          </Text>
-        ) : null}
+        <View>
+          <SectionLabel>{t('form.title')}</SectionLabel>
+          <GlassCard padding={space.md} style={styles.group}>
+            <TextField
+              value={title}
+              onChangeText={setTitle}
+              placeholder={t('form.title')}
+              accessibilityLabel={t('form.title')}
+              maxLength={TITLE_MAX + 20}
+              returnKeyType="next"
+            />
+            {submitted && titleError ? (
+              <Text accessibilityRole="alert" style={[styles.error, { color: colors.red }]}>
+                {titleError}
+              </Text>
+            ) : null}
+          </GlassCard>
+        </View>
 
-        <Text style={[styles.label, { color: colors.secondaryLabel }]}>{t('form.body')}</Text>
-        <TextInput
-          value={body}
-          onChangeText={setBody}
-          placeholder={t('form.body')}
-          placeholderTextColor={colors.secondaryLabel}
-          multiline
-          textAlignVertical="top"
-          style={[inputStyle, styles.multiline]}
-        />
-        {bodyError ? (
-          <Text accessibilityRole="alert" style={[styles.error, { color: colors.red }]}>
-            {bodyError}
-          </Text>
-        ) : null}
+        <View>
+          <SectionLabel>{t('form.body')}</SectionLabel>
+          <GlassCard padding={space.md} style={styles.group}>
+            <TextField
+              value={body}
+              onChangeText={setBody}
+              placeholder={t('form.body')}
+              accessibilityLabel={t('form.body')}
+              multiline
+              textAlignVertical="top"
+              style={styles.multiline}
+            />
+            {bodyError ? (
+              <Text accessibilityRole="alert" style={[styles.error, { color: colors.red }]}>
+                {bodyError}
+              </Text>
+            ) : null}
+          </GlassCard>
+        </View>
 
-        <Text style={[styles.label, { color: colors.secondaryLabel }]}>{t('form.category')}</Text>
-        <Picker
-          selectedValue={category}
-          onValueChange={(value) => {
-            if (isAnnouncementCategory(value)) setCategory(value);
-          }}
-        >
-          {ANNOUNCEMENT_CATEGORIES.map((c) => (
-            <Picker.Item key={c} value={c} label={t(`categories.${c}`)} />
-          ))}
-        </Picker>
-
-        <View style={styles.switchRow}>
-          <Text style={[styles.switchLabel, { color: colors.label }]}>{t('form.pinned')}</Text>
-          <Switch value={pinned} onValueChange={setPinned} />
+        <View>
+          <SectionLabel>{t('form.category')}</SectionLabel>
+          <GlassCard padding={space.md} style={styles.group}>
+            <Picker
+              selectedValue={category}
+              onValueChange={(value) => {
+                if (isAnnouncementCategory(value)) setCategory(value);
+              }}
+            >
+              {ANNOUNCEMENT_CATEGORIES.map((c) => (
+                <Picker.Item key={c} value={c} label={t(`categories.${c}`)} />
+              ))}
+            </Picker>
+            <View style={[styles.switchRow, { borderTopColor: colors.separator }]}>
+              <Text style={[styles.switchLabel, { color: colors.label }]}>{t('form.pinned')}</Text>
+              <Switch value={pinned} onValueChange={setPinned} />
+            </View>
+          </GlassCard>
         </View>
 
         {error ? (
@@ -162,23 +164,16 @@ function AnnouncementForm({ id, initial }: { id?: string; initial: Announcement 
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  content: { padding: 16, gap: 8 },
-  label: { fontSize: 13, marginTop: 8 },
-  input: {
-    minHeight: 48,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 12,
-    borderCurve: 'continuous',
-    fontSize: 17,
-  },
-  multiline: { minHeight: 140 },
+  content: { padding: space.lg, gap: space.xl },
+  group: { gap: space.sm },
+  multiline: { minHeight: 140, paddingTop: space.md },
   switchRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginVertical: 8,
+    paddingTop: space.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
-  switchLabel: { fontSize: 17 },
-  error: { fontSize: 13 },
+  switchLabel: { ...type.body },
+  error: { ...type.caption },
 });

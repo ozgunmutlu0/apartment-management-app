@@ -4,7 +4,6 @@ import { SymbolView } from 'expo-symbols';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  ActivityIndicator,
   FlatList,
   Pressable,
   RefreshControl,
@@ -13,7 +12,8 @@ import {
 } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
-import { PrimaryButton } from '@/components/PrimaryButton';
+import { GlassCard } from '@/components/GlassCard';
+import { Skeleton } from '@/components/Skeleton';
 import { useAnnouncements } from '@/features/announcements/api';
 import { AnnouncementActionsMenu } from '@/features/announcements/components/AnnouncementActionsMenu';
 import { AnnouncementCard } from '@/features/announcements/components/AnnouncementCard';
@@ -25,6 +25,7 @@ import {
 } from '@/features/announcements/types';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
+import { space } from '@/theme/tokens';
 
 type Filter = AnnouncementCategory | 'all';
 
@@ -116,16 +117,22 @@ export default function AnnouncementsScreen() {
         }}
       />
       {isPending ? (
-        <View style={styles.center}>
-          <ActivityIndicator />
+        <View style={styles.list}>
+          {[0, 1, 2].map((i) => (
+            <GlassCard key={i} style={styles.skeleton}>
+              <Skeleton width={80} height={24} radius={999} />
+              <Skeleton width="70%" height={20} />
+              <Skeleton height={14} />
+              <Skeleton width="40%" height={12} />
+            </GlassCard>
+          ))}
         </View>
       ) : isError ? (
         <View style={styles.center}>
-          <EmptyState icon="error" title={t('errors.load')} />
-          <PrimaryButton
-            variant="plain"
-            title={tc('buttons.retry')}
-            onPress={() => void refetch()}
+          <EmptyState
+            icon="error"
+            title={t('errors.load')}
+            action={{ title: tc('buttons.retry'), onPress: () => void refetch() }}
           />
         </View>
       ) : (
@@ -133,6 +140,7 @@ export default function AnnouncementsScreen() {
           data={items}
           keyExtractor={(a) => a.id}
           contentInsetAdjustmentBehavior="automatic"
+          style={{ backgroundColor: colors.systemGroupedBackground }}
           contentContainerStyle={styles.list}
           refreshControl={
             <RefreshControl refreshing={isRefetching} onRefresh={() => void refetch()} />
@@ -176,6 +184,7 @@ export default function AnnouncementsScreen() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  list: { padding: 16, gap: 12, flexGrow: 1 },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  list: { padding: space.lg, gap: space.md, flexGrow: 1 },
+  skeleton: { gap: space.sm },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: space.lg },
 });

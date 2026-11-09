@@ -1,18 +1,10 @@
 import { useRouter, Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Alert, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '@/components/EmptyState';
-import { PrimaryButton } from '@/components/PrimaryButton';
+import { GlassCard } from '@/components/GlassCard';
+import { Skeleton } from '@/components/Skeleton';
 import {
   useDeleteNotification,
   useMarkAllRead,
@@ -24,6 +16,7 @@ import {
 import { NotificationRow } from '@/features/notifications/components/NotificationRow';
 import { notificationHref } from '@/features/notifications/links';
 import { useColors } from '@/theme/colors';
+import { space, type } from '@/theme/tokens';
 
 export default function NotificationsScreen() {
   const { t } = useTranslation('notifications');
@@ -71,22 +64,31 @@ export default function NotificationsScreen() {
         }}
       />
       {query.isPending ? (
-        <View style={styles.center}>
-          <ActivityIndicator />
+        <View style={[styles.list, { backgroundColor: colors.systemGroupedBackground }]}>
+          {[0, 1, 2, 3].map((i) => (
+            <GlassCard key={i} style={styles.skeletonRow}>
+              <Skeleton width={44} height={44} />
+              <View style={styles.skeletonText}>
+                <Skeleton width="70%" height={18} />
+                <Skeleton width="90%" height={14} />
+                <Skeleton width="30%" height={12} />
+              </View>
+            </GlassCard>
+          ))}
         </View>
       ) : query.isError ? (
-        <View style={styles.center}>
-          <EmptyState icon="error" title={t('error')} />
-          <PrimaryButton
-            variant="plain"
-            title={tc('buttons.retry')}
-            onPress={() => void query.refetch()}
+        <View style={[styles.center, { backgroundColor: colors.systemGroupedBackground }]}>
+          <EmptyState
+            icon="error"
+            title={t('error')}
+            action={{ title: tc('buttons.retry'), onPress: () => void query.refetch() }}
           />
         </View>
       ) : (
         <FlatList
           data={items}
           keyExtractor={(n) => n.id}
+          style={{ backgroundColor: colors.systemGroupedBackground }}
           contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={styles.list}
           refreshControl={
@@ -117,6 +119,8 @@ export default function NotificationsScreen() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  list: { padding: 16, gap: 10, flexGrow: 1 },
-  headerButton: { fontSize: 17 },
+  list: { padding: space.lg, gap: space.md, flexGrow: 1 },
+  headerButton: { ...type.body },
+  skeletonRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  skeletonText: { flex: 1, gap: space.sm },
 });

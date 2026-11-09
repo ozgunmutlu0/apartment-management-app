@@ -8,7 +8,8 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
-    "retry": "Retry"
+    "retry": "Retry",
+    "ok": "OK"
   },
   "relativeTime": {
     "now": "now",

@@ -9,6 +9,7 @@ import {
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, useColorScheme } from 'react-native';
@@ -46,7 +47,8 @@ function ProfileErrorScreen() {
 }
 
 function RootNavigator() {
-  const colors = hexColors(useColorScheme());
+  const scheme = useColorScheme();
+  const colors = hexColors(scheme);
   const { session, profile, isLoading, profileError } = useAuth();
   // A font error must not trap the splash screen: fall back to the system font.
   const [fontsLoaded, fontError] = useFonts({
@@ -71,6 +73,7 @@ function RootNavigator() {
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: colors.systemGroupedBackground },
+        statusBarStyle: scheme === 'dark' ? 'light' : 'dark',
       }}
     >
       <Stack.Protected guard={hasBuilding}>
@@ -93,6 +96,7 @@ export default function RootLayout() {
       <AuthProvider>
         <NotificationsProvider>
           <NavigationTheme>
+            <StatusBar style="auto" />
             <RootNavigator />
           </NavigationTheme>
         </NotificationsProvider>

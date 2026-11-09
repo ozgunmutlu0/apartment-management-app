@@ -9,7 +9,7 @@ import { PressableScale } from '@/components/PressableScale';
 import { FormGroup } from '@/features/dues/components/FormRow';
 import { remainingOf, useDuesFormat } from '@/features/dues/utils';
 import { useColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 /** formSheet: payments of one due (view, delete, record another). Params: dueId, period. */
 export default function DuePaymentsScreen() {
@@ -46,6 +46,7 @@ export default function DuePaymentsScreen() {
 
   return (
     <ScrollView
+      {...scrollProps}
       style={{ backgroundColor: colors.systemGroupedBackground }}
       contentContainerStyle={styles.content}
     >

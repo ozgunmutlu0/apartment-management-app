@@ -12,7 +12,7 @@ import { TicketRow } from '@/features/tickets/components/TicketRow';
 import { useTickets, useTicketsRealtime } from '@/features/tickets/api';
 import { TICKET_STATUSES, type TicketStatus } from '@/features/tickets/types';
 import { useColors } from '@/theme/colors';
-import { radius, space } from '@/theme/tokens';
+import { radius, space, scrollProps } from '@/theme/tokens';
 
 export default function TicketsScreen() {
   const { t } = useTranslation('tickets');
@@ -113,6 +113,7 @@ export default function TicketsScreen() {
         }}
       />
       <FlatList
+        {...scrollProps}
         data={data}
         keyExtractor={(item) => item.id}
         contentInsetAdjustmentBehavior="automatic"

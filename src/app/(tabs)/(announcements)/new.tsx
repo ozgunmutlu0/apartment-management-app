@@ -1,4 +1,3 @@
-import { Picker } from '@expo/ui/community/picker';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +5,7 @@ import { ActivityIndicator, ScrollView, StyleSheet, Switch, Text, View } from 'r
 
 import { GlassCard } from '@/components/GlassCard';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { SelectField } from '@/components/SelectField';
 import { SectionLabel } from '@/components/SectionLabel';
 import { TextField } from '@/components/AuthField';
 import {
@@ -23,7 +23,7 @@ import {
 } from '@/features/announcements/types';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 export default function AnnouncementFormScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -82,6 +82,7 @@ function AnnouncementForm({ id, initial }: { id?: string; initial: Announcement 
     <>
       {isEdit ? <Stack.Screen options={{ title: t('form.editTitle') }} /> : null}
       <ScrollView
+        {...scrollProps}
         contentInsetAdjustmentBehavior="automatic"
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
@@ -130,19 +131,25 @@ function AnnouncementForm({ id, initial }: { id?: string; initial: Announcement 
         <View>
           <SectionLabel>{t('form.category')}</SectionLabel>
           <GlassCard padding={space.md} style={styles.group}>
-            <Picker
-              selectedValue={category}
-              onValueChange={(value) => {
+            <SelectField
+              value={category}
+              onChange={(value) => {
                 if (isAnnouncementCategory(value)) setCategory(value);
               }}
-            >
-              {ANNOUNCEMENT_CATEGORIES.map((c) => (
-                <Picker.Item key={c} value={c} label={t(`categories.${c}`)} />
-              ))}
-            </Picker>
+              options={ANNOUNCEMENT_CATEGORIES.map((c) => ({
+                value: c,
+                label: t(`categories.${c}`),
+              }))}
+            />
             <View style={[styles.switchRow, { borderTopColor: colors.separator }]}>
               <Text style={[styles.switchLabel, { color: colors.label }]}>{t('form.pinned')}</Text>
-              <Switch value={pinned} onValueChange={setPinned} />
+              <Switch
+                value={pinned}
+                onValueChange={setPinned}
+                trackColor={{ false: colors.separator, true: colors.tint }}
+                thumbColor={pinned ? colors.onTint : colors.tertiaryLabel}
+                ios_backgroundColor={colors.separator}
+              />
             </View>
           </GlassCard>
         </View>

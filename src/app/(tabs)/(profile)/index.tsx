@@ -20,7 +20,7 @@ import { setAppLanguage } from '@/i18n/locale';
 import { supportedLanguages, type SupportedLanguage } from '@/i18n/resources';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 function Group({ title, children }: { title?: string; children: ReactNode }) {
   return (
@@ -150,6 +150,7 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView
+      {...scrollProps}
       style={{ backgroundColor: colors.systemGroupedBackground }}
       contentContainerStyle={styles.content}
       contentInsetAdjustmentBehavior="automatic"

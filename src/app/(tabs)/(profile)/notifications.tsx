@@ -16,7 +16,7 @@ import {
 import { NotificationRow } from '@/features/notifications/components/NotificationRow';
 import { notificationHref } from '@/features/notifications/links';
 import { useColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 export default function NotificationsScreen() {
   const { t } = useTranslation('notifications');
@@ -86,6 +86,7 @@ export default function NotificationsScreen() {
         </View>
       ) : (
         <FlatList
+          {...scrollProps}
           data={items}
           keyExtractor={(n) => n.id}
           style={{ backgroundColor: colors.systemGroupedBackground }}

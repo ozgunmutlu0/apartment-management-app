@@ -54,3 +54,10 @@ export const press = {
   scale: 0.97,
   spring: { damping: 18, stiffness: 320, mass: 0.6 },
 } as const;
+
+/**
+ * Shared scroll tuning. Android's default fling friction carries a short flick (~200px) for
+ * 1500px+ of content, which feels like the page "jumps to the bottom"; 'fast' (friction 0.1 on
+ * Android, a no-op for slow drags) keeps flicks proportional to the gesture.
+ */
+export const scrollProps = { decelerationRate: 'fast' } as const;

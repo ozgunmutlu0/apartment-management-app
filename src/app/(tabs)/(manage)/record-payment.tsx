@@ -1,9 +1,9 @@
-import { DateTimePicker } from '@expo/ui/community/datetime-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { DateField } from '@/components/DateField';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { FilterChips } from '@/components/FilterChips';
 import { SectionLabel } from '@/components/SectionLabel';
@@ -12,7 +12,7 @@ import { FormGroup, FormRow } from '@/features/dues/components/FormRow';
 import { PAYMENT_METHODS } from '@/features/dues/types';
 import { parseAmount, useDuesFormat } from '@/features/dues/utils';
 import { useColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 /** formSheet: record a payment for a due. Params: dueId, unitLabel, remaining. */
 export default function RecordPaymentScreen() {
@@ -50,6 +50,7 @@ export default function RecordPaymentScreen() {
 
   return (
     <ScrollView
+      {...scrollProps}
       style={{ backgroundColor: colors.systemGroupedBackground }}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
@@ -73,14 +74,7 @@ export default function RecordPaymentScreen() {
           />
         </FormRow>
         <FormRow label={t('manage.record.date')}>
-          <DateTimePicker
-            value={paidAt}
-            mode="date"
-            display="compact"
-            presentation="inline"
-            maximumDate={new Date()}
-            onValueChange={(_e, date) => setPaidAt(date)}
-          />
+          <DateField value={paidAt} onChange={setPaidAt} maximumDate={new Date()} />
         </FormRow>
       </FormGroup>
 

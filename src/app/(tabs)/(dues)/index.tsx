@@ -21,7 +21,7 @@ import type { DueWithPayments } from '@/features/dues/types';
 import { effectiveStatus, remainingOf, useDuesFormat } from '@/features/dues/utils';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 function SummaryCard({ dues }: { dues: DueWithPayments[] | undefined }) {
   const { t, i18n } = useTranslation('dues');
@@ -175,6 +175,7 @@ export default function DuesScreen() {
 
   return (
     <SectionList
+      {...scrollProps}
       style={{ backgroundColor: colors.systemGroupedBackground }}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.content}

@@ -1,14 +1,14 @@
-import { DateTimePicker } from '@expo/ui/community/datetime-picker';
-import { Picker } from '@expo/ui/community/picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Badge } from '@/components/Badge';
+import { DateField } from '@/components/DateField';
 import { EmptyState } from '@/components/EmptyState';
 import { GlassCard } from '@/components/GlassCard';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { SelectField } from '@/components/SelectField';
 import { SectionLabel } from '@/components/SectionLabel';
 import { Skeleton } from '@/components/Skeleton';
 import {
@@ -31,7 +31,7 @@ import {
   zonedInstant,
 } from '@/features/reservations/time';
 import { useColors } from '@/theme/colors';
-import { radius, space, type } from '@/theme/tokens';
+import { radius, space, type, scrollProps } from '@/theme/tokens';
 
 function FormRow({ label, children }: { label: string; children: ReactNode }) {
   const colors = useColors();
@@ -109,6 +109,7 @@ export default function NewReservationScreen() {
 
   return (
     <ScrollView
+      {...scrollProps}
       style={{ backgroundColor: colors.systemGroupedBackground }}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
@@ -119,11 +120,11 @@ export default function NewReservationScreen() {
           <View>
             <SectionLabel>{t('form.area')}</SectionLabel>
             <GlassCard style={styles.card}>
-              <Picker selectedValue={area.id} onValueChange={(v) => setAreaId(String(v))}>
-                {(areas.data ?? []).map((a) => (
-                  <Picker.Item key={a.id} value={a.id} label={a.name} />
-                ))}
-              </Picker>
+              <SelectField
+                value={area.id}
+                onChange={setAreaId}
+                options={(areas.data ?? []).map((a) => ({ value: a.id, label: a.name }))}
+              />
               <Text style={[styles.secondary, { color: colors.secondaryLabel }]}>
                 {t('form.hours', { open: formatMinutes(open), close: formatMinutes(close) })}
               </Text>
@@ -134,14 +135,7 @@ export default function NewReservationScreen() {
             <SectionLabel>{t('form.date')}</SectionLabel>
             <GlassCard style={styles.card}>
               <FormRow label={t('form.date')}>
-                <DateTimePicker
-                  value={pickedDay}
-                  mode="date"
-                  display="compact"
-                  presentation="inline"
-                  minimumDate={pickerDate(today)}
-                  onValueChange={(_e, date) => setPickedDay(date)}
-                />
+                <DateField value={pickedDay} onChange={setPickedDay} minimumDate={pickerDate(today)} />
               </FormRow>
             </GlassCard>
           </View>
@@ -174,20 +168,20 @@ export default function NewReservationScreen() {
             <View>
               <SectionLabel>{t('form.start')}</SectionLabel>
               <GlassCard style={styles.card}>
-                <Picker selectedValue={start ?? 0} onValueChange={(v) => setStartChoice(Number(v))}>
-                  {starts.map((m) => (
-                    <Picker.Item key={m} value={m} label={formatMinutes(m)} />
-                  ))}
-                </Picker>
+                <SelectField
+                  value={String(start ?? 0)}
+                  onChange={(v) => setStartChoice(Number(v))}
+                  options={starts.map((m) => ({ value: String(m), label: formatMinutes(m) }))}
+                />
               </GlassCard>
               <View style={styles.gap} />
               <SectionLabel>{t('form.end')}</SectionLabel>
               <GlassCard style={styles.card}>
-                <Picker selectedValue={end ?? 0} onValueChange={(v) => setEndChoice(Number(v))}>
-                  {ends.map((m) => (
-                    <Picker.Item key={m} value={m} label={formatMinutes(m)} />
-                  ))}
-                </Picker>
+                <SelectField
+                  value={String(end ?? 0)}
+                  onChange={(v) => setEndChoice(Number(v))}
+                  options={ends.map((m) => ({ value: String(m), label: formatMinutes(m) }))}
+                />
               </GlassCard>
             </View>
           )}

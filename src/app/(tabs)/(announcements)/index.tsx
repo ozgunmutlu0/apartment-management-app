@@ -19,7 +19,7 @@ import {
 } from '@/features/announcements/types';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
-import { space } from '@/theme/tokens';
+import { space, scrollProps } from '@/theme/tokens';
 
 type Filter = AnnouncementCategory | 'all';
 
@@ -135,6 +135,7 @@ export default function AnnouncementsScreen() {
         </View>
       ) : (
         <FlatList
+          {...scrollProps}
           data={items}
           keyExtractor={(a) => a.id}
           contentInsetAdjustmentBehavior="automatic"

@@ -25,7 +25,7 @@ import {
   type TicketCategory,
 } from '@/features/tickets/types';
 import { useColors } from '@/theme/colors';
-import { hitTarget, radius, space, type } from '@/theme/tokens';
+import { hitTarget, radius, space, type, scrollProps } from '@/theme/tokens';
 
 const PICKER_OPTIONS = {
   mediaTypes: ['images'],
@@ -120,6 +120,7 @@ export default function NewTicketScreen() {
 
   return (
     <ScrollView
+      {...scrollProps}
       contentInsetAdjustmentBehavior="automatic"
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="interactive"

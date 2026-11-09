@@ -1,4 +1,3 @@
-import { Picker } from '@expo/ui/community/picker';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -6,6 +5,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } fr
 import { AuthField } from '@/components/AuthField';
 import { GlassCard } from '@/components/GlassCard';
 import { IconTile } from '@/components/IconTile';
+import { SelectField } from '@/components/SelectField';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { SectionLabel } from '@/components/SectionLabel';
 import { BrandBlock } from '@/features/auth/components/BrandBlock';
@@ -13,7 +13,7 @@ import { useAuth } from '@/lib/auth';
 import { authErrorMessage } from '@/lib/authErrors';
 import { supabase } from '@/lib/supabase';
 import { useColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 type BuildingLookup = {
   id: string;
@@ -83,6 +83,7 @@ export default function JoinBuildingScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView
+        {...scrollProps}
         style={{ backgroundColor: colors.systemGroupedBackground }}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
@@ -136,15 +137,14 @@ export default function JoinBuildingScreen() {
               <Text style={[styles.rowLabel, { color: colors.secondaryLabel }]}>
                 {t('join.unit')}
               </Text>
-              <Picker selectedValue={unitId} onValueChange={(value) => setUnitId(String(value))}>
-                {building.units.map((unit) => (
-                  <Picker.Item
-                    key={unit.id}
-                    value={unit.id}
-                    label={t('join.unitLabel', { block: unit.block, number: unit.number })}
-                  />
-                ))}
-              </Picker>
+              <SelectField
+                value={unitId}
+                onChange={setUnitId}
+                options={building.units.map((unit) => ({
+                  value: unit.id,
+                  label: t('join.unitLabel', { block: unit.block, number: unit.number }),
+                }))}
+              />
             </GlassCard>
           </View>
         ) : null}

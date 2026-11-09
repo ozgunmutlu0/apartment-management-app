@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { createLiraFormatter } from '@/lib/money';
 import { useTranslation } from 'react-i18next';
 
 import type { DueStatus, DueWithPayments, Payment } from './types';
@@ -54,7 +55,7 @@ export function useDuesFormat() {
   const { i18n } = useTranslation();
   const lang = i18n.language;
   return useMemo(() => {
-    const money = new Intl.NumberFormat(lang, { style: 'currency', currency: 'TRY' });
+    const money = createLiraFormatter(lang);
     const month = new Intl.DateTimeFormat(lang, { month: 'long', year: 'numeric' });
     const date = new Intl.DateTimeFormat(lang, { dateStyle: 'medium' });
     return {

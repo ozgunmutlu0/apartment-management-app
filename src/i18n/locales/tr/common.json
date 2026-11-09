@@ -8,7 +8,8 @@
     "cancel": "İptal",
     "delete": "Sil",
     "edit": "Düzenle",
-    "retry": "Tekrar dene"
+    "retry": "Tekrar dene",
+    "ok": "Tamam"
   },
   "relativeTime": {
     "now": "şimdi",

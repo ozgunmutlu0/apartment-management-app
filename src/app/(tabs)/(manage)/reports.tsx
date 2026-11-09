@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { createLiraFormatter } from '@/lib/money';
 import { useTranslation } from 'react-i18next';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -12,7 +13,7 @@ import { REPORT_PERIODS, useReport, type ReportPeriod } from '@/features/reports
 import { BarRow } from '@/features/reports/components/BarRow';
 import { TICKET_CATEGORIES, TICKET_STATUSES } from '@/features/tickets/types';
 import { useColors, useStatusColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 function ChartCard({
   title,
@@ -46,15 +47,7 @@ export default function ReportsScreen() {
   const colors = useColors();
   const statusColors = useStatusColors();
   // StatTile figures are one line of 28pt in a half-width card: drop the decimals.
-  const money = useMemo(
-    () =>
-      new Intl.NumberFormat(i18n.language, {
-        style: 'currency',
-        currency: 'TRY',
-        maximumFractionDigits: 0,
-      }),
-    [i18n.language],
-  );
+  const money = useMemo(() => createLiraFormatter(i18n.language, 0), [i18n.language]);
   const [periodIndex, setPeriodIndex] = useState(0);
   const period: ReportPeriod = REPORT_PERIODS[periodIndex];
   const report = useReport(period);
@@ -89,6 +82,7 @@ export default function ReportsScreen() {
 
   return (
     <ScrollView
+      {...scrollProps}
       style={{ backgroundColor: colors.systemGroupedBackground }}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.content}

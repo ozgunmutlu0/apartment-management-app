@@ -20,7 +20,7 @@ import { BrandBlock } from '@/features/auth/components/BrandBlock';
 import { useAuth } from '@/lib/auth';
 import { authErrorMessage } from '@/lib/authErrors';
 import { useColors } from '@/theme/colors';
-import { hitTarget, space, type } from '@/theme/tokens';
+import { hitTarget, space, type, scrollProps } from '@/theme/tokens';
 
 const DEMO_PASSWORD = 'Demo1234!';
 const DEMO_ACCOUNTS = [
@@ -63,6 +63,7 @@ export default function SignInScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView
+        {...scrollProps}
         style={{ backgroundColor: colors.systemGroupedBackground }}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"

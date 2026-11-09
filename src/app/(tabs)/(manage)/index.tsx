@@ -22,7 +22,7 @@ import { effectiveStatus, paidTotal, periodOf, useDuesFormat } from '@/features/
 import { Enter } from '@/features/manage/components/Enter';
 import { useTickets } from '@/features/tickets/api';
 import { useColors } from '@/theme/colors';
-import { space } from '@/theme/tokens';
+import { space, scrollProps } from '@/theme/tokens';
 
 type Destination = {
   key: string;
@@ -101,6 +101,7 @@ export default function ManageScreen() {
 
   return (
     <ScrollView
+      {...scrollProps}
       style={{ backgroundColor: colors.systemGroupedBackground }}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.content}

@@ -19,7 +19,7 @@ import { useUnreadCount } from '@/features/notifications/api';
 import { useResidence } from '@/features/profile/api';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
-import { space } from '@/theme/tokens';
+import { space, scrollProps } from '@/theme/tokens';
 
 function greetingKey(hour: number): 'morning' | 'afternoon' | 'evening' | 'night' {
   if (hour >= 5 && hour < 12) return 'morning';
@@ -109,6 +109,7 @@ export default function HomeScreen() {
     >
       <StatusBar style="auto" />
       <ScrollView
+        {...scrollProps}
         style={{ backgroundColor: colors.systemGroupedBackground }}
         // The wrapper applies the top inset (no header here), so the system must not add it again.
         contentInsetAdjustmentBehavior="never"

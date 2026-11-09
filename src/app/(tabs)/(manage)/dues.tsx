@@ -29,7 +29,7 @@ import {
   useDuesFormat,
 } from '@/features/dues/utils';
 import { useColors } from '@/theme/colors';
-import { radius, space, type } from '@/theme/tokens';
+import { radius, space, type, scrollProps } from '@/theme/tokens';
 
 export default function ManageDuesScreen() {
   const { t, i18n } = useTranslation('dues');
@@ -145,6 +145,7 @@ export default function ManageDuesScreen() {
         }}
       />
       <FlatList
+        {...scrollProps}
         style={{ backgroundColor: colors.systemGroupedBackground }}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.content}

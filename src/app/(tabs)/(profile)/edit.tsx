@@ -9,7 +9,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { useUpdateProfile } from '@/features/profile/api';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 /** Presented as a formSheet (see (profile)/_layout.tsx). */
 export default function EditProfileScreen() {
@@ -41,6 +41,7 @@ export default function EditProfileScreen() {
 
   return (
     <ScrollView
+      {...scrollProps}
       style={{ backgroundColor: colors.systemGroupedBackground }}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"

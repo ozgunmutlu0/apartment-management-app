@@ -19,7 +19,7 @@ import { BrandBlock } from '@/features/auth/components/BrandBlock';
 import { useAuth } from '@/lib/auth';
 import { authErrorMessage } from '@/lib/authErrors';
 import { useColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -70,6 +70,7 @@ export default function SignUpScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <ScrollView
+        {...scrollProps}
         style={{ backgroundColor: colors.systemGroupedBackground }}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"

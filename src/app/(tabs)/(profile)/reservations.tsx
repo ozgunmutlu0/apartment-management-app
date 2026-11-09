@@ -19,7 +19,7 @@ import {
 import { useReservationFormat } from '@/features/reservations/format';
 import { parseTime } from '@/features/reservations/time';
 import { useColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 function CardSkeleton() {
   return (
@@ -114,6 +114,7 @@ export default function ReservationsScreen() {
 
   return (
     <ScrollView
+      {...scrollProps}
       style={{ backgroundColor: colors.systemGroupedBackground }}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={styles.content}

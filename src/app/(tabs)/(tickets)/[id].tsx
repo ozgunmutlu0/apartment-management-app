@@ -28,12 +28,12 @@ import { formatDateTime, formatRelative, unitLabel } from '@/features/tickets/fo
 import { TICKET_STATUSES, type TicketStatus } from '@/features/tickets/types';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
-import { hitTarget, radius, space, type } from '@/theme/tokens';
+import { hitTarget, radius, space, type, scrollProps } from '@/theme/tokens';
 
 const NO_ASSIGNEE = 'none';
 
 export default function TicketDetailScreen() {
-  const { t } = useTranslation('tickets');
+  const { t, i18n } = useTranslation('tickets');
   const { t: tc } = useTranslation('common');
   const router = useRouter();
   const colors = useColors();
@@ -142,6 +142,7 @@ export default function TicketDetailScreen() {
     <>
       <Stack.Screen options={{ title: ticket.title }} />
       <ScrollView
+        {...scrollProps}
         contentInsetAdjustmentBehavior="automatic"
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
@@ -161,7 +162,7 @@ export default function TicketDetailScreen() {
             <View style={styles.metaRow}>
               <StatusBadge status={ticket.status} />
               <Text style={[styles.meta, { color: colors.secondaryLabel }]}>
-                {formatRelative(ticket.created_at)}
+                {formatRelative(ticket.created_at, i18n.language)}
                 {unit ? ` · ${t('unit', { label: unit })}` : ''}
               </Text>
             </View>

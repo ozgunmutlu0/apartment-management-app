@@ -14,7 +14,7 @@ import { useAnnouncementActions } from '@/features/announcements/components/useA
 import { formatDateTime } from '@/features/announcements/format';
 import { useAuth } from '@/lib/auth';
 import { useColors } from '@/theme/colors';
-import { radius, space, type } from '@/theme/tokens';
+import { radius, space, type, scrollProps } from '@/theme/tokens';
 
 export default function AnnouncementDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -81,6 +81,7 @@ export default function AnnouncementDetailScreen() {
         />
       ) : null}
       <ScrollView
+        {...scrollProps}
         style={{ backgroundColor: colors.systemGroupedBackground }}
         contentInsetAdjustmentBehavior="automatic"
         contentContainerStyle={styles.content}

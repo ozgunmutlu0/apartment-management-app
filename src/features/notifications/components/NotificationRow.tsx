@@ -65,7 +65,7 @@ export function NotificationRow({
   onMarkRead,
   onDelete,
 }: NotificationRowProps) {
-  const { t } = useTranslation('notifications');
+  const { t, i18n } = useTranslation('notifications');
   const { t: tc } = useTranslation('common');
   const colors = useColors();
   const titleOf = useNotificationTitle();
@@ -112,7 +112,7 @@ export function NotificationRow({
                 </Text>
               ) : null}
               <Text style={[styles.time, { color: colors.secondaryLabel }]}>
-                {formatRelative(notification.created_at)}
+                {formatRelative(notification.created_at, i18n.language)}
               </Text>
             </View>
             {unread ? (

@@ -20,7 +20,7 @@ export type TicketRowProps = {
 };
 
 export function TicketRow({ ticket, showUnit, onPress }: TicketRowProps) {
-  const { t } = useTranslation('tickets');
+  const { t, i18n } = useTranslation('tickets');
   const colors = useColors();
   const unit = showUnit ? unitLabel(ticket.unit) : null;
   return (
@@ -34,7 +34,7 @@ export function TicketRow({ ticket, showUnit, onPress }: TicketRowProps) {
           <View style={styles.meta}>
             <StatusBadge status={ticket.status} />
             <Text style={[styles.secondary, { color: colors.secondaryLabel }]}>
-              {formatRelative(ticket.created_at)}
+              {formatRelative(ticket.created_at, i18n.language)}
               {unit ? ` · ${t('unit', { label: unit })}` : ''}
             </Text>
           </View>

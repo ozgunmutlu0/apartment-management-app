@@ -1,9 +1,9 @@
-import { DateTimePicker } from '@expo/ui/community/datetime-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TextInput } from 'react-native';
 
+import { DateField } from '@/components/DateField';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { useGenerateDues } from '@/features/dues/api';
 import { FormGroup, FormRow } from '@/features/dues/components/FormRow';
@@ -15,7 +15,7 @@ import {
   useDuesFormat,
 } from '@/features/dues/utils';
 import { useColors } from '@/theme/colors';
-import { space, type } from '@/theme/tokens';
+import { space, type, scrollProps } from '@/theme/tokens';
 
 /** formSheet: generate one due per unit for a period. Optional param: period (YYYY-MM-01). */
 export default function GenerateDuesScreen() {
@@ -58,19 +58,14 @@ export default function GenerateDuesScreen() {
 
   return (
     <ScrollView
+      {...scrollProps}
       style={{ backgroundColor: colors.systemGroupedBackground }}
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
       <FormGroup>
         <FormRow label={t('manage.generateSheet.period')}>
-          <DateTimePicker
-            value={month}
-            mode="date"
-            display="compact"
-            presentation="inline"
-            onValueChange={(_e, date) => setMonth(date)}
-          />
+          <DateField value={month} onChange={setMonth} />
         </FormRow>
         <FormRow label={t('manage.generateSheet.amount')}>
           <TextInput
@@ -84,13 +79,7 @@ export default function GenerateDuesScreen() {
           />
         </FormRow>
         <FormRow label={t('manage.generateSheet.dueDate')}>
-          <DateTimePicker
-            value={dueDate}
-            mode="date"
-            display="compact"
-            presentation="inline"
-            onValueChange={(_e, date) => setDueDate(date)}
-          />
+          <DateField value={dueDate} onChange={setDueDate} />
         </FormRow>
       </FormGroup>
       <Text style={[styles.caption, { color: colors.secondaryLabel }]}>

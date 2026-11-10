@@ -52,7 +52,7 @@ Session tokens are stored with `expo-secure-store` (AsyncStorage fallback for la
 
 ## i18n
 
-`i18next` + `react-i18next` + `expo-localization`. Turkish is the default, English the second language. Strings live in `src/i18n/locales/{tr,en}/<namespace>.json`, one namespace per feature (`common`, `auth`, `tabs`, `home`, `tickets`, `announcements`, `dues`, `manage`, `profile`). Every user-facing string uses `t('key')` and both languages are updated together. The language can be changed in Profile and is stored in `profiles.locale`.
+`i18next` + `react-i18next` + `expo-localization`. Turkish is the default, English the second language. Strings live in `src/i18n/locales/{tr,en}/<namespace>.json`, one namespace per feature (`common`, `auth`, `tabs`, `home`, `tickets`, `announcements`, `dues`, `manage`, `profile`, `notifications`, `reports`, `reservations`). Every user-facing string uses `t('key')` and both languages are updated together. The language can be changed in Profile and is stored in `profiles.locale`.
 
 ## UI principles
 

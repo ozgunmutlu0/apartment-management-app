@@ -66,7 +66,7 @@ React Native ve Expo (TypeScript), Expo Router ile dosya tabanlı gezinme, iOS 2
 | 3 | Altyapı: Expo iskeleti, Supabase şeması / RLS, kimlik doğrulama ve roller |
 | 4 | Zorunlu özellikler: arıza bildirimi, talep takibi, duyurular |
 | 5 | İkinci aşama: aidat takibi, bildirimler |
-| 6 | Ekstra özellikler: ana sayfa, rezervasyon, raporlar; test ve düzeltmeler |
+| 6 | Ekstra özellikler: ana sayfa, rezervasyon, raporlar; test ve düzeltmeler (Android emülatöründe gerçek Supabase ile denendi; iOS cihaz ve uzaktan push doğrulanmadı) |
 | 7 | Dokümantasyon, son kontroller ve teslim |
 
 ## 9. Öncelik sıralaması

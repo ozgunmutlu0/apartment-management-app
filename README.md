@@ -22,7 +22,9 @@ Apartment life runs on WhatsApp groups, phone calls and paper lists. Fault repor
 
 ## Features
 
-All features below are implemented. They have passed static checks (typecheck, lint, expo-doctor, bundle export) but are **not yet tested on a device or against a live Supabase project** (Aşama 6, testing in progress).
+All features below are implemented. Static checks pass (typecheck, lint, expo-doctor 20/20, iOS bundle export). The app has been run on an Android emulator (Pixel 8, API 35) in Expo Go (SDK 58) against a live Supabase project (all 7 migrations applied, demo seed loaded). With the manager account, home, tickets list, ticket detail with timeline, announcements, manage, reports and profile render correctly in light and dark mode.
+
+Not verified yet: iOS devices and Liquid Glass on iOS 26, and remote push notifications end to end (the `send-push` Edge Function is not deployed, and remote push does not work in Expo Go on Android; it needs a development build).
 
 - [x] Project skeleton (Expo Router, NativeTabs, theme, i18n TR + EN)
 - [x] Database schema (Postgres, RLS, triggers, RPCs, storage, demo seed)
@@ -30,7 +32,7 @@ All features below are implemented. They have passed static checks (typecheck, l
 - [x] Fault reports with photos and request tracking (Pending, In review, In progress, Resolved)
 - [x] Announcements (pinned, manager CRUD)
 - [x] Dues tracking (manager creates and records payments, residents view)
-- [x] Notifications (in-app, realtime, push; see [Push notifications setup](supabase/README.md#push-bildirimleri-opsiyonel))
+- [x] Notifications: in-app list and realtime unread badge work out of the box; remote push is optional and requires deploying the `send-push` Edge Function and a development build (see [Push notifications setup](supabase/README.md#push-bildirimleri-opsiyonel))
 - [x] Common area reservations
 - [x] Home dashboard and manager reports
 
@@ -48,7 +50,7 @@ Permissions are enforced by Row Level Security in the database, not only in the 
 
 ## Screenshots
 
-Taken on an Android emulator (Pixel 8, API 35) (light and dark) with the demo resident account. Naming rules: [docs/screenshots/README.md](docs/screenshots/README.md).
+Taken on an Android emulator (Pixel 8, API 35) (light and dark) with the demo resident account. The manager flows listed under Features were checked separately on the same emulator. Naming rules: [docs/screenshots/README.md](docs/screenshots/README.md).
 
 <table>
   <tr>
@@ -144,6 +146,16 @@ Created by `supabase/seed.sql` (demo/dev projects only; never run the seed in pr
 
 Building invite code: `GUNES1` (Güneş Apartmanı).
 
+### Running the demo
+
+Sign in with one of the demo accounts above; the tabs depend on the role:
+
+- `resident` accounts: Home, Tickets, Announcements, Dues, Profile (reservations and notifications are under Profile).
+- `manager`: Home, Tickets, Announcements, Manage (dues, reports), Profile.
+- `technician`: Home, Tickets (assigned jobs only), Announcements, Profile.
+
+A newly registered user is a resident without a building and is asked for the invite code first.
+
 ### Scripts
 
 ```bash
@@ -176,9 +188,9 @@ docs/                  # architecture, database, project report (TR), screenshot
 | Aşama 2 | Design: roles, screens, data model, navigation | Done |
 | Aşama 3 | Foundation: skeleton, Supabase schema/RLS, auth and roles | Done (implemented) |
 | Aşama 4 | Required features: tickets with photos, request tracking, announcements | Done (implemented) |
-| Aşama 5 | Second phase: dues, notifications (realtime + push), extras: dashboard, reservations, reports | Done (implemented) |
-| Aşama 6 | Test: static QA done (typecheck, lint, expo-doctor, iOS export pass); Android relative-time fallback and role-based initial route fixed; device and live Supabase testing | In progress |
-| Aşama 7 | Documentation, final checks, delivery | Planned |
+| Aşama 5 | Second phase: dues, notifications (realtime + push) | Done (implemented) |
+| Aşama 6 | Extras: home dashboard, reservations, reports; test and fixes. Static QA passes; run on an Android emulator against live Supabase in light and dark. Not verified: iOS device / Liquid Glass, remote push (Edge Function not deployed, needs a development build) | Done on Android, gaps listed |
+| Aşama 7 | Documentation, final checks, delivery | In progress |
 
 Work packages and rules: [PLAN.md](PLAN.md). Turkish project definition: [docs/project-report-tr.md](docs/project-report-tr.md).
 
@@ -193,7 +205,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). AI-assisted development guidelines are i
 - Teknoloji: React Native + Expo SDK 58, TypeScript, Supabase (Auth, Postgres + RLS, Storage, Realtime).
 - iOS 26'da Liquid Glass için yerel bileşenler (NativeTabs, formSheet, expo-glass-effect); Türkçe (varsayılan) ve İngilizce.
 - Öncelikler: zorunlu = giriş/roller, arıza, talep takibi, duyuru; ikinci aşama = aidat, bildirim; ekstra = rezervasyon, raporlar.
-- Durum: tüm özellikler geliştirildi (statik kontroller geçti); cihaz ve gerçek Supabase üzerinde test aşaması (Aşama 6) sürüyor.
+- Durum: tüm özellikler geliştirildi; statik kontroller geçti. Uygulama Android emülatöründe (Pixel 8, API 35, Expo Go) gerçek bir Supabase projesine karşı açık ve koyu modda denendi. Doğrulanmadı: iOS cihaz / iOS 26 Liquid Glass ve uzaktan push (`send-push` Edge Function yayınlanmadı; Expo Go'da Android uzaktan push desteklemez, development build gerekir). Uygulama içi bildirimler ve Realtime rozeti çalışır. Aşama 7 (dokümantasyon ve teslim) sürüyor.
 - Detaylı proje tanımı: [docs/project-report-tr.md](docs/project-report-tr.md). Kurulum için yukarıdaki "Getting started" bölümüne ve [supabase/README.md](supabase/README.md) dosyasına bakın.
 
 ## License

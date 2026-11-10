@@ -15,6 +15,21 @@ import { TICKET_CATEGORIES, TICKET_STATUSES } from '@/features/tickets/types';
 import { useColors, useStatusColors } from '@/theme/colors';
 import { space, type, scrollProps } from '@/theme/tokens';
 
+/** Locale-aware decimal; falls back to a manual comma for Turkish if Intl ignores the locale. */
+function formatDecimal(value: number, digits: number, language: string): string {
+  const fixed = value.toFixed(digits);
+  const turkish = language.startsWith('tr');
+  try {
+    const formatted = new Intl.NumberFormat(language, {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    }).format(value);
+    return turkish && digits > 0 && formatted === fixed ? fixed.replace('.', ',') : formatted;
+  } catch {
+    return turkish ? fixed.replace('.', ',') : fixed;
+  }
+}
+
 function ChartCard({
   title,
   caption,
@@ -77,8 +92,8 @@ export default function ReportsScreen() {
     avg === null
       ? '-'
       : avg < 48
-        ? t('tickets.avgHours', { value: avg.toFixed(avg < 10 ? 1 : 0) })
-        : t('tickets.avgDays', { value: (avg / 24).toFixed(1) });
+        ? t('tickets.avgHours', { value: formatDecimal(avg, avg < 10 ? 1 : 0, i18n.language) })
+        : t('tickets.avgDays', { value: formatDecimal(avg / 24, 1, i18n.language) });
 
   return (
     <ScrollView

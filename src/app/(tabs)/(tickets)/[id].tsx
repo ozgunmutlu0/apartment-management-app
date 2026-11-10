@@ -1,5 +1,5 @@
 import { MenuView, type MenuAction } from '@expo/ui/community/menu';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -140,7 +140,6 @@ export default function TicketDetailScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: ticket.title }} />
       <ScrollView
         {...scrollProps}
         contentInsetAdjustmentBehavior="automatic"

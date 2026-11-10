@@ -5,6 +5,7 @@ import {
   useQueryClient,
   type QueryClient,
 } from '@tanstack/react-query';
+import { File } from 'expo-file-system';
 import { useEffect } from 'react';
 
 import { useAuth } from '@/lib/auth';
@@ -203,13 +204,37 @@ export type NewTicketInput = {
 
 export type CreateTicketResult = { id: string; failedPhotos: number };
 
+const MIN_PHOTO_BYTES = 100;
+
+/** Detects the real image type from magic bytes (the picker may return PNG/WebP/HEIC, not only JPEG). */
+function sniffImageType(b: Uint8Array): { contentType: string; ext: string } | null {
+  if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) {
+    return { contentType: 'image/jpeg', ext: 'jpg' };
+  }
+  if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) {
+    return { contentType: 'image/png', ext: 'png' };
+  }
+  const tag = (from: number) => String.fromCharCode(...b.slice(from, from + 4));
+  if (tag(0) === 'RIFF' && tag(8) === 'WEBP') return { contentType: 'image/webp', ext: 'webp' };
+  if (tag(4) === 'ftyp') {
+    const brand = tag(8);
+    if (brand.startsWith('hei') || brand.startsWith('mif')) {
+      const heic = brand === 'heic' || brand === 'heix';
+      return { contentType: heic ? 'image/heic' : 'image/heif', ext: 'heic' };
+    }
+  }
+  return null;
+}
+
 async function uploadPhoto(ticketId: string, uri: string, index: number): Promise<void> {
-  const response = await fetch(uri);
-  const body = await response.arrayBuffer();
-  const path = `${ticketId}/${Date.now()}-${index}.jpg`;
+  // RN's fetch() cannot reliably read local file URIs; read the bytes natively instead.
+  const bytes = new Uint8Array(await new File(uri).arrayBuffer());
+  const type = bytes.length >= MIN_PHOTO_BYTES ? sniffImageType(bytes) : null;
+  if (!type) throw new Error('unreadable or unsupported image file');
+  const path = `${ticketId}/${Date.now()}-${index}.${type.ext}`;
   const { error: uploadError } = await supabase.storage
     .from(BUCKET)
-    .upload(path, body, { contentType: 'image/jpeg', upsert: false });
+    .upload(path, bytes, { contentType: type.contentType, upsert: false });
   if (uploadError) throw uploadError;
   const { error: rowError } = await supabase
     .from('ticket_photos')

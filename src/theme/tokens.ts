@@ -60,4 +60,4 @@ export const press = {
  * 1500px+ of content, which feels like the page "jumps to the bottom"; 'fast' (friction 0.1 on
  * Android, a no-op for slow drags) keeps flicks proportional to the gesture.
  */
-export const scrollProps = { decelerationRate: 'fast' } as const;
+export const scrollProps = { decelerationRate: 'fast', nestedScrollEnabled: true } as const;

@@ -11,6 +11,8 @@ supabase/
     20250101000200_rls.sql                # grant'ler + RLS politikaları
     20250101000300_storage_realtime.sql   # ticket-photos bucket + realtime
     20250101000400_join_building.sql      # davet kodu, get_building_by_invite / join_building RPC
+    20250101000500_notifications.sql      # bildirim trigger'ları, push_tokens, notifications_send_push
+    20250101000600_security_hardening.sql # pg_net extensions şemasına, güvenlik sıkılaştırmaları
   seed.sql                                # demo bina, kullanıcılar, örnek veriler
 ```
 
@@ -25,7 +27,9 @@ Supabase panelinde **SQL Editor** açın ve dosyaları **sırayla** çalıştır
 3. `migrations/20250101000200_rls.sql`
 4. `migrations/20250101000300_storage_realtime.sql`
 5. `migrations/20250101000400_join_building.sql`
-6. `seed.sql` (isteğe bağlı, yalnızca demo/geliştirme projesi için)
+6. `migrations/20250101000500_notifications.sql`
+7. `migrations/20250101000600_security_hardening.sql`
+8. `seed.sql` (isteğe bağlı, yalnızca demo/geliştirme projesi için)
 
 ### B) Supabase CLI
 
@@ -115,7 +119,7 @@ Auth ayarı: Authentication > Providers > Email açık olmalı. Demo için "Conf
 Uygulama içi bildirimler (tablo + Realtime) ek kurulum gerektirmez. Telefona **push** göndermek için:
 
 1. Migration'ları uygulayın (`20250101000500_notifications.sql` `notifications` tablosundaki `notifications_send_push` trigger'ını kurar; `20250101000600_security_hardening.sql` `pg_net`'i `extensions` şemasına taşır ve trigger'ı yeniden oluşturur).
-2. Edge Function'ı yayınlayın (trigger kendi gizli anahtarını gönderdiği için JWT doğrulaması kapalıdır):
+2. Edge Function'ı yayınlayın (`functions/send-push/` depoda mevcuttur ancak varsayılan olarak yayınlanmış değildir; trigger kendi gizli anahtarını gönderdiği için JWT doğrulaması kapalıdır):
    ```bash
    npx supabase functions deploy send-push --no-verify-jwt --project-ref <PROJECT_REF>
    npx supabase secrets set SEND_PUSH_SECRET=<uzun-rastgele-bir-değer> --project-ref <PROJECT_REF>

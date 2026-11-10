@@ -131,8 +131,8 @@ begin
     (v_building, v_mgr, 'Asansör bakımı',
      'Cuma günü 10:00 - 14:00 arası asansör periyodik bakımı yapılacaktır. Bu sürede asansörler kullanılamayacaktır.',
      'maintenance', false, now() - interval '3 days'),
-    (v_building, v_mgr, 'Bahar şenliği',
-     'Önümüzdeki hafta sonu bahçede komşuluk şenliği düzenliyoruz. Tüm sakinlerimiz davetlidir.',
+    (v_building, v_mgr, 'Komşuluk kahvaltısı',
+     'Önümüzdeki hafta sonu sosyal tesisimizde komşuluk kahvaltısı düzenliyoruz. Tüm sakinlerimiz davetlidir.',
      'event', false, now() - interval '1 day');
 
   -- ------------------------------------------------------------ dues: last 4 months (m = 0 is the current month)
@@ -148,7 +148,9 @@ begin
   cross join generate_series(0, 3) as m
   where u.building_id = v_building;
 
-  -- past months are paid, except resident 1's last month (-> the one overdue due)
+  -- past months are paid, except two units' last month:
+  --   Blok A / 3 (resident 1): nothing paid -> overdue
+  --   Blok B / 4: partial payment below, past its due date -> overdue (refresh_due_status)
   insert into public.payments (due_id, amount, paid_at, method, recorded_by)
   select d.id, d.amount, (d.due_date - 3)::timestamptz + interval '10 hours',
          case when d.unit_id = v_unit2 then 'card' else 'bank_transfer' end, v_mgr
@@ -156,7 +158,28 @@ begin
   join public.units u on u.id = d.unit_id
   where u.building_id = v_building
     and d.period < date_trunc('month', current_date)::date
-    and not (d.unit_id = v_unit1 and d.period = (date_trunc('month', current_date) - interval '1 month')::date);
+    and not (d.period = (date_trunc('month', current_date) - interval '1 month')::date
+             and u.block || u.number in ('A3', 'B4'));
+
+  insert into public.payments (due_id, amount, paid_at, method, recorded_by)
+  select d.id, 600.00, (d.due_date - 7)::timestamptz + interval '10 hours', 'cash', v_mgr
+  from public.dues d
+  join public.units u on u.id = d.unit_id
+  where u.building_id = v_building and u.block = 'B' and u.number = '4'
+    and d.period = (date_trunc('month', current_date) - interval '1 month')::date;
+
+  -- current month, mid-month look: 8 of 12 units paid in full on successive days from the 2nd
+  -- (paid_at capped at "now" so it is never in the future). A3, B4, B5, B6 stay open.
+  insert into public.payments (due_id, amount, paid_at, method, recorded_by)
+  select d.id, d.amount,
+         least(now() - interval '5 minutes',
+               date_trunc('month', now()) + (row_number() over (order by u.block, u.number)) * interval '30 hours'),
+         case when u.number in ('2', '5') then 'card' else 'bank_transfer' end, v_mgr
+  from public.dues d
+  join public.units u on u.id = d.unit_id
+  where u.building_id = v_building
+    and d.period = date_trunc('month', current_date)::date
+    and u.block || u.number in ('A1', 'A2', 'A4', 'A5', 'A6', 'B1', 'B2', 'B3');
 
   -- a partial payment for resident 2's current month (stays unpaid)
   insert into public.payments (due_id, amount, method, recorded_by)
